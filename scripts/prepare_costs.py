@@ -3,7 +3,10 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[2]
-INPUT = ROOT / "BD_MADRE_DE_COSTOS_19-10-2026.xlsx"
+SOURCES = list(ROOT.glob("BD_MADRE_DE_COSTOS*.xlsx"))
+if not SOURCES:
+    raise FileNotFoundError(f"No se encontró BD_MADRE_DE_COSTOS*.xlsx en {ROOT}")
+INPUT = max(SOURCES, key=lambda path: path.stat().st_mtime)
 OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "costs.json"
 MONTHS = ["Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 
