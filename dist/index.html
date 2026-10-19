@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b3b37">
+  <title>Avanti · Histórico de precios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">A</div><div><strong>AVANTI</strong><span>Pharma Group</span></div></div>
+      <nav id="nav" aria-label="Secciones">
+        <button class="nav-item active" data-view="overview"><span>⌁</span> Panorama</button>
+        <button class="nav-item" data-view="product"><span>⌕</span> Ficha de producto</button>
+        <button class="nav-item" data-view="compare"><span>⇄</span> Comparativo</button>
+        <button class="nav-item" data-view="mapping"><span>⌘</span> Equivalencias</button>
+        <button class="nav-item" data-view="trace"><span>▤</span> Trazabilidad</button>
+      </nav>
+      <div class="sidebar-note"><span class="status-dot"></span><div><b>Base cerrada</b><small>Mayo–agosto 2026</small></div></div>
+      <div class="sidebar-foot">Preparado para Ana K.<br><span>Avanti Pharma · Arequipa</span></div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><p class="eyebrow">INTELIGENCIA DE COMPRAS</p><h1>Histórico de precios</h1></div>
+        <div class="top-actions"><button class="icon-btn" id="helpBtn" aria-label="Ver criterios">i</button><div class="avatar">AK</div></div>
+      </header>
+
+      <section class="filterbar" aria-label="Filtros">
+        <label class="search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Busca un medicamento, código o descripción…" autocomplete="off"><kbd>⌘ K</kbd><div id="searchResults" class="search-results hidden"></div></label>
+        <label><span>Proveedor</span><select id="providerFilter"><option value="">Todos</option></select></label>
+        <label><span>Mes</span><select id="monthFilter"><option value="">May–Ago 2026</option></select></label>
+        <button id="clearFilters" class="ghost-btn">Limpiar</button>
+      </section>
+
+      <section id="content" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <dialog id="criteriaDialog">
+    <button class="dialog-close" aria-label="Cerrar">×</button>
+    <p class="eyebrow">CRITERIOS DE LECTURA</p>
+    <h2>Números correctos antes que bonitos.</h2>
+    <div class="criteria-grid">
+      <div><b>Precio observado</b><p>Se usa el precio final impreso cuando existe. Si se divide importe entre cantidad, queda marcado como calculado. FDS muestra su precio de lista, porque no imprime importe por línea.</p></div>
+      <div><b>Comparabilidad</b><p>Solo se estima ahorro cuando producto propuesto, unidad normalizada y cantidad por presentación coinciden. Si el envase no está explícito, la comparación queda restringida.</p></div>
+      <div><b>Bonificaciones</b><p>Las líneas BONIF/BONIFICACIÓN, tipo Y o precio cero se separan. Nunca entran en medias ni tendencias de precio.</p></div>
+      <div><b>Equivalencias</b><p>La agrupación es una propuesta conservadora. Toda edición se guarda en este navegador y puede exportarse a CSV.</p></div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
