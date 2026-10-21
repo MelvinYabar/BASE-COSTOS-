@@ -69,6 +69,17 @@ def main():
             if not close(expected, percentage, 0.6):
                 errors.append(f"Comparativo {row.get('n')}: diferencia porcentual inconsistente")
 
+        matching = [item for item in payload["base"] if (item.get("gtin") or item.get("product")) == (row.get("gtin") or row.get("product"))]
+        candidates = [(next((cost.get("value") for cost in reversed(item["costs"]) if cost.get("value") is not None), None), item.get("provider")) for item in matching]
+        candidates = [item for item in candidates if item[0] is not None]
+        if candidates:
+            expected_min = min(candidates, key=lambda item: item[0])
+            expected_max = max(candidates, key=lambda item: item[0])
+            if (cheapest, row.get("cheapest")) != expected_min:
+                errors.append(f"Comparativo {row.get('n')}: proveedor/costo mínimo no coincide con la base corregida")
+            if (expensive, row.get("mostExpensive")) != expected_max:
+                errors.append(f"Comparativo {row.get('n')}: proveedor/costo máximo no coincide con la base corregida")
+
     for row in payload["detail"]:
         boxes = row.get("boxes")
         units_per_box = row.get("unitsPerBox")
@@ -77,7 +88,12 @@ def main():
             errors.append(f"Detalle {row.get('n')}: cajas × unidades/caja no coincide con unidades")
         without_tax = row.get("costWithoutTax")
         final_cost = row.get("finalCost")
-        if row.get("tax") == "+18%" and None not in (without_tax, final_cost) and not close(without_tax * 1.18, final_cost, 0.0015):
+        if row.get("provider", "").upper() == "ALFARO":
+            if row.get("tax") != "IGV incluido":
+                errors.append(f"Detalle {row.get('n')}: ALFARO debe marcar IGV incluido")
+            if None not in (without_tax, final_cost) and not close(without_tax, final_cost, 0.000001):
+                errors.append(f"Detalle {row.get('n')}: ALFARO no debe recibir un segundo IGV")
+        elif row.get("tax") == "+18%" and None not in (without_tax, final_cost) and not close(without_tax * 1.18, final_cost, 0.0015):
             errors.append(f"Detalle {row.get('n')}: costo final no coincide con IGV de 18%")
 
     missing_gtin = sum(1 for row in payload["detail"] if not row.get("gtin"))
@@ -94,7 +110,7 @@ def main():
         workbook = load_workbook(source, data_only=True, read_only=True)
         source_counts = {
             "baseRows": sum(1 for row in workbook["BD MADRE DE COSTOS"].iter_rows(min_row=5, values_only=True) if row[2] or row[3]),
-            "comparisons": sum(1 for row in workbook["COMPARATIVO PROVEEDORES"].iter_rows(min_row=5, values_only=True) if row[2]),
+            "comparisons": sum(1 for row in workbook["COMPARATIVO PROVEEDORES"].iter_rows(min_row=5, values_only=True) if row[2] and str(row[0]).strip().upper() != "TOTAL"),
             "differentPresentations": sum(1 for row in workbook["PRESENTACIONES DISTINTAS"].iter_rows(min_row=5, values_only=True) if row[2]),
             "detailRows": sum(1 for row in workbook.worksheets[3].iter_rows(min_row=5, values_only=True) if row[2]),
         }

@@ -9,6 +9,7 @@ if not SOURCES:
 INPUT = max(SOURCES, key=lambda path: path.stat().st_mtime)
 OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "costs.json"
 MONTHS = ["Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+ALFARO = "ALFARO"
 
 
 def clean(value):
@@ -21,9 +22,20 @@ def num(value):
     return round(float(value), 6) if isinstance(value, (int, float)) else None
 
 
+def latest_cost(row):
+    return next((item["value"] for item in reversed(row["costs"]) if item["value"] is not None), None)
+
+
 def main():
     formulas = load_workbook(INPUT, data_only=False, read_only=False)
     values = load_workbook(INPUT, data_only=True, read_only=False)
+
+    detail_ws = values.worksheets[3]
+    alfaro_needs_correction = any(
+        clean(row[3]).upper() == ALFARO and clean(row[12]) == "+18%"
+        for row in detail_ws.iter_rows(min_row=5, values_only=True)
+        if row[2]
+    )
 
     base_f = formulas["BD MADRE DE COSTOS"]
     base_v = values["BD MADRE DE COSTOS"]
@@ -37,6 +49,10 @@ def main():
         costs = []
         for c in range(5, 13):
             value = num(base_v.cell(r, c).value)
+            if provider.upper() == ALFARO and alfaro_needs_correction and value is not None:
+                # ALFARO's invoice amount already includes IGV. The supplied workbook
+                # added 18% again, so remove only that duplicated tax adjustment.
+                value = round(value / 1.18, 4)
             formula = base_f.cell(r, c).value
             costs.append({"value": value, "carried": isinstance(formula, str) and formula.startswith("=")})
         base.append({
@@ -51,19 +67,43 @@ def main():
             "monthsPurchased": base_v.cell(r, 16).value or 0,
         })
 
+    base_by_key = {}
+    for item in base:
+        base_by_key.setdefault(item["gtin"] or item["product"], []).append(item)
+
+    # Recalculate the comparison from the corrected base. Otherwise ALFARO could
+    # retain an obsolete minimum/maximum and an incorrect estimated saving.
     ws = values["COMPARATIVO PROVEEDORES"]
     comparisons = []
     for row in ws.iter_rows(min_row=5, values_only=True):
-        if not row[2]:
+        gtin = clean(row[1])
+        product = clean(row[2])
+        if not product or clean(row[0]).upper() == "TOTAL":
             continue
+        candidates = []
+        for item in base_by_key.get(gtin or product, []):
+            value = latest_cost(item)
+            if value is not None:
+                candidates.append((value, item["provider"]))
+        if not candidates:
+            continue
+        cheapest_cost, cheapest = min(candidates, key=lambda item: item[0])
+        expensive_cost, expensive = max(candidates, key=lambda item: item[0])
+        difference = round(expensive_cost - cheapest_cost, 4)
+        units_purchased = num(row[11]) or 0
         comparisons.append({
-            "n": row[0], "gtin": clean(row[1]), "product": clean(row[2]),
+            "n": 0, "gtin": gtin, "product": product,
             "unitsPerBox": num(row[3]), "providerCount": row[4] or 0,
-            "cheapest": clean(row[5]), "cheapestCost": num(row[6]),
-            "mostExpensive": clean(row[7]), "mostExpensiveCost": num(row[8]),
-            "difference": num(row[9]), "differencePct": num(row[10]),
-            "unitsPurchased": num(row[11]), "estimatedSaving": num(row[12]),
+            "cheapest": cheapest, "cheapestCost": cheapest_cost,
+            "mostExpensive": expensive, "mostExpensiveCost": expensive_cost,
+            "difference": difference,
+            "differencePct": round(difference / cheapest_cost * 100, 1) if cheapest_cost else None,
+            "unitsPurchased": units_purchased,
+            "estimatedSaving": round(difference * units_purchased, 2),
         })
+    comparisons.sort(key=lambda item: item["estimatedSaving"] or 0, reverse=True)
+    for index, item in enumerate(comparisons, 1):
+        item["n"] = index
 
     ws = values["PRESENTACIONES DISTINTAS"]
     presentations = []
@@ -71,17 +111,24 @@ def main():
         if row[2]:
             presentations.append({"n": row[0], "gtin": clean(row[1]), "product": clean(row[2]), "detail": clean(row[3])})
 
-    ws = values.worksheets[3]
+    ws = detail_ws
     detail = []
     for row in ws.iter_rows(min_row=5, values_only=True):
         if not row[2]:
             continue
+        provider = clean(row[3])
+        cost_without_tax = num(row[11])
+        tax = clean(row[12])
+        final_cost = num(row[13])
+        if provider.upper() == ALFARO:
+            tax = "IGV incluido"
+            final_cost = cost_without_tax
         detail.append({
             "n": row[0], "gtin": clean(row[1]), "description": clean(row[2]), "provider": clean(row[3]),
             "month": clean(row[4]), "invoice": clean(row[5]), "file": clean(row[6]),
             "boxes": num(row[7]), "unitsPerBox": num(row[8]), "units": num(row[9]),
-            "invoiceAmount": num(row[10]), "costWithoutTax": num(row[11]), "tax": clean(row[12]),
-            "finalCost": num(row[13]), "amountSource": clean(row[14]), "unitsSource": clean(row[15]),
+            "invoiceAmount": num(row[10]), "costWithoutTax": cost_without_tax, "tax": tax,
+            "finalCost": final_cost, "amountSource": clean(row[14]), "unitsSource": clean(row[15]),
         })
 
     payload = {
@@ -94,6 +141,8 @@ def main():
             "comparisons": len(comparisons),
             "differentPresentations": len(presentations),
             "detailRows": len(detail),
+            "igvIncludedProviders": ["ALFARO", "CASTILLO", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"],
+            "alfaroCorrectionApplied": alfaro_needs_correction,
         },
         "base": base,
         "comparisons": comparisons,

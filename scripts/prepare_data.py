@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 INPUT = ROOT / "BD_HISTORICO_PRECIOS" / "historico_precios.csv"
 OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "data.json"
+IGV_INCLUDED_PROVIDERS = {"ALFARO", "CASTILLO", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"}
 
 
 def number(value):
@@ -112,7 +113,7 @@ def observed_price(row):
     amount = number(row.get("importe"))
     # Prefer a final unit price explicitly printed by the supplier.
     direct = {
-        "ALFARO": ("precio_unit_final", "Final impreso"),
+        "ALFARO": ("precio_unit_final", "Final impreso con IGV incluido"),
         "FARMAGOLD": ("valor_unitario", "Final impreso"),
         "BETHEL": ("valor_unitario", "Valor unitario sin IGV impreso"),
     }
@@ -179,6 +180,7 @@ def main():
             "priceField": price_field,
             "priceBasis": price_basis,
             "calculated": calculated,
+            "includesIgv": row["proveedor"] in IGV_INCLUDED_PROVIDERS,
             "amount": number(row.get("importe")) or number(row.get("total")) or number(row.get("valor_venta")),
             "lot": row.get("lote") or row.get("lote_venc") or "",
             "raw": row.get("raw", ""),
