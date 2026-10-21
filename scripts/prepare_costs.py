@@ -9,7 +9,13 @@ if not SOURCES:
 INPUT = max(SOURCES, key=lambda path: path.stat().st_mtime)
 OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "costs.json"
 MONTHS = ["Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-ALFARO = "ALFARO"
+IGV_INCLUDED_PROVIDERS = {
+    "ALFARO",
+    "CASTILLO",
+    "EBENEL",
+    "FDS",
+    "FP MAYORISTA (QUIMICA SUIZA)",
+}
 
 
 def clean(value):
@@ -31,11 +37,13 @@ def main():
     values = load_workbook(INPUT, data_only=True, read_only=False)
 
     detail_ws = values.worksheets[3]
-    alfaro_needs_correction = any(
-        clean(row[3]).upper() == ALFARO and clean(row[12]) == "+18%"
+    providers_needing_correction = {
+        clean(row[3]).upper()
         for row in detail_ws.iter_rows(min_row=5, values_only=True)
         if row[2]
-    )
+        and clean(row[3]).upper() in IGV_INCLUDED_PROVIDERS
+        and clean(row[12]) == "+18%"
+    }
 
     base_f = formulas["BD MADRE DE COSTOS"]
     base_v = values["BD MADRE DE COSTOS"]
@@ -49,9 +57,9 @@ def main():
         costs = []
         for c in range(5, 13):
             value = num(base_v.cell(r, c).value)
-            if provider.upper() == ALFARO and alfaro_needs_correction and value is not None:
-                # ALFARO's invoice amount already includes IGV. The supplied workbook
-                # added 18% again, so remove only that duplicated tax adjustment.
+            if provider.upper() in providers_needing_correction and value is not None:
+                # These suppliers' invoice amounts already include IGV. If the
+                # workbook added 18% again, remove only that duplicated adjustment.
                 value = round(value / 1.18, 4)
             formula = base_f.cell(r, c).value
             costs.append({"value": value, "carried": isinstance(formula, str) and formula.startswith("=")})
@@ -120,7 +128,7 @@ def main():
         cost_without_tax = num(row[11])
         tax = clean(row[12])
         final_cost = num(row[13])
-        if provider.upper() == ALFARO:
+        if provider.upper() in IGV_INCLUDED_PROVIDERS:
             tax = "IGV incluido"
             final_cost = cost_without_tax
         detail.append({
@@ -141,8 +149,9 @@ def main():
             "comparisons": len(comparisons),
             "differentPresentations": len(presentations),
             "detailRows": len(detail),
-            "igvIncludedProviders": ["ALFARO", "CASTILLO", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"],
-            "alfaroCorrectionApplied": alfaro_needs_correction,
+            "igvIncludedProviders": sorted(IGV_INCLUDED_PROVIDERS),
+            "igvCorrectionsApplied": sorted(providers_needing_correction),
+            "alfaroCorrectionApplied": "ALFARO" in providers_needing_correction,
         },
         "base": base,
         "comparisons": comparisons,

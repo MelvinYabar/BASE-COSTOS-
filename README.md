@@ -32,7 +32,7 @@ Después abre `http://localhost:8000`.
 
 La sección **BD de costos** incluye el botón **Exportar Excel**. Descarga un libro `.xlsx` con cinco hojas: control, base maestra, comparativo, presentaciones distintas y detalle del cálculo. Los códigos GTIN se conservan como texto y los importes se exportan como valores numéricos.
 
-ALFARO, CASTILLO, FP MAYORISTA (QUÍMICA SUIZA) y FDS facturan con IGV incluido. El proceso de actualización no vuelve a aplicar el 18% a esos proveedores. Si una base anterior marca ALFARO como `+18%`, el generador elimina automáticamente ese doble cálculo y vuelve a calcular los comparativos.
+ALFARO, CASTILLO, EBENEL, FP MAYORISTA (QUÍMICA SUIZA) y FDS facturan con IGV incluido. El proceso de actualización no vuelve a aplicar el 18% a esos proveedores. Si una base anterior marca cualquiera de ellos como `+18%`, el generador elimina automáticamente ese doble cálculo y vuelve a calcular los comparativos.
 
 ## Actualización de datos
 
@@ -46,7 +46,7 @@ Para actualizar el histórico de precios, reemplaza `BD_HISTORICO_PRECIOS/histor
 
 ## Controles de validación
 
-La validación automática comprueba que los conteos del Excel coincidan con el JSON publicado, que no existan claves producto–proveedor duplicadas, que los meses observados y arrastrados sean coherentes, que las comparaciones cuadren y que unidades e IGV reproduzcan el costo final. También exige que ALFARO aparezca como `IGV incluido` y que su costo final no reciba un segundo 18%. La revisión humana confirma GTIN, presentación, equivalencias y cualquier unidad asumida contra la factura original.
+La validación automática comprueba que los conteos del Excel coincidan con el JSON publicado, que no existan claves producto–proveedor duplicadas, que los meses observados y arrastrados sean coherentes, que las comparaciones cuadren y que unidades e IGV reproduzcan el costo final. También exige que todos los proveedores con IGV incluido aparezcan con ese tratamiento y que su costo final no reciba un segundo 18%. La revisión humana confirma GTIN, presentación, equivalencias y cualquier unidad asumida contra la factura original.
 
 ## Estructura
 

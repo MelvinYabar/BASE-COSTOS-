@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 INPUT = ROOT / "BD_HISTORICO_PRECIOS" / "historico_precios.csv"
 OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "data.json"
-IGV_INCLUDED_PROVIDERS = {"ALFARO", "CASTILLO", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"}
+IGV_INCLUDED_PROVIDERS = {"ALFARO", "CASTILLO", "EBENEL", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"}
 
 
 def number(value):

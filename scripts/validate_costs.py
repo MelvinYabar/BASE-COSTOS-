@@ -20,6 +20,7 @@ def main():
     warnings = []
     payload = json.loads(DATA.read_text(encoding="utf-8"))
     meta = payload["meta"]
+    igv_included_providers = {provider.upper() for provider in meta.get("igvIncludedProviders", [])}
 
     expected_lengths = {
         "baseRows": len(payload["base"]),
@@ -88,11 +89,11 @@ def main():
             errors.append(f"Detalle {row.get('n')}: cajas × unidades/caja no coincide con unidades")
         without_tax = row.get("costWithoutTax")
         final_cost = row.get("finalCost")
-        if row.get("provider", "").upper() == "ALFARO":
+        if row.get("provider", "").upper() in igv_included_providers:
             if row.get("tax") != "IGV incluido":
-                errors.append(f"Detalle {row.get('n')}: ALFARO debe marcar IGV incluido")
+                errors.append(f"Detalle {row.get('n')}: {row.get('provider')} debe marcar IGV incluido")
             if None not in (without_tax, final_cost) and not close(without_tax, final_cost, 0.000001):
-                errors.append(f"Detalle {row.get('n')}: ALFARO no debe recibir un segundo IGV")
+                errors.append(f"Detalle {row.get('n')}: {row.get('provider')} no debe recibir un segundo IGV")
         elif row.get("tax") == "+18%" and None not in (without_tax, final_cost) and not close(without_tax * 1.18, final_cost, 0.0015):
             errors.append(f"Detalle {row.get('n')}: costo final no coincide con IGV de 18%")
 
