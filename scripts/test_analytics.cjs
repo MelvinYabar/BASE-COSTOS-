@@ -52,7 +52,7 @@ test('Compras no estima importes ausentes a partir de precios de lista', () => {
   assert.equal(r.rows.length,1); assert.equal(r.missing,1); assert.equal(r.bonuses,1);
 });
 test('Referencia mensual ponderada ignora unidades asumidas y compras futuras', () => {
-  const detail = (month, units, finalCost, more={}) => ({month,units,finalCost,gtin:'00123',provider:'ALFARO',unitsSource:'Factura',...more});
+  const detail = (month, units, finalCost, more={}) => ({month,units,finalCost,boxes:units,unitsPerBox:1,invoiceAmount:units*finalCost,description:'Medicamento',gtin:'00123',provider:'ALFARO',unitsSource:'Factura',...more});
   const index = A.costIndex({meta:{source:'BD_MADRE_DE_COSTOS_19-10-2026.xlsx'},detail:[
     detail('Mayo',2,10),detail('Mayo',8,20),detail('Julio',10,99),
     detail('Junio',10,1000,{unitsSource:'se asume 1 por envase'})]});
@@ -61,6 +61,28 @@ test('Referencia mensual ponderada ignora unidades asumidas y compras futuras', 
   assert.equal(A.attachCosts([sale({date:'2026-04-01',cost:null})],index,true)[0].cost,null);
   assert.equal(A.attachCosts([sale({cost:null,code:'123'})],index,true)[0].cost,null);
   assert.equal(A.attachCosts([sale({cost:null,unit:'CAJA'})],index,true)[0].cost,null);
+});
+test('Tres cajas X30: importe final dividido entre 90, con IGV aplicado una vez', () => {
+  const row = {description:'MEDICAMENTO TAB X 30',boxes:3,unitsPerBox:1,unitsSource:'se asume 1 por envase',invoiceAmount:180,provider:'ALFARO'};
+  const included = A.purchaseCost(row);
+  assert.equal(included.units,90); assert.equal(included.unitCost,2);
+  assert.equal(included.finalAmount,180); assert.equal(included.recovered,true);
+  const withoutIGV = A.purchaseCost({...row,provider:'DIMEXA'});
+  assert.equal(withoutIGV.units,90); close(withoutIGV.finalAmount,212.4); close(withoutIGV.unitCost,2.36);
+  for (const provider of ['FDS','QUIMICA SUIZA','FP MAYORISTA','FP MAYORISTA (QUIMICA SUIZA)','EBENEL','CASTILLO']) assert.equal(A.purchaseCost({...row,provider}).unitCost,2);
+});
+test('X30 se interpreta como cantidad; ML, MG, centímetros y dosis no son unidades de venta', () => {
+  for (const name of ['MEDICAMENTO CAJA x30','MEDICAMENTO X30TAB','MEDICAMENTO CJA X 30 COMP','MEDICAMENTO CJAX30UND']) assert.equal(A.packFromName(name).count,30,name);
+  for (const name of ['JARABE X 120ML','CREMA X 30 G','MEDICAMENTO X 10 MG','APOSITO X 10 CM','INHALADOR X 200 DOSIS','MEDICAMENTO X 1.5ML']) assert.equal(A.packFromName(name).count,null,name);
+  assert.equal(A.packFromName('MEDICAMENTO X10 AMP X2ML').count,10);
+  assert.equal(A.packFromName('MEDICAMENTO X2 BLISTER X10 TAB').count,null);
+});
+test('Unidades contradictorias y cantidades ausentes quedan pendientes en vez de inventar costos', () => {
+  const row = {description:'MEDICAMENTO CAJA X30',boxes:3,unitsPerBox:20,unitsSource:'catálogo',invoiceAmount:180,provider:'FDS'};
+  assert.match(A.purchaseCost(row).issue,/catálogo/);
+  assert.equal(A.purchaseCost(row).unitCost,null);
+  assert.equal(A.purchaseCost({...row,unitsPerBox:30,boxes:null}).unitCost,null);
+  assert.equal(A.purchaseCost({...row,unitsPerBox:30,invoiceAmount:null}).unitCost,null);
 });
 test('Comparación requiere unidad/IGV confirmados y deja ajustes incompatibles sin margen', () => {
   assert.equal(A.attachCosts([sale()],new Map(),false)[0].cost,null);

@@ -226,3 +226,11 @@ la estructura del proyecto y los scripts de preparación/validación. Continúa 
 el estado actual, preserva los cambios existentes y aplica las reglas de negocio de
 IGV documentadas. No publiques ni subas fuentes privadas salvo que te lo solicite.
 ```
+
+## Regla de unidades e IGV aclarada el 23 de octubre de 2026
+
+El usuario confirmó la regla de compras: multiplicar envases por unidades de la presentación, aplicar IGV solo a proveedores que no lo incluyen y dividir el importe final entre las unidades totales. Se corrigió verbalmente la inversión de la división de su ejemplo: es importe / unidades.
+
+`AvantiAnalytics.purchaseCost` implementa esa regla; `packFromName` reconoce X de cantidad sin confundir volumen, concentración, dimensiones ni dosis. Los conflictos con catálogo y múltiples cantidades quedan pendientes. `costIndex` usa las compras recalculadas válidas para las referencias de venta. No se han cambiado los JSON originales ni el generador de la BD madre sin fuente Excel.
+
+Nueva vista: `dist/cost-review.js`, accesible en BD de costos → Revisión de costos. Muestra cálculo y costo publicado en paralelo, unidades recuperadas, faltantes, conflictos, filtros y exportación. Los avisos en ventas muestran motivos concretos y distinguen la confirmación de unidad/IGV todavía pendiente. La aclaración del usuario se refiere al costo de compras, no demuestra la unidad y base tributaria del reporte de ventas.

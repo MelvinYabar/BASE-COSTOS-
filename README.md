@@ -21,7 +21,7 @@ Reglas de cálculo:
 - **Precio de venta ponderado:** suma de importes / suma de cantidades del mismo código y unidad. No es una media simple de precios diarios.
 - **Sin código:** se conserva el registro y se agrupa por descripción exacta, sin vincularlo automáticamente a un GTIN.
 - **Cantidades e importes:** se conservan los signos originales y las ventas de importe cero. Si los signos son incompatibles, la fila permanece en los totales pero no recibe un margen de referencia.
-- **Costo de referencia:** solo después de confirmar unidad e IGV comparables. Se usa el costo unitario explícito de ventas o el promedio mensual de costos finales de compras, ponderado por unidades y por GTIN exacto. Si falta el mes, se usa el último anterior. Se excluyen unidades asumidas, GTIN con presentaciones distintas y meses posteriores. No es un costo de inventario FIFO ni el costo real de la unidad vendida.
+- **Costo de referencia:** después de confirmar unidad e IGV comparables. Se usa el costo unitario explícito de ventas o se recalcula cada compra: `importe de la línea × factor IGV / (envases comprados × unidades por envase)`. El factor es 1 para los proveedores con IGV incluido y 1.18 para los demás. Con GTIN exacto se pondera por unidades del mismo mes o último anterior. Una cantidad X inequívoca del nombre puede recuperar unidades antes asumidas. Los conflictos nombre–catálogo, varias cantidades X, presentaciones distintas y meses posteriores se excluyen del cruce. No es un costo de inventario FIFO ni el costo real de la unidad vendida.
 - **Margen sobre costo:** importe / costo total de referencia − 1. La tabla exige costo en todas las filas de cada grupo; la tarjeta muestra únicamente la población con costo comparable e indica su cobertura. El resultado se presenta como porcentaje.
 - **Volumen de compras:** importes impresos del histórico; excluye bonificaciones y líneas sin importe. No reconstruye importes desde precios de lista ni uniformiza el IGV.
 - **Volumen de ventas:** importes del archivo de ventas. El reporte original no identifica distribuidor: se muestra `Sin distribuidor` y cero distribuidores identificados. No se asignan ventas a proveedores de compra por inferencia.
@@ -90,3 +90,11 @@ La validación automática comprueba que los conteos del Excel coincidan con el 
 - `scripts/`: utilidades para regenerar los archivos de datos desde las fuentes locales.
 - `.openai/hosting.json`: configuración de la publicación privada en Sites.
 - `render.yaml`: infraestructura declarativa para Render.
+
+## Revisión de unidades e IGV
+
+En **BD de costos → Revisión de costos** se muestran los cálculos desde el importe original, la cantidad comprada y las unidades por envase. Por ejemplo, 3 cajas X30 son 90 unidades: un importe de 180 con IGV incluido da 2 por unidad; un importe de 180 sin IGV da 2.36 después de aplicar el 18% una sola vez.
+
+Se reconocen cantidades como `CAJA X30`, `TAB X 30`, `X30TAB` y `CJAX30UND`. Una X seguida de ML, MG, centímetros o dosis no expresa unidades vendibles. Si el nombre contiene varias cantidades de envase o contradice el catálogo, la fila queda pendiente de revisar la factura. Si no hay X inequívoca se conservan únicamente unidades confirmadas por catálogo/factura, no una unidad asumida.
+
+La revisión conserva el costo publicado para contrastarlo con el cálculo desde el importe; incluye filtro de estado y exportación Excel. No sobrescribe la BD madre ni sus comparativos sin disponer de la fuente original y una validación completa. Los márgenes de referencia usan las compras válidas recalculadas. Los avisos de ventas distinguen la confirmación pendiente de los motivos de falta de costo: código sin relacionar, falta de historia, presentación o unidades.

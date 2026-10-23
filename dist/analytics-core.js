@@ -57,14 +57,19 @@
   }
   function summarize(rows) {
     let qty = 0, amount = 0, costTotal = 0, missingCost = 0;
+    const costIssues = new Map();
     const units = new Set();
     for (const r of rows) {
       qty += r.qty; amount += r.amount; units.add(r.unit);
-      if (r.cost == null) missingCost++; else costTotal += r.qty * r.cost;
+      if (r.cost == null) {
+        missingCost++;
+        const reason = r.costOrigin || 'Costo no informado';
+        costIssues.set(reason, (costIssues.get(reason) || 0) + 1);
+      } else costTotal += r.qty * r.cost;
     }
     const sameUnit = units.size === 1;
     const complete = rows.length > 0 && !missingCost;
-    return {qty, amount, costTotal: complete ? costTotal : null, missingCost,
+    return {qty, amount, costTotal: complete ? costTotal : null, missingCost, costIssues: [...costIssues],
       price: sameUnit && qty > 0 ? amount / qty : null,
       unitCost: complete && sameUnit && qty > 0 ? costTotal / qty : null,
       margin: complete && costTotal > 0 ? amount / costTotal - 1 : null,
@@ -100,6 +105,49 @@
     return {rows: valid, missing: rows.filter(r => !r.bonus && !Number.isFinite(r.amount)).length,
       bonuses: rows.filter(r => r.bonus).length};
   }
+  function packFromName(description) {
+    const name = normalize(description).replace(/×/g, ' X ');
+    const counts = [];
+    const pattern = /(?:\bX|(?:CAJA|CJA)\s*X)\s*(\d{1,4})(?![\d.,])/g;
+    let match;
+    while ((match = pattern.exec(name))) {
+      const rest = name.slice(pattern.lastIndex).trimStart();
+      // Millilitres, strengths and dimensions describe contents, not counts.
+      if (/^(?:ML|MG|MCG|UG|GR|G|KG|L|CM|MM|UI|DOSIS|U\.I\.)(?:\b|\d)/.test(rest)) continue;
+      const token = rest.match(/^[A-Z]+/)?.[0];
+      if (token && !/^(?:TAB|TABLETA|TABLETAS|COMP|COMPR|COMPRIMIDO|COMPRIMIDOS|CAP|CAPS|CAPSULA|CAPSULAS|AMP|AMPOLLA|AMPOLLAS|SOB|SOBRE|SOBRES|UND|UN|UNI|UNIDAD|UNIDADES|U|VIAL|VIALES|PARCHE|PARCHES|BLISTER|BLISTERS|FCO|FRASCO|FRASCOS|TUBO|TUBOS|OVULO|OVULOS|SUPOSITORIO|SUPOSITORIOS)$/.test(token)) continue;
+      if (Number(match[1]) > 0) counts.push(Number(match[1]));
+    }
+    return counts.length === 1 ? {count: counts[0], issue: ''} : {count: null,
+      issue: counts.length > 1 ? 'Varias cantidades X en el nombre: revisar presentación' : 'El nombre no contiene una cantidad de unidades inequívoca'};
+  }
+  function purchaseCost(row, includedProviders) {
+    const included = new Set((includedProviders || ['ALFARO','CASTILLO','EBENEL','FDS','FP MAYORISTA (QUIMICA SUIZA)']).map(normalize));
+    for (const alias of ['QUIMICA SUIZA','FP MAYORISTA']) included.add(alias);
+    const factor = included.has(normalize(row.provider)) ? 1 : 1.18;
+    const parsed = packFromName(row.description);
+    const assumed = /se asume/i.test(row.unitsSource || '');
+    const known = !assumed && Number.isFinite(row.unitsPerBox) && row.unitsPerBox > 0;
+    const result = {row, pack: null, boxes: row.boxes, units: null, amount: row.invoiceAmount,
+      factor, finalAmount: Number.isFinite(row.invoiceAmount) && row.invoiceAmount >= 0 ? row.invoiceAmount * factor : null,
+      unitCost: null, source: '', issue: '', recovered: false};
+    if (parsed.issue.startsWith('Varias')) result.issue = parsed.issue;
+    else if (known && parsed.count != null && parsed.count !== row.unitsPerBox) result.issue = `Nombre X ${parsed.count} y catálogo/fuente ${row.unitsPerBox}: confirmar presentación`;
+    else {
+      result.pack = parsed.count ?? (known ? row.unitsPerBox : null);
+      result.source = parsed.count != null ? `Nombre: X ${parsed.count}` : known ? row.unitsSource : '';
+      result.recovered = assumed && parsed.count != null;
+      if (!result.pack) result.issue = 'Falta confirmar unidades por envase';
+    }
+    if (!result.issue && !(Number.isFinite(row.boxes) && row.boxes > 0)) result.issue = 'Falta cantidad de envases comprados válida';
+    if (!result.issue && !(Number.isFinite(row.invoiceAmount) && row.invoiceAmount >= 0)) result.issue = 'Falta importe de la línea de compra válido';
+    if (!result.issue) {
+      result.units = row.boxes * result.pack;
+      result.finalAmount = row.invoiceAmount * factor;
+      result.unitCost = result.finalAmount / result.units;
+    }
+    return result;
+  }
   function costIndex(costs) {
     const months = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
     const year = costs.meta.source.match(/(20\d{2})\.xlsx$/i)?.[1];
@@ -108,13 +156,22 @@
     const blocked = new Set((costs.presentations || []).map(r => String(r.gtin)));
     for (const r of costs.detail) {
       const m = months.indexOf(normalize(r.month));
-      if (!r.gtin || blocked.has(String(r.gtin)) || m < 0 || !(r.units > 0) || !(r.finalCost > 0) || /se asume/i.test(r.unitsSource)) continue;
+      const calculation = purchaseCost(r, costs.meta.igvIncludedProviders);
+      if (!r.gtin || blocked.has(String(r.gtin)) || m < 0 || calculation.issue || !(calculation.unitCost > 0)) continue;
       const month = `${year}-${String(m + 1).padStart(2, '0')}`;
       const key = JSON.stringify([String(r.gtin), month]);
       if (!groups.has(key)) groups.set(key, {code: String(r.gtin), month, units: 0, total: 0, providers: new Set()});
-      const g = groups.get(key); g.units += r.units; g.total += r.units * r.finalCost; g.providers.add(r.provider);
+      const g = groups.get(key); g.units += calculation.units; g.total += calculation.finalAmount; g.providers.add(r.provider);
     }
     const index = new Map();
+    index.diagnostics = new Map();
+    for (const r of costs.detail) {
+      if (!r.gtin) continue;
+      const code = String(r.gtin), calculation = purchaseCost(r, costs.meta.igvIncludedProviders);
+      if (!index.diagnostics.has(code)) index.diagnostics.set(code, new Set());
+      const reason = blocked.has(code) ? 'GTIN con presentaciones distintas' : calculation.issue;
+      if (reason) index.diagnostics.get(code).add(reason);
+    }
     for (const g of groups.values()) {
       if (!index.has(g.code)) index.set(g.code, []);
       index.get(g.code).push({month: g.month, cost: g.total / g.units, providers: [...g.providers].sort()});
@@ -129,10 +186,11 @@
       if (r.cost != null) return {...r, costOrigin: 'Costo unitario del archivo de ventas'};
       if (r.unit !== 'UNIDAD VENDIDA' && normalize(r.unit) !== 'UNIDAD') return {...r, cost: null, costOrigin: 'Unidad no comparable'};
       const ref = (index.get(r.code) || []).filter(v => v.month <= r.date.slice(0, 7)).at(-1);
-      return {...r, cost: ref?.cost ?? null, costOrigin: ref ? `Referencia ${ref.month}: ${ref.providers.join(', ')}` : 'Sin GTIN / costo comparable'};
+      const missing = !r.code ? 'Falta código de venta' : index.has(r.code) ? 'Falta costo del mismo mes o anterior' : index.diagnostics?.has(r.code) ? [...index.diagnostics.get(r.code)].join('; ') || 'Compra sin costo positivo utilizable' : 'Código sin relacionar con GTIN de compras';
+      return {...r, cost: ref?.cost ?? null, costOrigin: ref ? `Referencia ${ref.month}: ${ref.providers.join(', ')}` : missing};
     });
   }
-  const api = {normalize, number, date, aliases, detectColumns, importRows, summarize, aggregate, volume, purchases, costIndex, attachCosts};
+  const api = {normalize, number, date, aliases, detectColumns, importRows, summarize, aggregate, volume, purchases, packFromName, purchaseCost, costIndex, attachCosts};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AvantiAnalytics = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
