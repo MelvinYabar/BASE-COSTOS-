@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b3b37">
-  <title>Avanti · Histórico de precios</title>
+  <title>Avanti · Base de costos y ventas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -19,6 +19,9 @@
         <button class="nav-item" data-view="product"><span>⌕</span> Ficha de producto</button>
         <button class="nav-item" data-view="compare"><span>⇄</span> Comparativo</button>
         <button class="nav-item" data-view="costs"><span>S/</span> BD de costos</button>
+        <button class="nav-item" data-view="sales" title="Precios y cantidades"><span>▦</span> Precios y cantidades</button>
+        <button class="nav-item" data-view="daily" title="Vendidos por día"><span>▥</span> Vendidos por día</button>
+        <button class="nav-item" data-view="volume" title="Volumen mensual"><span>▤</span> Volumen mensual</button>
         <button class="nav-item" data-view="mapping"><span>⌘</span> Equivalencias</button>
         <button class="nav-item" data-view="trace"><span>▤</span> Trazabilidad</button>
       </nav>
@@ -28,7 +31,7 @@
 
     <main>
       <header class="topbar">
-        <div><p class="eyebrow">INTELIGENCIA DE COMPRAS</p><h1>Histórico de precios</h1></div>
+        <div><p class="eyebrow">INTELIGENCIA DE COMPRAS Y VENTAS</p><h1>Base de costos</h1></div>
         <div class="top-actions"><button class="icon-btn" id="helpBtn" aria-label="Ver criterios">i</button></div>
       </header>
 
@@ -56,6 +59,8 @@
   </dialog>
 
   <script src="vendor/xlsx.full.min.js"></script>
+  <script src="analytics-core.js"></script>
   <script src="app.js"></script>
+  <script src="analytics.js"></script>
 </body>
 </html>

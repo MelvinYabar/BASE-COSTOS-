@@ -2,6 +2,40 @@
 
 Dashboard estático para consultar el histórico de precios y la base de costos de Avanti Pharma Group S.A.C.
 
+También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen mensual**, con compras y ventas separadas. La pestaña de ventas contiene la base de precios, la base de cantidades, los márgenes de referencia y el detalle de origen. Los reportes se exportan a Excel con códigos como texto y cifras numéricas.
+
+## Ventas
+
+El reporte `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` se prepara localmente con:
+
+```powershell
+python scripts/prepare_sales.py
+```
+
+También se puede indicar otra ruta: `python scripts/prepare_sales.py "C:\ruta\reporte.xlsx"`. El generador encuentra los encabezados del reporte, conserva códigos con ceros iniciales y compara la suma de las filas con el total declarado antes de escribir `dist/sales.json`. El Excel fuente y ese JSON local están excluidos de Git. No se publican las ventas automáticamente al desplegar el código.
+
+Desde **Precios y cantidades → Cargar ventas** se puede importar el reporte original o un Excel/CSV con `fecha`, `codigo`, `producto`, `cantidad` e `importe`. La plantilla CSV admite además `distribuidor`, `unidad` y `costo_unitario`. La importación detecta la fila de encabezados y permite revisar las columnas. Reemplaza el histórico de ventas completo; no agrega filas a la base anterior. Se guarda en IndexedDB de ese navegador y origen, con un aviso si no se pudo persistir. Para usar ventas en otro navegador o en producción, hay que cargar el archivo allí. No se envía el archivo a un servidor.
+
+Reglas de cálculo:
+
+- **Precio de venta ponderado:** suma de importes / suma de cantidades del mismo código y unidad. No es una media simple de precios diarios.
+- **Sin código:** se conserva el registro y se agrupa por descripción exacta, sin vincularlo automáticamente a un GTIN.
+- **Cantidades e importes:** se conservan los signos originales y las ventas de importe cero. Si los signos son incompatibles, la fila permanece en los totales pero no recibe un margen de referencia.
+- **Costo de referencia:** solo después de confirmar unidad e IGV comparables. Se usa el costo unitario explícito de ventas o el promedio mensual de costos finales de compras, ponderado por unidades y por GTIN exacto. Si falta el mes, se usa el último anterior. Se excluyen unidades asumidas, GTIN con presentaciones distintas y meses posteriores. No es un costo de inventario FIFO ni el costo real de la unidad vendida.
+- **Margen sobre costo:** importe / costo total de referencia − 1. La tabla exige costo en todas las filas de cada grupo; la tarjeta muestra únicamente la población con costo comparable e indica su cobertura. El resultado se presenta como porcentaje.
+- **Volumen de compras:** importes impresos del histórico; excluye bonificaciones y líneas sin importe. No reconstruye importes desde precios de lista ni uniformiza el IGV.
+- **Volumen de ventas:** importes del archivo de ventas. El reporte original no identifica distribuidor: se muestra `Sin distribuidor` y cero distribuidores identificados. No se asignan ventas a proveedores de compra por inferencia.
+
+
+Para comprobar la lógica y los JSON existentes:
+
+```powershell
+node --test scripts/test_analytics.cjs
+python scripts/validate_costs.py --published-only
+```
+
+El modo `--published-only` no compara contra el Excel original de costos; conserva esa limitación como advertencia. La validación completa sigue siendo `python scripts/validate_costs.py` cuando se dispone de la fuente.
+
 Para retomar el proyecto desde otra computadora o con otro asistente, consulta primero [HANDOFF.md](HANDOFF.md). Allí están el contexto funcional, las reglas de negocio, el flujo de actualización y el estado conocido de los datos.
 
 ## Despliegue en Render

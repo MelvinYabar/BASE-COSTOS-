@@ -1,6 +1,20 @@
 # Traspaso del proyecto — Dashboard de costos Avanti
 
-Actualizado: 22 de octubre de 2026.
+Actualizado: 23 de octubre de 2026.
+
+## Continuación local del 23 de octubre de 2026
+
+Se añadieron vistas de precios/cantidades, vendidos por día y volumen mensual de compras y ventas. Ver las reglas detalladas y el flujo de importación en README.md. La arquitectura continúa estática, sin compilación.
+
+Archivos nuevos: `dist/analytics-core.js` (cálculos compartidos), `dist/analytics.js` (interfaz e importación), `scripts/prepare_sales.py` y `scripts/test_analytics.cjs`. Se incorporaron tres entradas de navegación y estilos adaptables. La exportación de las vistas nuevas usa SheetJS local y conserva los códigos como texto.
+
+El reporte local de ventas tiene el patrón `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx`, hoja `VENTAS-DIARIAS-POR-ITEM`, con encabezados en fila 13. El generador exige que el detalle concilie exactamente con el resumen. Las filas sin código y los ajustes con signos distintos se conservan y se señalan. El reporte original no tiene columna de distribuidor. No inventar esa relación ni eliminar filas para forzar comparaciones.
+
+El usuario ratificó la lista de proveedores con IGV incluido (FDS, FP Mayorista/Química Suiza, Alfaro, Ebenel y Castillo). No confirmó todavía la unidad y el IGV del archivo de **ventas**. Por eso el control de comparación permanece desactivado al cargar o importar; habilita márgenes de referencia después de la verificación. No interpretar esa lista de proveedores como confirmación tributaria de las ventas.
+
+El Excel de ventas y el JSON `dist/sales.json` están excluidos de Git. La versión local lee ese JSON; las importaciones de la interfaz se guardan en IndexedDB del mismo navegador/origen y sustituyen el histórico completo. La publicación pública puede cargar ventas localmente desde la interfaz, sin subir el archivo a un servidor.
+
+La copia de trabajo inicial se recibió sin `.git`. Para integrar los cambios se clonó el repositorio y se trasladaron únicamente código, pruebas y documentación; las fuentes privadas de ventas no se trasladaron. Los JSON originales de compras y costos permanecen intactos. La validación del JSON de costos pasa con `--published-only`; no se dispone del Excel madre para comparar contra la fuente. Se conservan las tres advertencias previas de calidad.
 
 Este documento reúne el contexto operativo necesario para continuar el proyecto desde otra computadora o con otro asistente. Es un resumen técnico saneado del trabajo realizado; no contiene credenciales, claves ni una copia literal de conversaciones privadas.
 

@@ -1,3 +1,4 @@
+import argparse
 import json
 import math
 from collections import Counter, defaultdict
@@ -16,6 +17,9 @@ def close(a, b, tolerance):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Valida la BD de costos y, si está disponible, su Excel fuente.")
+    parser.add_argument("--published-only", action="store_true", help="Validar solo el JSON, sin comparación con el Excel original")
+    args = parser.parse_args()
     errors = []
     warnings = []
     payload = json.loads(DATA.read_text(encoding="utf-8"))
@@ -104,7 +108,9 @@ def main():
         f"Filas con una unidad por envase asumida: {assumed_units}",
     ])
 
-    if not SOURCES:
+    if args.published_only:
+        warnings.append("Modo JSON: no se comparó con el Excel fuente original.")
+    elif not SOURCES:
         errors.append(f"No se encontró BD_MADRE_DE_COSTOS*.xlsx en {ROOT}")
     else:
         source = max(SOURCES, key=lambda path: path.stat().st_mtime)
