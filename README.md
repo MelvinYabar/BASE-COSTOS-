@@ -2,6 +2,8 @@
 
 Dashboard estático para consultar el histórico de precios y la base de costos de Avanti Pharma Group S.A.C.
 
+Para retomar el proyecto desde otra computadora o con otro asistente, consulta primero [HANDOFF.md](HANDOFF.md). Allí están el contexto funcional, las reglas de negocio, el flujo de actualización y el estado conocido de los datos.
+
 ## Despliegue en Render
 
 El repositorio incluye un Blueprint en `render.yaml`. Para desplegarlo:
