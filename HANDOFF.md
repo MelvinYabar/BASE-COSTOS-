@@ -2,6 +2,16 @@
 
 Actualizado: 23 de octubre de 2026.
 
+## Compras por proveedor y GTIN — 23 de octubre de 2026
+
+Se incorporó el reporte de ventas hasta el 23 de octubre de 2026. Concilia 20,664 líneas, 681,422 unidades reportadas y S/ 2,438,818.22. `dist/sales.json` sigue excluido de Git para evitar publicar ventas en el repositorio o Render; puede incluirse en el paquete privado de Sites.
+
+La nueva sección **Compras por proveedor** se genera con `scripts/prepare_purchases.py` desde el registro de facturas, el consolidado detallado y el catálogo distribuidor–medicamento. El JSON publicado excluye deliberadamente teléfonos, contactos, cuentas, contraseñas y observaciones del maestro de proveedores.
+
+La conciliación contra GTIN es conservadora. Solo los nombres normalizados únicos se marcan como coincidencia exacta. Las coincidencias por similitud quedan como propuestas, aunque el puntaje sea alto. Se comparan nombre, concentración y presentación, y no se fusionan proveedores desconocidos con proveedores conocidos. En particular, `HNOS. DIAZ & ASOCIADOS` no se presume equivalente a EBENEL.
+
+Fuentes actuales: 3,338 líneas detalladas, 614 registros de facturas, 19 proveedores y 2,051 descripciones únicas para conciliar. La cobertura exacta inicial debe ampliarse mediante revisión humana; no bajar los umbrales para inflar la cobertura.
+
 ## Continuación local del 23 de octubre de 2026
 
 Se añadieron vistas de precios/cantidades, vendidos por día y volumen mensual de compras y ventas. Ver las reglas detalladas y el flujo de importación en README.md. La arquitectura continúa estática, sin compilación.

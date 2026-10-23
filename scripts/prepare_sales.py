@@ -9,6 +9,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
+PARENT = ROOT.parent
 
 
 def number(value):
@@ -21,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", nargs="?", type=Path)
     args = parser.parse_args()
-    candidates = list(ROOT.glob("*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx"))
+    candidates = list(ROOT.glob("*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx")) + list(PARENT.glob("*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx"))
     if not args.source and not candidates:
         parser.error("Indica la ruta del Excel de ventas.")
     source = args.source or max(candidates, key=lambda p: p.stat().st_mtime)

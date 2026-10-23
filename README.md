@@ -4,6 +4,8 @@ Dashboard estático para consultar el histórico de precios y la base de costos 
 
 También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen mensual**, con compras y ventas separadas. La pestaña de ventas contiene la base de precios, la base de cantidades, los márgenes de referencia y el detalle de origen. Los reportes se exportan a Excel con códigos como texto y cifras numéricas.
 
+La sección **Compras por proveedor** usa el registro general de facturas y el consolidado de productos comprados. Separa las coincidencias exactas de GTIN de las propuestas por similitud; una propuesta nunca se considera confirmada automáticamente.
+
 ## Ventas
 
 El reporte `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` se prepara localmente con:
@@ -12,7 +14,34 @@ El reporte `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` se prepara localmente con:
 python scripts/prepare_sales.py
 ```
 
-También se puede indicar otra ruta: `python scripts/prepare_sales.py "C:\ruta\reporte.xlsx"`. El generador encuentra los encabezados del reporte, conserva códigos con ceros iniciales y compara la suma de las filas con el total declarado antes de escribir `dist/sales.json`. El Excel fuente y ese JSON local están excluidos de Git. No se publican las ventas automáticamente al desplegar el código.
+También se puede indicar otra ruta: `python scripts/prepare_sales.py "C:\ruta\reporte.xlsx"`. El generador encuentra los encabezados del reporte, conserva códigos con ceros iniciales y compara la suma de las filas con el total declarado antes de escribir `dist/sales.json`. También busca el reporte en la carpeta superior. El Excel fuente y ese JSON local están excluidos de Git. No se publican las ventas automáticamente en GitHub ni Render; la publicación privada de Sites puede incluir el JSON generado dentro de su paquete privado.
+
+## Compras por proveedor y conciliación GTIN
+
+Las fuentes esperadas dentro de la carpeta superior son:
+
+```text
+COMPRAS/COMPRAS AVANTI FARMA 2026.xlsx
+COMPRAS/Consolidado Facturas/consolidado.xlsx
+COMPRAS/BDD DISTRIBUIDOR - LABORATORIO por medicamento.xlsx
+```
+
+Para regenerar la base procesada:
+
+```powershell
+python scripts/prepare_purchases.py
+python -m unittest scripts.test_purchases
+```
+
+`dist/purchases.json` contiene únicamente los datos operativos necesarios para el dashboard. El proceso excluye contactos, teléfonos, cuentas bancarias, credenciales y observaciones privadas del maestro de proveedores.
+
+La conciliación usa tres niveles:
+
+- **Coincidencia exacta:** nombre normalizado único, con GTIN utilizable.
+- **Propuesta alta / revisar propuesta:** candidato por nombre, concentración y presentación; requiere confirmación humana.
+- **Sin coincidencia:** permanece sin GTIN. No se elige el candidato más parecido solo para aumentar cobertura.
+
+El maestro tributario aplica factor 1 a ALFARO, CASTILLO, EBENEL, FDS y FP MAYORISTA (QUÍMICA SUIZA). Los demás proveedores usan factor 1.18 conforme a la regla vigente. Los proveedores no se fusionan por razón social parecida sin evidencia explícita.
 
 Desde **Precios y cantidades → Cargar ventas** se puede importar el reporte original o un Excel/CSV con `fecha`, `codigo`, `producto`, `cantidad` e `importe`. La plantilla CSV admite además `distribuidor`, `unidad` y `costo_unitario`. La importación detecta la fila de encabezados y permite revisar las columnas. Reemplaza el histórico de ventas completo; no agrega filas a la base anterior. Se guarda en IndexedDB de ese navegador y origen, con un aviso si no se pudo persistir. Para usar ventas en otro navegador o en producción, hay que cargar el archivo allí. No se envía el archivo a un servidor.
 
@@ -88,6 +117,7 @@ La validación automática comprueba que los conteos del Excel coincidan con el 
 
 - `dist/`: sitio listo para publicación, incluidos los datos procesados.
 - `scripts/`: utilidades para regenerar los archivos de datos desde las fuentes locales.
+- `dist/purchases.json`: compras y propuestas de conciliación sin información de contacto o bancaria.
 - `.openai/hosting.json`: configuración de la publicación privada en Sites.
 - `render.yaml`: infraestructura declarativa para Render.
 
