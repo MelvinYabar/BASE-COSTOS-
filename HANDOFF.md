@@ -10,6 +10,10 @@ La nueva sección **Compras por proveedor** se genera con `scripts/prepare_purch
 
 La conciliación contra GTIN es conservadora. Solo los nombres normalizados únicos se marcan como coincidencia exacta. Las coincidencias por similitud quedan como propuestas, aunque el puntaje sea alto. Se comparan nombre, concentración y presentación, y no se fusionan proveedores desconocidos con proveedores conocidos. En particular, `HNOS. DIAZ & ASOCIADOS` no se presume equivalente a EBENEL.
 
+La interfaz ahora permite abrir cualquier descripción no exacta desde **Compras por proveedor → Conciliación GTIN**. El cuadro muestra hasta 18 candidatos del catálogo interno y admite búsqueda por nombre o GTIN. La cantidad de la presentación puede variar; se muestra como advertencia y no bloquea el candidato, mientras que una concentración incompatible recibe una penalización fuerte. Al elegir un candidato, el vínculo queda como `Confirmado manualmente` en `localStorage` bajo `avanti-purchase-gtin-mappings-v1`. Puede quitarse, exportarse a JSON y cargarse en otro navegador. La confirmación del GTIN no confirma unidades por caja ni recalcula por sí sola la BD madre.
+
+El maestro oficial `20615607160-LISTA-PRODUCTOS-26-10-2026.xlsx` pasó a ser la autoridad del nombre y el identificador. Contiene 2,185 productos, 1,463 activos y 1,504 códigos de barras válidos. Los productos sin código de barras continúan disponibles mediante su código interno. Ventas y catálogos de distribuidores se usan solo como alias exactos; los códigos ajenos al maestro no se ofrecen como candidatos confirmables. Una asociación manual antigua cuyo GTIN desaparezca queda marcada como `GTIN fuera del maestro`. En el caso revisado, `7751859000446` es ZETALER y LATIXA 500 usa `7406048002069`.
+
 Fuentes actuales: 3,338 líneas detalladas, 614 registros de facturas, 19 proveedores y 2,051 descripciones únicas para conciliar. La cobertura exacta inicial debe ampliarse mediante revisión humana; no bajar los umbrales para inflar la cobertura.
 
 ## Continuación local del 23 de octubre de 2026

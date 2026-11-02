@@ -73,7 +73,9 @@ def main():
         "codeCount": len({r["code"] for r in rows if r["code"]}),
         "reportedQty": float(reported[0]), "reportedAmount": float(reported[1]),
         "signIssues": sum(r["signIssue"] for r in rows),
-        "types": dict(Counter(r["type"] for r in rows)), "hasDistributor": False}, "rows": rows}
+        "types": dict(Counter(r["type"] for r in rows)), "hasDistributor": False,
+        "unitBasis": "UNIDAD VENDIDA", "salesIncludesIgv": True,
+        "costComparisonConfirmed": True}, "rows": rows}
     output = ROOT / "dist" / "sales.json"
     output.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Ventas conciliadas: {len(rows):,} filas; cantidad {qty_total:,.2f}; S/ {amount_total:,.2f}")

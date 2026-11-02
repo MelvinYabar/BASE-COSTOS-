@@ -19,14 +19,16 @@
         <button class="nav-item" data-view="product"><span>⌕</span> Ficha de producto</button>
         <button class="nav-item" data-view="compare"><span>⇄</span> Comparativo</button>
         <button class="nav-item" data-view="costs"><span>S/</span> BD de costos</button>
+        <button class="nav-item" data-view="pending" title="Revisión temporal de ventas sin costo"><span>!</span> Pendientes 30%</button>
         <button class="nav-item" data-view="purchases" title="Compras por proveedor"><span>▣</span> Compras por proveedor</button>
+        <button class="nav-item" data-view="invoices" title="Histórico por factura"><span>⌑</span> Facturas y medicamentos</button>
         <button class="nav-item" data-view="sales" title="Precios y cantidades"><span>▦</span> Precios y cantidades</button>
         <button class="nav-item" data-view="daily" title="Vendidos por día"><span>▥</span> Vendidos por día</button>
         <button class="nav-item" data-view="volume" title="Volumen mensual"><span>▤</span> Volumen mensual</button>
         <button class="nav-item" data-view="mapping"><span>⌘</span> Equivalencias</button>
         <button class="nav-item" data-view="trace"><span>▤</span> Trazabilidad</button>
       </nav>
-      <div class="sidebar-note"><span class="status-dot"></span><div><b>Base cerrada</b><small>Mayo–agosto 2026</small></div></div>
+      <div class="sidebar-note"><span class="status-dot"></span><div><b>Facturas actualizadas</b><small>Mayo–octubre 2026</small></div></div>
       <div class="sidebar-foot">Panel interno<br><span>Avanti Pharma · Arequipa</span></div>
     </aside>
 
@@ -39,7 +41,7 @@
       <section class="filterbar" aria-label="Filtros">
         <label class="search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Busca un medicamento, código o descripción…" autocomplete="off"><kbd>⌘ K</kbd><div id="searchResults" class="search-results hidden"></div></label>
         <label><span>Proveedor</span><select id="providerFilter"><option value="">Todos</option></select></label>
-        <label><span>Mes</span><select id="monthFilter"><option value="">May–Ago 2026</option></select></label>
+        <label><span>Mes</span><select id="monthFilter"><option value="">Todos los meses cargados</option></select></label>
         <button id="clearFilters" class="ghost-btn">Limpiar</button>
       </section>
 
@@ -59,11 +61,19 @@
     </div>
   </dialog>
 
+  <dialog id="purchaseMatchDialog" class="match-dialog" aria-labelledby="purchaseMatchTitle"></dialog>
+  <dialog id="costUnitDialog" class="match-dialog" aria-labelledby="costUnitTitle"></dialog>
+  <dialog id="pendingDecisionDialog" class="match-dialog" aria-labelledby="pendingDecisionTitle"></dialog>
+
   <script src="vendor/xlsx.full.min.js"></script>
   <script src="analytics-core.js"></script>
-  <script src="app.js"></script>
+  <script src="pending-review-core.js"></script>
+  <script src="purchase-matching.js"></script>
+  <script src="app.js?v=21"></script>
   <script src="analytics.js"></script>
   <script src="cost-review.js"></script>
+  <script src="pending-review.js"></script>
   <script src="purchases.js"></script>
+  <script src="invoices.js"></script>
 </body>
 </html>

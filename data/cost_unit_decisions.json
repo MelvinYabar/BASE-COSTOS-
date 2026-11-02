@@ -1,0 +1,1016 @@
+{
+  "version": 1,
+  "sourceFile": "revision_costos (1).xlsx",
+  "importedAt": "2026-10-30",
+  "decisions": {
+    "ROW:21": {
+      "mode": "split",
+      "quantity": 200,
+      "product": "ALPRAZOLAM 0.5 MG X 200 TAB (ALPRAZOLAM)",
+      "provider": "ALFARO",
+      "sourceRow": 21
+    },
+    "ROW:31": {
+      "mode": "split",
+      "quantity": 500,
+      "product": "ACIDO FOLICO 0.5 MG CAJA X 500 TAB.",
+      "provider": "ALFARO",
+      "sourceRow": 31
+    },
+    "ROW:117": {
+      "mode": "split",
+      "quantity": 28,
+      "product": "DIOVAN 160 MG (VALSARTAN) CAJA COMP X 28",
+      "provider": "ALFARO",
+      "sourceRow": 117
+    },
+    "ROW:181": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GLUCOPHAGE 500 MG CAJA COMPX50 S/IGV",
+      "provider": "ALFARO",
+      "sourceRow": 181
+    },
+    "ROW:281": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "PAXELIS 50 MG X 10 COMP RECUBIERTOS (TAPENTADOL)",
+      "provider": "ALFARO",
+      "sourceRow": 281
+    },
+    "ROW:300": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "SUPRACALM 1 G (PARACETAMOL) CAJA COMP X 10",
+      "provider": "ALFARO",
+      "sourceRow": 300
+    },
+    "ROW:492": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "PLAQUINOL 400mg CPR x",
+      "provider": "ALFARO",
+      "sourceRow": 492
+    },
+    "ROW:494": {
+      "mode": "split",
+      "quantity": 104,
+      "product": "Panadol 500mg x 104 Tab",
+      "provider": "ALFARO",
+      "sourceRow": 494
+    },
+    "ROW:525": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CATETER NIPRO 18, 20 ,22 ,24",
+      "provider": "BETHEL",
+      "sourceRow": 525
+    },
+    "ROW:532": {
+      "mode": "split",
+      "quantity": 100,
+      "product": "JERINGA DE 10 ML",
+      "provider": "BETHEL",
+      "sourceRow": 532
+    },
+    "ROW:541": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "TERMOMETRO ORAL",
+      "provider": "BETHEL",
+      "sourceRow": 541
+    },
+    "ROW:589": {
+      "mode": "split",
+      "quantity": 100,
+      "product": "AGUJA DESC 22G X 1 1/2 X 100U",
+      "provider": "CASTILLO",
+      "sourceRow": 589
+    },
+    "ROW:590": {
+      "mode": "split",
+      "quantity": 100,
+      "product": "AGUJA HIPODERMICA NIPRO 25GX5/8 CAJA X 100 UND.",
+      "provider": "CASTILLO",
+      "sourceRow": 590
+    },
+    "ROW:606": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "BIVADIN 10MG (Escitalopram) X10COMP REC J",
+      "provider": "CASTILLO",
+      "sourceRow": 606
+    },
+    "ROW:664": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GUANTES ESTERIL 6.5",
+      "provider": "CASTILLO",
+      "sourceRow": 664
+    },
+    "ROW:665": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "COBAVIT-12 1 MG/ML (HIDROXOCOBALAMINA (VITAMINA B12A)) X AMPOLLA X 1 ML",
+      "provider": "CASTILLO",
+      "sourceRow": 665
+    },
+    "ROW:666": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "COBAVIT-12 1 MG/ML (HIDROXOCOBALAMINA (VITAMINA B12A)) X AMPOLLA X 1 ML",
+      "provider": "CASTILLO",
+      "sourceRow": 666
+    },
+    "ROW:902": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "PAXELIS RETARD 50MG CJA X30COMP",
+      "provider": "CASTILLO",
+      "sourceRow": 902
+    },
+    "ROW:971": {
+      "mode": "split",
+      "quantity": 20,
+      "product": "DORMEX 7.5MG X20COMP - CONTROLADO",
+      "provider": "CASTILLO",
+      "sourceRow": 971
+    },
+    "ROW:982": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GUANTES ESTERIL 6.5",
+      "provider": "CASTILLO",
+      "sourceRow": 982
+    },
+    "ROW:1057": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ALERGICAL NEO (4MG+10MG) CAJA TAB X 100 (CLORFENAMINA + FENILEFRINA)",
+      "provider": "DIMEXA",
+      "sourceRow": 1057
+    },
+    "ROW:1242": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GLUCOPHAGE XR 500MG X 30 S/IGV",
+      "provider": "DIMEXA",
+      "sourceRow": 1242
+    },
+    "ROW:1281": {
+      "mode": "split",
+      "quantity": 6,
+      "product": "KETOPROFENO 100 MG X 30 TAB (KETOPROFENO)",
+      "provider": "DIMEXA",
+      "sourceRow": 1281
+    },
+    "ROW:1282": {
+      "mode": "split",
+      "quantity": 6,
+      "product": "KETOPROFENO 100MG/2ML IM SOL.INY.CAJA X 6 AMP.",
+      "provider": "DIMEXA",
+      "sourceRow": 1282
+    },
+    "ROW:1394": {
+      "mode": "split",
+      "quantity": 60,
+      "product": "VILZERMET 50MG/1000MG CAJA X 60 COMP.REC. S/IGV",
+      "provider": "DIMEXA",
+      "sourceRow": 1394
+    },
+    "ROW:1556": {
+      "mode": "split",
+      "quantity": 500,
+      "product": "ACIDO FOLICO 0.5MG CJA X 100 TAB",
+      "provider": "DIMEXA",
+      "sourceRow": 1556
+    },
+    "ROW:1690": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "SUPRACALM 1 G X 100 COMP.",
+      "provider": "DIMEXA",
+      "sourceRow": 1690
+    },
+    "ROW:1691": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "SUPRACALM 1 G X 100 COMP.",
+      "provider": "DIMEXA",
+      "sourceRow": 1691
+    },
+    "ROW:1759": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "CATETER I.V. NRO 22X1 X 50UNID",
+      "provider": "EBENEL",
+      "sourceRow": 1759
+    },
+    "ROW:1887": {
+      "mode": "split",
+      "quantity": 6,
+      "product": "KETOPROFENO 100 MG X 30 TAB (KETOPROFENO)",
+      "provider": "EBENEL",
+      "sourceRow": 1887
+    },
+    "ROW:2252": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GLUCOPHAGE XR 500MG X 30 S/IGV",
+      "provider": "FDS",
+      "sourceRow": 2252
+    },
+    "ROW:2253": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GLUCOPHAGE XR 500MG X 30 S/IGV",
+      "provider": "FDS",
+      "sourceRow": 2253
+    },
+    "ROW:2413": {
+      "mode": "split",
+      "quantity": 60,
+      "product": "DEQUAZOL R NF 500 MG + 100000 UI CAJA OVUX60",
+      "provider": "MYM",
+      "sourceRow": 2413
+    },
+    "ROW:2414": {
+      "mode": "split",
+      "quantity": 60,
+      "product": "DEQUAZOL R NF 500 MG + 100000 UI CAJA OVUX60",
+      "provider": "MYM",
+      "sourceRow": 2414
+    },
+    "ROW:2415": {
+      "mode": "split",
+      "quantity": 60,
+      "product": "DEQUAZOL R NF 500 MG + 100000 UI CAJA OVU X 8",
+      "provider": "MYM",
+      "sourceRow": 2415
+    },
+    "ROW:2450": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GUANTES ESTERIL 7 1/2 X 50 PARES",
+      "provider": "MYM",
+      "sourceRow": 2450
+    },
+    "ROW:2464": {
+      "mode": "split",
+      "quantity": 100,
+      "product": "JERINGA NIPRO 21 G X 1 1/2 CAJA X 100",
+      "provider": "MYM",
+      "sourceRow": 2464
+    },
+    "ROW:2494": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "SALBUTAMOL 100MCG/DOSIS - INHALADOR (FRASCO X 200 DOSIS)",
+      "provider": "MYM",
+      "sourceRow": 2494
+    },
+    "ROW:1": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0000230104 MIOSTAT 1.5ML 12-LAC LOT:139LE",
+      "provider": "ALCON",
+      "sourceRow": 1
+    },
+    "ROW:2": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0000230104 MIOSTAT 1.5ML 12-LAC LOT:139LE",
+      "provider": "ALCON",
+      "sourceRow": 2
+    },
+    "ROW:3": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0002100088 ALCAINE 0.5% 15ML-PE LOT:1373D",
+      "provider": "ALCON",
+      "sourceRow": 3
+    },
+    "ROW:4": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0007950205 BSS 500ML-LAM LOT:12EV7",
+      "provider": "ALCON",
+      "sourceRow": 4
+    },
+    "ROW:5": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0007950206 BSS BAG 500ML-LAM",
+      "provider": "ALCON",
+      "sourceRow": 5
+    },
+    "ROW:6": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0007950206 BSS BAG 500ML-LAM LOT:135A4",
+      "provider": "ALCON",
+      "sourceRow": 6
+    },
+    "ROW:7": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065100003 MICROSPONGE SURGICAL SPONGESHARP",
+      "provider": "ALCON",
+      "sourceRow": 7
+    },
+    "ROW:8": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065100003 MICROSPONGE SURGICAL SPONGESHARP",
+      "provider": "ALCON",
+      "sourceRow": 8
+    },
+    "ROW:9": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065752201 PAK CENTURION ULTRA BALANCE",
+      "provider": "ALCON",
+      "sourceRow": 9
+    },
+    "ROW:10": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065752201 PAK CENTURION ULTRA BALANCE",
+      "provider": "ALCON",
+      "sourceRow": 10
+    },
+    "ROW:11": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065921541 CLEARCUT SIDE PORT 1.2MM ANGDUAL",
+      "provider": "ALCON",
+      "sourceRow": 11
+    },
+    "ROW:12": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065921541 CLEARCUT SIDE PORT 1.2MM ANGDUAL",
+      "provider": "ALCON",
+      "sourceRow": 12
+    },
+    "ROW:13": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065982465 CLEARCUT HP2 DB SLIT 2.4MM ANG",
+      "provider": "ALCON",
+      "sourceRow": 13
+    },
+    "ROW:14": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "8065982465 CLEARCUT HP2 DB SLIT 2.4MM ANG",
+      "provider": "ALCON",
+      "sourceRow": 14
+    },
+    "ROW:15": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "0002100088 ALCAINE 0.5% 15ML-PE LOT:1373D",
+      "provider": "ALCON",
+      "sourceRow": 15
+    },
+    "ROW:433": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "Tobradex 1mg + 3mg/mL Susp Oft x",
+      "provider": "ALFARO",
+      "sourceRow": 433
+    },
+    "ROW:445": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "APIDRA SOLOSTAR 100UI/ml (3ml) x 1IMP REFRIG",
+      "provider": "ALFARO",
+      "sourceRow": 445
+    },
+    "ROW:498": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "SOLIQUA 10-40 Pre Llenada 3 mL Solo Star REFRIG",
+      "provider": "ALFARO",
+      "sourceRow": 498
+    },
+    "ROW:510": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "Tomatodo Systane * (=)",
+      "provider": "ALFARO",
+      "sourceRow": 510
+    },
+    "ROW:511": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "Tomatodo Systane * (=)",
+      "provider": "ALFARO",
+      "sourceRow": 511
+    },
+    "ROW:512": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "Tomatodo Systane * (>)",
+      "provider": "ALFARO",
+      "sourceRow": 512
+    },
+    "ROW:522": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "AEROCAMARA ADULTO Y NIÑO",
+      "provider": "BETHEL",
+      "sourceRow": 522
+    },
+    "ROW:530": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "GUYANTE QX ESTRIL 7",
+      "provider": "BETHEL",
+      "sourceRow": 530
+    },
+    "ROW:539": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "STERI STRIP LILA Y VERDE",
+      "provider": "BETHEL",
+      "sourceRow": 539
+    },
+    "ROW:580": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "3-GEL 10ML X20SCH (Hidróxido de Al, Hidroxido de Mg,",
+      "provider": "CASTILLO",
+      "sourceRow": 580
+    },
+    "ROW:890": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "NEOLIFE 2000MG+200MCG(INOSITOL + ACIDO FOLICO)",
+      "provider": "CASTILLO",
+      "sourceRow": 890
+    },
+    "ROW:904": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "PEDIASURE UPAGE 10+ 850 G",
+      "provider": "CASTILLO",
+      "sourceRow": 904
+    },
+    "ROW:1045": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CASSETTE PARA FACOCENTURION REF.8065752201",
+      "provider": "CORP. LOURDES Y SAO PAULO",
+      "sourceRow": 1045
+    },
+    "ROW:1518": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ONY TEC 8% C 3.3ML",
+      "provider": "DIMEXA",
+      "sourceRow": 1518
+    },
+    "ROW:1560": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ALERCET JARABE 60 ML",
+      "provider": "DIMEXA",
+      "sourceRow": 1560
+    },
+    "ROW:1671": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "NYLON NEGRO 10/0 DLZ6.2 2A 30 CM",
+      "provider": "DIMEXA",
+      "sourceRow": 1671
+    },
+    "ROW:1825": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "FERINJECT 50MG VIAL X 10 ML X 1 (CARBOXIMALTOSA FERRICA)",
+      "provider": "EBENEL",
+      "sourceRow": 1825
+    },
+    "ROW:1894": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "LAGRICEL OFTENO 0.4% OCUVIALES CAJA X 20 UNIDOSIS.",
+      "provider": "EBENEL",
+      "sourceRow": 1894
+    },
+    "ROW:2163": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "AMINOTER MAX ACOND FCO 300ML - Lafage",
+      "provider": "EBENEL",
+      "sourceRow": 2163
+    },
+    "ROW:2167": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "BANES FORTE 200 MG SUSP 60 ML - Droguerias",
+      "provider": "EBENEL",
+      "sourceRow": 2167
+    },
+    "ROW:2168": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "BANES FORTE 200 MG SUSP 60 ML - Droguerias",
+      "provider": "EBENEL",
+      "sourceRow": 2168
+    },
+    "ROW:2175": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CROMUS 0.03% UNGUENTO TUBO 15 G - Unimed",
+      "provider": "EBENEL",
+      "sourceRow": 2175
+    },
+    "ROW:2177": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "DUOTRAV GOTAS OFT 2.5 ML - Novartis",
+      "provider": "EBENEL",
+      "sourceRow": 2177
+    },
+    "ROW:2178": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "DUOTRAV GOTAS OFT 2.5 ML - Novartis",
+      "provider": "EBENEL",
+      "sourceRow": 2178
+    },
+    "ROW:2187": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "HIRUDOID FORTE GEL 40G - Deutsche pharma",
+      "provider": "EBENEL",
+      "sourceRow": 2187
+    },
+    "ROW:2191": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "MUCOSOLVAN COMPOSITUM JBE PED 120ML - Sanofi",
+      "provider": "EBENEL",
+      "sourceRow": 2191
+    },
+    "ROW:2196": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "RUPAFIN JBE FCO 120ML - Itf farmaceutica",
+      "provider": "EBENEL",
+      "sourceRow": 2196
+    },
+    "ROW:2198": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "UNIDORZO GTS FCO 5ML - Roster",
+      "provider": "EBENEL",
+      "sourceRow": 2198
+    },
+    "ROW:2199": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "UNIGEL GEL OFT 10G - Roster",
+      "provider": "EBENEL",
+      "sourceRow": 2199
+    },
+    "ROW:2200": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "UNIGEL GEL OFT 10G - Roster",
+      "provider": "EBENEL",
+      "sourceRow": 2200
+    },
+    "ROW:2201": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "UNIGEL GEL OFT 10G - Roster",
+      "provider": "EBENEL",
+      "sourceRow": 2201
+    },
+    "ROW:2202": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "UNIGEL GEL OFT 10G - Roster",
+      "provider": "EBENEL",
+      "sourceRow": 2202
+    },
+    "ROW:2205": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ZYMAXID GTS OFT 5ML - Quimica suiza",
+      "provider": "EBENEL",
+      "sourceRow": 2205
+    },
+    "ROW:2318": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ESTROGEL GEL TOPICO 60MG/100GR FCO80GR",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2318
+    },
+    "ROW:2326": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "NASONEX 50MCG SPRAY NASAL FCOX60DSS, PED",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2326
+    },
+    "ROW:2344": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "AUDAL NF SOLUCIÓN OTICA FCOX10ML",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2344
+    },
+    "ROW:2345": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "BENALGIN 10000 NF SOL INY 2.5ML CJ 1UND",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2345
+    },
+    "ROW:2347": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "COMBIGAN SOL.OFT FCOX5ML (3004.90.29.00)",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2347
+    },
+    "ROW:2350": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ESTROGEL GEL TOPICO 60MG/100GR FCO80GR",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2350
+    },
+    "ROW:2351": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EUCER.DERM PUR OIL CONT.FX200ML, GEL LIM",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2351
+    },
+    "ROW:2352": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EUCER.DERM.PURE OIL CONT.TBX100ML, EXFOL",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2352
+    },
+    "ROW:2353": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EUCERIN AQUAPHOR LIP CARE TBO 10ML",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2353
+    },
+    "ROW:2357": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "FERANIN NF 50MG/5ML JBE FCOX100ML",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2357
+    },
+    "ROW:2553": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ELECTRORAL NF FRESA SOL 1000ML FCOX1-N",
+      "provider": "MYM",
+      "sourceRow": 2553
+    },
+    "ROW:2554": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ELECTRORAL PED NF FRESA SOL 1000ML FCOX1",
+      "provider": "MYM",
+      "sourceRow": 2554
+    },
+    "ROW:2586": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "POSITON. CREMA. CAJA CON TUBO 30 G",
+      "provider": "MYM",
+      "sourceRow": 2586
+    },
+    "ROW:2587": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "POSITON. CREMA. CAJA CON TUBO 30 G",
+      "provider": "MYM",
+      "sourceRow": 2587
+    },
+    "ROW:2638": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EVALAX 17G FRASCO POLVO PARA SOLUCIÓN ORAL 250G",
+      "provider": "MYM",
+      "sourceRow": 2638
+    },
+    "ROW:2639": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EVALAX 17G FRASCO POLVO PARA SOLUCIÓN ORAL 250G",
+      "provider": "MYM",
+      "sourceRow": 2639
+    },
+    "ROW:2655": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "FP ISDIN FUSION WATER MAGIC COLOR MEDIUM 50ML",
+      "provider": "MYM",
+      "sourceRow": 2655
+    },
+    "ROW:2682": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "NUTRATOPIC PRO-AMP CREMA EMOLIENTE FACIAL 50ML",
+      "provider": "MYM",
+      "sourceRow": 2682
+    },
+    "ROW:2683": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "NUTRATOPIC PRO-AMP LOCION CORPORAL E 400ML",
+      "provider": "MYM",
+      "sourceRow": 2683
+    },
+    "ROW:2684": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "OILY SKIN ACNIBEN BODY SPRAY 150ML",
+      "provider": "MYM",
+      "sourceRow": 2684
+    },
+    "ROW:2685": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "OILY SKIN ACNIBEN BODY SPRAY 150ML",
+      "provider": "MYM",
+      "sourceRow": 2685
+    },
+    "ROW:2708": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ANTH UVM FLUID 50+ 50ML C/C**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2708
+    },
+    "ROW:2709": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ANTH UVM GEL C/C SPF50 50ML**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2709
+    },
+    "ROW:2710": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "AVE SOL COMP SPF50 AREN 10G**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2710
+    },
+    "ROW:2713": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CICAPLAST BALM B5 T40**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2713
+    },
+    "ROW:2716": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EFFAC GEL LIMP PURIFIC 400ML**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2716
+    },
+    "ROW:2717": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "EFFAC SERUM ULTR CONCE 30ML **",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2717
+    },
+    "ROW:2719": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "FOT SPRAY PED W/S SPF50250ML**",
+      "provider": "SANTA URSULA",
+      "sourceRow": 2719
+    },
+    "ROW:209": {
+      "mode": "split",
+      "quantity": 10,
+      "product": "KETESSE 25 MG X 10 SOBRE X 10 ML (DEXKETOPROFENO)",
+      "provider": "ALFARO",
+      "sourceRow": 209
+    },
+    "ROW:249": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "MICOLIS 1% (NITRATO DE ECONAZOL) CREMA 30G",
+      "provider": "ALFARO",
+      "sourceRow": 249
+    },
+    "ROW:476": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "HISALER® 5mg/5mL Jarabe x 60mL (%)",
+      "provider": "ALFARO",
+      "sourceRow": 476
+    },
+    "ROW:615": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CAPRIMIDA UD 1200MG CA +800 UI ( SOBRE X 5.7G) / CITRATO DE CALCIO + COLECALCIFEROL (VITAMINA D3)",
+      "provider": "CASTILLO",
+      "sourceRow": 615
+    },
+    "ROW:616": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CAPRIMIDA UD 1200MG CA +800 UI ( SOBRE X 5.7G) / CITRATO DE CALCIO + COLECALCIFEROL (VITAMINA D3)",
+      "provider": "CASTILLO",
+      "sourceRow": 616
+    },
+    "ROW:716": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "NAMAX EN OCUVIAL 2%+0.5% AMPOLLA X 0.3 ML X 30 (BRIMONIDINA)",
+      "provider": "CASTILLO",
+      "sourceRow": 716
+    },
+    "ROW:925": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "VITAPYRENA FORTE 10 MG + 500 MG (FENILEFRINA + PARACETAMOL) X SOBRE X 5 G",
+      "provider": "CASTILLO",
+      "sourceRow": 925
+    },
+    "ROW:949": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CAPRIMIDA UD 1200MG CA +800 UI ( SOBRE X 5.7G) / CITRATO DE CALCIO + COLECALCIFEROL (VITAMINA D3)",
+      "provider": "CASTILLO",
+      "sourceRow": 949
+    },
+    "ROW:950": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CAPRIMIDA UD 1200MG CA +800 UI ( SOBRE X 5.7G) / CITRATO DE CALCIO + COLECALCIFEROL (VITAMINA D3)",
+      "provider": "CASTILLO",
+      "sourceRow": 950
+    },
+    "ROW:981": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GUANTES ESTERILES MODERM #7 1/2 X 50 PARES",
+      "provider": "CASTILLO",
+      "sourceRow": 981
+    },
+    "ROW:983": {
+      "mode": "split",
+      "quantity": 50,
+      "product": "GUANTES ESTERILES QUIMEDIC #7 1/2 X 50 PARES",
+      "provider": "CASTILLO",
+      "sourceRow": 983
+    },
+    "ROW:1089": {
+      "mode": "split",
+      "quantity": 160,
+      "product": "BISMUTOL 262.5 MG SOBRE 2TB X 160 SOB TABLETA MASTICABLE",
+      "provider": "DIMEXA",
+      "sourceRow": 1089
+    },
+    "ROW:1251": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "HISALER 5MG/ 5ML JARABE - FRASCO 60 ML (CETIRIZINA)",
+      "provider": "DIMEXA",
+      "sourceRow": 1251
+    },
+    "ROW:1728": {
+      "mode": "split",
+      "quantity": 200,
+      "product": "ALPRAZOLAM 0.5 MG X 200 TAB (ALPRAZOLAM)",
+      "provider": "EBENEL",
+      "sourceRow": 1728
+    },
+    "ROW:1809": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "ELECTRORAL ADVANCE FRUTAL FRASCO X 1 LITRO",
+      "provider": "EBENEL",
+      "sourceRow": 1809
+    },
+    "ROW:1840": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "GASEOVET FCO MENTA 80 MG X100M",
+      "provider": "EBENEL",
+      "sourceRow": 1840
+    },
+    "ROW:1890": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "KRYTANTEK 2 MG + 20 MG + 5 MG GTS FCO 5ML",
+      "provider": "EBENEL",
+      "sourceRow": 1890
+    },
+    "ROW:1898": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "LIPIKAR BAUME AP BALSAMO 400 ML CREMA",
+      "provider": "EBENEL",
+      "sourceRow": 1898
+    },
+    "ROW:1926": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "MICOLIS 1% (NITRATO DE ECONAZOL) CREMA 30G",
+      "provider": "EBENEL",
+      "sourceRow": 1926
+    },
+    "ROW:1947": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "TUSICLOX 35.4MG/5ML SUSPENSION ORAL",
+      "provider": "EBENEL",
+      "sourceRow": 1947
+    },
+    "ROW:1998": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "TUSICLOX 35.4MG/5ML SUSPENSION ORAL",
+      "provider": "EBENEL",
+      "sourceRow": 1998
+    },
+    "ROW:2064": {
+      "mode": "split",
+      "quantity": 28,
+      "product": "DIOVAN 160 MG (VALSARTAN) CAJA COMP X 28",
+      "provider": "EBENEL",
+      "sourceRow": 2064
+    },
+    "ROW:2112": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "KRYTANTEK 2 MG + 20 MG + 5 MG GTS FCO 5ML",
+      "provider": "EBENEL",
+      "sourceRow": 2112
+    },
+    "ROW:2157": {
+      "mode": "split",
+      "quantity": 60,
+      "product": "VILZERMET 50MG/1000MG CAJA X 60 COMP.REC. S/IGV",
+      "provider": "EBENEL",
+      "sourceRow": 2157
+    },
+    "ROW:2312": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "BUSCAPINA 20MG/SOLUCION INYECTABLE) (N-BUTILBROMURO DE ESCOPOLAMINA)",
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "sourceRow": 2312
+    },
+    "ROW:2410": {
+      "mode": "split",
+      "quantity": 100,
+      "product": "CLORFENAMINA 10MG/1ML SOLUCION INYECTABLE AMPOLLA X 1 ML",
+      "provider": "MYM",
+      "sourceRow": 2410
+    },
+    "ROW:2412": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CUTENOX 40 MG/0.4 ML SOLUCION INYECTABLE (ENOXAPARINA DE SODIO)",
+      "provider": "MYM",
+      "sourceRow": 2412
+    },
+    "ROW:2537": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CUTENOX 40 MG/0.4 ML SOLUCION INYECTABLE (ENOXAPARINA DE SODIO)",
+      "provider": "MYM",
+      "sourceRow": 2537
+    },
+    "ROW:2538": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CUTENOX 40 MG/0.4 ML SOLUCION INYECTABLE (ENOXAPARINA DE SODIO)",
+      "provider": "MYM",
+      "sourceRow": 2538
+    },
+    "ROW:2626": {
+      "mode": "whole",
+      "quantity": 1,
+      "product": "CUTENOX 40 MG/0.4 ML SOLUCION INYECTABLE (ENOXAPARINA DE SODIO)",
+      "provider": "MYM",
+      "sourceRow": 2626
+    }
+  },
+  "rejected": []
+}

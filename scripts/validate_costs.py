@@ -2,6 +2,7 @@ import argparse
 import json
 import math
 from collections import Counter, defaultdict
+from datetime import date
 from pathlib import Path
 
 from openpyxl import load_workbook
@@ -25,6 +26,21 @@ def main():
     payload = json.loads(DATA.read_text(encoding="utf-8"))
     meta = payload["meta"]
     igv_included_providers = {provider.upper() for provider in meta.get("igvIncludedProviders", [])}
+
+    effective_through = meta.get("effectiveThrough")
+    try:
+        cutoff = date.fromisoformat(effective_through)
+    except (TypeError, ValueError):
+        cutoff = None
+        errors.append(f"Fecha efectiva inválida: {effective_through!r}")
+    expected_months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    if cutoff:
+        expected_months = expected_months[4:cutoff.month]
+        if meta.get("months") != expected_months:
+            errors.append(f"Meses publicados={meta.get('months')}; esperados hasta el corte={expected_months}")
+        future_rows = [row for row in payload["detail"] if row.get("month") not in expected_months]
+        if future_rows:
+            errors.append(f"Filas fuera del periodo efectivo: {len(future_rows)}")
 
     expected_lengths = {
         "baseRows": len(payload["base"]),
@@ -102,9 +118,19 @@ def main():
             errors.append(f"Detalle {row.get('n')}: costo final no coincide con IGV de 18%")
 
     missing_gtin = sum(1 for row in payload["detail"] if not row.get("gtin"))
+    central_applied = sum(1 for row in payload["detail"] if row.get("gtinSource") == "Asociación manual central")
+    central_conflicts = sum(1 for row in payload["detail"] if row.get("centralGtinConflict"))
+    if meta.get("missingGtinAfter") != missing_gtin:
+        errors.append(f"missingGtinAfter: meta={meta.get('missingGtinAfter')}; datos={missing_gtin}")
+    if meta.get("centralAssociationsApplied") != central_applied:
+        errors.append(f"centralAssociationsApplied: meta={meta.get('centralAssociationsApplied')}; datos={central_applied}")
+    if meta.get("centralAssociationConflicts") != central_conflicts:
+        errors.append(f"centralAssociationConflicts: meta={meta.get('centralAssociationConflicts')}; datos={central_conflicts}")
     assumed_units = sum(1 for row in payload["detail"] if "se asume 1" in row.get("unitsSource", ""))
     warnings.extend([
         f"Filas de detalle sin GTIN: {missing_gtin}",
+        f"Filas recuperadas con asociaciones centrales: {central_applied}",
+        f"GTIN originales reemplazados por asociación manual central: {central_conflicts}",
         f"Filas con una unidad por envase asumida: {assumed_units}",
     ])
 
@@ -121,9 +147,15 @@ def main():
             "differentPresentations": sum(1 for row in workbook["PRESENTACIONES DISTINTAS"].iter_rows(min_row=5, values_only=True) if row[2]),
             "detailRows": sum(1 for row in workbook.worksheets[3].iter_rows(min_row=5, values_only=True) if row[2]),
         }
-        for field, observed in source_counts.items():
-            if observed != expected_lengths[field]:
-                errors.append(f"{field}: Excel={observed}; JSON={expected_lengths[field]}")
+        if source_counts["baseRows"] != meta.get("sourceBaseRows"):
+            errors.append(f"sourceBaseRows: Excel={source_counts['baseRows']}; meta={meta.get('sourceBaseRows')}")
+        if source_counts["detailRows"] != meta.get("sourceDetailRows"):
+            errors.append(f"sourceDetailRows: Excel={source_counts['detailRows']}; meta={meta.get('sourceDetailRows')}")
+        if source_counts["differentPresentations"] != expected_lengths["differentPresentations"]:
+            errors.append(f"differentPresentations: Excel={source_counts['differentPresentations']}; JSON={expected_lengths['differentPresentations']}")
+        expected_detail = meta.get("sourceDetailRows", 0) + meta.get("integratedInvoiceRows", 0)
+        if expected_lengths["detailRows"] != expected_detail:
+            errors.append(f"detailRows: fuentes integradas={expected_detail}; JSON={expected_lengths['detailRows']}")
         if meta.get("source") != source.name:
             errors.append(f"Fuente declarada={meta.get('source')}; fuente usada={source.name}")
 

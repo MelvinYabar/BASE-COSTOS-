@@ -3,8 +3,19 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const A = require('../dist/analytics-core.js');
+const Pending = require('../dist/pending-review-core.js');
 const sale = (overrides = {}) => ({date:'2026-06-12',code:'00123',product:'Medicamento',qty:2,amount:30,unit:'UNIDAD VENDIDA',provider:'Distribuidor A',cost:10,...overrides});
 const close = (observed, expected) => assert.ok(Math.abs(observed - expected) < 1e-7, `${observed} != ${expected}`);
+
+test('Pendientes agrupa ventas repetidas y evalúa decisiones sin inventar cobertura', () => {
+  const missing=[sale({code:'001',amount:10,cost:null,costOrigin:'Sin relación'}),sale({code:'001',amount:20,cost:null,costOrigin:'Sin relación'}),sale({code:'',product:'Otro',amount:5,cost:null,costOrigin:'Falta código'})];
+  const groups=Pending.groups(missing,A.normalize);
+  assert.equal(groups.length,2);assert.equal(groups.find(g=>g.code==='001').amount,30);
+  const manual=Pending.evaluate(groups[0],{mode:'manual_cost',unitCost:2},new Map(),A);
+  assert.equal(manual.state,'resolved');assert.equal(manual.coveredRows,2);
+  const excluded=Pending.evaluate(groups[1],{mode:'exclude'},new Map(),A);
+  assert.equal(excluded.state,'excluded');assert.equal(excluded.coveredRows,0);
+});
 
 test('Precio y margen ponderan por cantidades, no por número de filas', () => {
   const result = A.aggregate([sale({qty:2,amount:20,cost:5}), sale({qty:8,amount:160,cost:10})])[0];
@@ -73,9 +84,49 @@ test('Tres cajas X30: importe final dividido entre 90, con IGV aplicado una vez'
 });
 test('X30 se interpreta como cantidad; ML, MG, centímetros y dosis no son unidades de venta', () => {
   for (const name of ['MEDICAMENTO CAJA x30','MEDICAMENTO X30TAB','MEDICAMENTO CJA X 30 COMP','MEDICAMENTO CJAX30UND']) assert.equal(A.packFromName(name).count,30,name);
-  for (const name of ['JARABE X 120ML','CREMA X 30 G','MEDICAMENTO X 10 MG','APOSITO X 10 CM','INHALADOR X 200 DOSIS','MEDICAMENTO X 1.5ML']) assert.equal(A.packFromName(name).count,null,name);
+  for (const name of ['JARABE X 120ML','CREMA X 30 G','INHALADOR X 200 DOSIS','MEDICAMENTO X 1.5ML']) {assert.equal(A.packFromName(name).count,1,name);assert.equal(A.packFromName(name).whole,true,name)}
+  for (const name of ['MEDICAMENTO X 10 MG','APOSITO X 10 CM']) assert.equal(A.packFromName(name).count,null,name);
   assert.equal(A.packFromName('MEDICAMENTO X10 AMP X2ML').count,10);
   assert.equal(A.packFromName('MEDICAMENTO X2 BLISTER X10 TAB').count,null);
+  assert.equal(A.packFromName('JARDIANCE DUO 12.5MG/1000MG FRASCO X 60 COMP').count,60);
+  assert.equal(A.packFromName('DEBLAX 100000 UI CAJA CAPS X 2 (COLECALCIFEROL)').count,2);
+});
+
+test('La decisión manual permite partir o conservar el envase completo', () => {
+  const row={gtin:'ABC',description:'PRODUCTO SIN PRESENTACION',boxes:2,unitsPerBox:1,unitsSource:'se asume 1 por envase',invoiceAmount:100,provider:'ALFARO'};
+  const split=A.applyUnitDecision(row,{'GTIN:ABC':{mode:'split',quantity:10}});
+  const whole=A.applyUnitDecision(row,{'GTIN:ABC':{mode:'whole'}});
+  assert.equal(A.purchaseCost(split).units,20);assert.equal(A.purchaseCost(split).unitCost,5);
+  assert.equal(A.purchaseCost(whole).units,2);assert.equal(A.purchaseCost(whole).unitCost,50);
+});
+
+test('Las decisiones centrales por fila funcionan fuera del navegador y admiten un ajuste local', () => {
+  const row={n:7,gtin:'ABC',month:'Mayo',description:'PRODUCTO SIN PRESENTACION',boxes:2,unitsPerBox:1,unitsSource:'se asume 1 por envase',invoiceAmount:100,provider:'ALFARO'};
+  const costs={meta:{source:'COSTOS_2026.xlsx'},presentations:[],unitDecisions:{'ROW:7':{mode:'split',quantity:10}},detail:[row]};
+  const central=A.costIndex(costs);
+  assert.equal(central.get('ABC')[0].cost,5);
+  const local=A.costIndex(costs,{'GTIN:ABC':{mode:'whole',quantity:1}});
+  assert.equal(local.get('ABC')[0].cost,50);
+});
+
+test('Usa la presentación oficial asociada cuando la factura abreviada no informa unidades', () => {
+  const row={description:'DEBLAX 100.000 UI CJA*1',systemName:'DEBLAX 100000 UI CAJA CAPS X 2 (COLECALCIFEROL)',boxes:3,unitsPerBox:1,unitsSource:'se asume 1 por envase',invoiceAmount:120,provider:'DIMEXA',tax:'+18%'};
+  const calc=A.purchaseCost(row);
+  assert.equal(calc.pack,2);assert.equal(calc.units,6);assert.equal(calc.issue,'');assert.match(calc.source,/Producto oficial/);
+});
+
+test('S/IGV, sin IGV, exonerado o inafecto no reciben 18% adicional', () => {
+  const row={description:'PRODUCTO CAJA X 2',boxes:1,unitsPerBox:2,unitsSource:'Factura',invoiceAmount:100,provider:'DIMEXA'};
+  for(const tax of ['S/IGV','SIN IGV','EXONERADO','INAFECTO']) assert.equal(A.purchaseCost({...row,tax}).factor,1,tax);
+  assert.equal(A.purchaseCost({...row,tax:'+18%'}).factor,1.18);
+});
+
+test('El reporte oficial de ventas confirma automáticamente unidad e IGV', () => {
+  const rows=[{unit:'UNIDAD VENDIDA'},{unit:'UNIDAD VENDIDA'}];
+  const meta={source:'20615607160-PRODUCTOS-VENDIDOS-POR-DIA-23-10-2026.xlsx',sheet:'VENTAS-DIARIAS-POR-ITEM'};
+  assert.equal(A.salesComparisonConfirmed(rows,meta),true);
+  assert.equal(A.salesComparisonConfirmed([{unit:'CAJA'}],meta),false);
+  assert.equal(A.salesComparisonConfirmed(rows,{source:'archivo.xlsx',sheet:'Hoja1'}),false);
 });
 test('Unidades contradictorias y cantidades ausentes quedan pendientes en vez de inventar costos', () => {
   const row = {description:'MEDICAMENTO CAJA X30',boxes:3,unitsPerBox:20,unitsSource:'catálogo',invoiceAmount:180,provider:'FDS'};
@@ -93,6 +144,16 @@ test('Comparación requiere unidad/IGV confirmados y deja ajustes incompatibles 
 test('GTIN con presentaciones distintas no recibe una referencia automática', () => {
   const index = A.costIndex({meta:{source:'COSTOS_2026.xlsx'},presentations:[{gtin:'00123'}],detail:[{gtin:'00123',month:'Mayo',units:10,finalCost:2,provider:'A',unitsSource:'Factura'}]});
   assert.equal(index.has('00123'),false);
+});
+test('Santa Úrsula queda visible en compras pero no alimenta el costo oficial', () => {
+  const detail=[
+    {gtin:'00123',month:'Mayo',description:'PRODUCTO X 10',boxes:1,unitsPerBox:10,unitsSource:'Factura',invoiceAmount:100,provider:'SANTA URSULA'},
+    {gtin:'00456',month:'Mayo',description:'OTRO PRODUCTO X 10',boxes:1,unitsPerBox:10,unitsSource:'Factura',invoiceAmount:80,provider:'ALFARO'},
+  ];
+  const index=A.costIndex({meta:{source:'COSTOS_2026.xlsx'},presentations:[],detail});
+  assert.equal(index.has('00123'),false);
+  assert.equal(index.has('00456'),true);
+  assert.match([...index.diagnostics.get('00123')].join(' '),/proveedor no oficial/);
 });
 const salesPath = process.env.AVANTI_SALES_JSON || path.join(__dirname,'../dist/sales.json');
 test('Histórico real concilia con los controles independientes del Excel', {skip:!fs.existsSync(salesPath)}, () => {

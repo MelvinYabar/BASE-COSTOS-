@@ -105,38 +105,68 @@
     return {rows: valid, missing: rows.filter(r => !r.bonus && !Number.isFinite(r.amount)).length,
       bonuses: rows.filter(r => r.bonus).length};
   }
+  function salesComparisonConfirmed(rows, meta) {
+    if (!rows?.length) return false;
+    if (meta?.costComparisonConfirmed === true) return true;
+    const officialReport = meta?.sheet === 'VENTAS-DIARIAS-POR-ITEM' && /PRODUCTOS-VENDIDOS-POR-DIA/i.test(meta?.source || '');
+    return officialReport && rows.every(row => ['UNIDAD VENDIDA','UNIDAD'].includes(normalize(row.unit)));
+  }
   function packFromName(description) {
     const name = normalize(description).replace(/×/g, ' X ');
     const counts = [];
-    const pattern = /(?:\bX|(?:CAJA|CJA)\s*X)\s*(\d{1,4})(?![\d.,])/g;
+    let wholeEvidence = '';
+    const pattern = /(?:\bX|(?:CAJA|CJA)\s*X)\s*(\d{1,4}(?:[.,]\d+)?)(?![\d.,])/g;
     let match;
     while ((match = pattern.exec(name))) {
       const rest = name.slice(pattern.lastIndex).trimStart();
       // Millilitres, strengths and dimensions describe contents, not counts.
-      if (/^(?:ML|MG|MCG|UG|GR|G|KG|L|CM|MM|UI|DOSIS|U\.I\.)(?:\b|\d)/.test(rest)) continue;
+      const measure = rest.match(/^(ML|GR|G|KG|L|DOSIS)(?:\b|\d)/)?.[1];
+      if (measure) { wholeEvidence = measure; continue; }
+      if (/^(?:MG|MCG|UG|CM|MM|UI|U\.I\.)(?:\b|\d)/.test(rest)) continue;
       const token = rest.match(/^[A-Z]+/)?.[0];
       if (token && !/^(?:TAB|TABLETA|TABLETAS|COMP|COMPR|COMPRIMIDO|COMPRIMIDOS|CAP|CAPS|CAPSULA|CAPSULAS|AMP|AMPOLLA|AMPOLLAS|SOB|SOBRE|SOBRES|UND|UN|UNI|UNIDAD|UNIDADES|U|VIAL|VIALES|PARCHE|PARCHES|BLISTER|BLISTERS|FCO|FRASCO|FRASCOS|TUBO|TUBOS|OVULO|OVULOS|SUPOSITORIO|SUPOSITORIOS)$/.test(token)) continue;
-      if (Number(match[1]) > 0) counts.push(Number(match[1]));
+      const quantity=Number(match[1].replace(',','.'));
+      if (Number.isInteger(quantity) && quantity > 0) counts.push(quantity);
     }
-    return counts.length === 1 ? {count: counts[0], issue: ''} : {count: null,
+    return counts.length === 1 ? {count: counts[0], issue: '', whole:false} : counts.length === 0 && wholeEvidence ?
+      {count:1, issue:'', whole:true, measure:wholeEvidence} : {count: null, whole:false,
       issue: counts.length > 1 ? 'Varias cantidades X en el nombre: revisar presentación' : 'El nombre no contiene una cantidad de unidades inequívoca'};
+  }
+  function costUnitKey(row) {
+    return row.gtin ? `GTIN:${String(row.gtin)}` : `COMPRA:${normalize(row.provider)}|${normalize(row.description)}`;
+  }
+  function applyUnitDecision(row, decisions) {
+    const decision = decisions?.[costUnitKey(row)] || decisions?.[`ROW:${row.n}`];
+    if (!decision) return row;
+    const quantity = decision.mode === 'whole' ? 1 : Number(decision.quantity);
+    return Number.isFinite(quantity) && quantity > 0 ? {...row,manualUnitsPerBox:quantity,manualUnitDecision:decision.mode} : row;
   }
   function purchaseCost(row, includedProviders) {
     const included = new Set((includedProviders || ['ALFARO','CASTILLO','EBENEL','FDS','FP MAYORISTA (QUIMICA SUIZA)']).map(normalize));
     for (const alias of ['QUIMICA SUIZA','FP MAYORISTA']) included.add(alias);
-    const factor = included.has(normalize(row.provider)) ? 1 : 1.18;
+    const taxText = normalize([row.tax,row.description,row.amountSource].filter(Boolean).join(' '));
+    const explicitNoExtraTax = /(?:\bS\s*\/\s*IGV\b|\bSIN\s+IGV\b|\bIGV\s+INCLUIDO\b|\bEXONERAD[AO]\b|\bINAFECT[AO]\b)/.test(taxText);
+    const factor = included.has(normalize(row.provider)) || explicitNoExtraTax ? 1 : 1.18;
     const parsed = packFromName(row.description);
+    const official = row.systemName ? packFromName(row.systemName) : {count:null,issue:''};
     const assumed = /se asume/i.test(row.unitsSource || '');
     const known = !assumed && Number.isFinite(row.unitsPerBox) && row.unitsPerBox > 0;
     const result = {row, pack: null, boxes: row.boxes, units: null, amount: row.invoiceAmount,
       factor, finalAmount: Number.isFinite(row.invoiceAmount) && row.invoiceAmount >= 0 ? row.invoiceAmount * factor : null,
       unitCost: null, source: '', issue: '', recovered: false};
-    if (parsed.issue.startsWith('Varias')) result.issue = parsed.issue;
-    else if (known && parsed.count != null && parsed.count !== row.unitsPerBox) result.issue = `Nombre X ${parsed.count} y catálogo/fuente ${row.unitsPerBox}: confirmar presentación`;
+    const manualPack = Number(row.manualUnitsPerBox);
+    if (Number.isFinite(manualPack) && manualPack > 0) {
+      result.pack = manualPack;
+      result.source = row.manualUnitDecision === 'whole' ? 'Decisión manual: no se parte' : `Decisión manual: se parte en ${manualPack}`;
+      result.recovered = true;
+    }
+    else if (parsed.issue.startsWith('Varias')) result.issue = parsed.issue;
+    else if (parsed.count != null && official.count != null && parsed.count !== official.count) result.issue = `Factura X ${parsed.count} y producto oficial X ${official.count}: confirmar presentación`;
+    else if (known && parsed.count != null && !parsed.whole && parsed.count !== row.unitsPerBox) result.issue = `Nombre X ${parsed.count} y catálogo/fuente ${row.unitsPerBox}: confirmar presentación`;
     else {
-      result.pack = parsed.count ?? (known ? row.unitsPerBox : null);
-      result.source = parsed.count != null ? `Nombre: X ${parsed.count}` : known ? row.unitsSource : '';
-      result.recovered = assumed && parsed.count != null;
+      result.pack = parsed.count ?? (known ? row.unitsPerBox : official.count);
+      result.source = parsed.count != null ? (parsed.whole ? `Factura: ${parsed.measure}, no se parte` : `Factura: X ${parsed.count}`) : known ? row.unitsSource : official.count != null ? (official.whole ? `Producto oficial: ${official.measure}, no se parte` : `Producto oficial asociado: X ${official.count}`) : '';
+      result.recovered = assumed && (parsed.count != null || official.count != null);
       if (!result.pack) result.issue = 'Falta confirmar unidades por envase';
     }
     if (!result.issue && !(Number.isFinite(row.boxes) && row.boxes > 0)) result.issue = 'Falta cantidad de envases comprados válida';
@@ -148,16 +178,19 @@
     }
     return result;
   }
-  function costIndex(costs) {
+  function costIndex(costs, decisions = {}) {
     const months = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
     const year = costs.meta.source.match(/(20\d{2})\.xlsx$/i)?.[1];
     const groups = new Map();
     if (!year) return groups;
+    const effectiveDecisions = {...(costs.unitDecisions || {}), ...(decisions || {})};
     const blocked = new Set((costs.presentations || []).map(r => String(r.gtin)));
-    for (const r of costs.detail) {
+    const excludedProviders = new Set((costs.meta.excludedCostProviders || ['SANTA URSULA']).map(normalize));
+    for (const original of costs.detail) {
+      const r = applyUnitDecision(original, effectiveDecisions);
       const m = months.indexOf(normalize(r.month));
       const calculation = purchaseCost(r, costs.meta.igvIncludedProviders);
-      if (!r.gtin || blocked.has(String(r.gtin)) || m < 0 || calculation.issue || !(calculation.unitCost > 0)) continue;
+      if (excludedProviders.has(normalize(r.provider)) || !r.gtin || blocked.has(String(r.gtin)) || m < 0 || calculation.issue || !(calculation.unitCost > 0)) continue;
       const month = `${year}-${String(m + 1).padStart(2, '0')}`;
       const key = JSON.stringify([String(r.gtin), month]);
       if (!groups.has(key)) groups.set(key, {code: String(r.gtin), month, units: 0, total: 0, providers: new Set()});
@@ -165,11 +198,12 @@
     }
     const index = new Map();
     index.diagnostics = new Map();
-    for (const r of costs.detail) {
+    for (const original of costs.detail) {
+      const r = applyUnitDecision(original, effectiveDecisions);
       if (!r.gtin) continue;
       const code = String(r.gtin), calculation = purchaseCost(r, costs.meta.igvIncludedProviders);
       if (!index.diagnostics.has(code)) index.diagnostics.set(code, new Set());
-      const reason = blocked.has(code) ? 'GTIN con presentaciones distintas' : calculation.issue;
+      const reason = excludedProviders.has(normalize(r.provider)) ? 'Compra disponible solo en proveedor no oficial' : blocked.has(code) ? 'GTIN con presentaciones distintas' : calculation.issue;
       if (reason) index.diagnostics.get(code).add(reason);
     }
     for (const g of groups.values()) {
@@ -190,7 +224,7 @@
       return {...r, cost: ref?.cost ?? null, costOrigin: ref ? `Referencia ${ref.month}: ${ref.providers.join(', ')}` : missing};
     });
   }
-  const api = {normalize, number, date, aliases, detectColumns, importRows, summarize, aggregate, volume, purchases, packFromName, purchaseCost, costIndex, attachCosts};
+  const api = {normalize, number, date, aliases, detectColumns, importRows, summarize, aggregate, volume, purchases, salesComparisonConfirmed, packFromName, costUnitKey, applyUnitDecision, purchaseCost, costIndex, attachCosts};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AvantiAnalytics = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

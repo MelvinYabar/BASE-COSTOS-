@@ -3,12 +3,15 @@ import json
 import re
 import unicodedata
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 INPUT = ROOT / "BD_HISTORICO_PRECIOS" / "historico_precios.csv"
-OUTPUT = Path(__file__).resolve().parents[1] / "dist" / "data.json"
+SITE = Path(__file__).resolve().parents[1]
+OUTPUT = SITE / "dist" / "data.json"
+INVOICES = SITE / "dist" / "invoices.json"
+INVOICE_INTEGRATION_FROM = "2026-09-01"
 IGV_INCLUDED_PROVIDERS = {"ALFARO", "CASTILLO", "EBENEL", "FP MAYORISTA (QUIMICA SUIZA)", "FDS"}
 
 
@@ -19,18 +22,16 @@ def number(value):
         return None
 
 
-def date_iso(*values):
+def date_iso(cutoff, *values):
     for value in values:
         if not value:
             continue
         for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y", "%d-%m-%Y", "%d.%m.%y"):
             try:
                 parsed = datetime.strptime(value.strip(), fmt).date()
-                # The supplied corpus is explicitly May–August 2026. A few FDS
-                # issue-date cells contain the lot expiry captured by the PDF
-                # parser, so reject out-of-coverage dates and fall back to the
-                # traceable date embedded in the filename.
-                if parsed.year == 2026 and 5 <= parsed.month <= 8:
+                # Reject lot-expiry dates accidentally captured as issue dates.
+                # The reconciled invoice cutoff is the authority for coverage.
+                if date(2026, 5, 1) <= parsed <= cutoff:
                     return parsed.isoformat()
             except ValueError:
                 pass
@@ -100,7 +101,13 @@ def pack_count(description):
 
 def is_bonus(row):
     blob = " ".join((row.get("descripcion", ""), row.get("nota", ""))).upper()
-    if "BONIF" in blob or row.get("tipo") == "Y":
+    if re.search(r"\bBONI(?:F(?:ICACION)?)?\b", blob) or row.get("tipo") == "Y":
+        return True
+    # Some suppliers print promotional lines at S/ 0.00 or with a 100% discount
+    # without spelling out BONIF. They are free units, not market prices.
+    totals = [number(row.get(field)) for field in ("importe", "total", "valor_venta") if row.get(field) not in (None, "")]
+    discounts = [number(row.get(f"dcto{i}")) for i in range(1, 5) if row.get(f"dcto{i}") not in (None, "")]
+    if (totals and min(totals) == 0) or any(value == 100 for value in discounts):
         return True
     fields = [row.get("precio_unitario"), row.get("precio_unit_final"), row.get("valor_unitario"), row.get("valor_venta_unit")]
     present = [number(v) for v in fields if v not in (None, "")]
@@ -138,8 +145,37 @@ def observed_price(row):
 
 
 def main():
+    invoice_payload = json.loads(INVOICES.read_text(encoding="utf-8")) if INVOICES.exists() else {"meta": {}, "records": []}
+    try:
+        cutoff = date.fromisoformat(invoice_payload.get("meta", {}).get("to", ""))
+    except ValueError:
+        cutoff = date(2026, 8, 31)
     with INPUT.open(encoding="utf-8-sig", newline="") as fh:
         source = list(csv.DictReader(fh))
+
+    integrated_rows = 0
+    for record in invoice_payload.get("records", []):
+        emitted = str(record.get("fecha", ""))
+        if not (INVOICE_INTEGRATION_FROM <= emitted <= cutoff.isoformat()):
+            continue
+        amount = record.get("importe_total")
+        description = record.get("producto", "")
+        source.append({
+            "proveedor": record.get("proveedor", ""),
+            "fecha_emision": emitted,
+            "fecha_archivo": emitted,
+            "descripcion": description,
+            "nro_factura": record.get("documento", ""),
+            "archivo": record.get("fuente", ""),
+            "codigo": "",
+            "cantidad": record.get("cantidad"),
+            "um": record.get("um", ""),
+            "importe": amount,
+            "precio_unitario": record.get("precio_unitario"),
+            "nota": "BONIFICACION" if record.get("sin_costo") or (isinstance(amount, (int, float)) and amount <= 0.10) else "",
+            "raw": record.get("metodo_deteccion", ""),
+        })
+        integrated_rows += 1
 
     by_signature = defaultdict(list)
     for row in source:
@@ -166,7 +202,7 @@ def main():
             "product": preferred[sig],
             "description": row["descripcion"],
             "provider": row["proveedor"],
-            "date": date_iso(row.get("fecha_emision"), row.get("fecha_archivo")),
+            "date": date_iso(cutoff, row.get("fecha_emision"), row.get("fecha_archivo")),
             "invoice": row.get("nro_factura", ""),
             "file": row.get("archivo", ""),
             "code": row.get("codigo", ""),
@@ -195,7 +231,9 @@ def main():
     months = sorted({r["date"][:7] for r in rows if r["date"]})
     payload = {
         "meta": {
-            "generated": "2026-10-19",
+            "generated": invoice_payload.get("meta", {}).get("generated", datetime.now().date().isoformat()),
+            "effectiveThrough": cutoff.isoformat(),
+            "integratedInvoiceRows": integrated_rows,
             "rowCount": len(rows),
             "invoiceCount": len({(r["provider"], r["invoice"], r["file"]) for r in rows}),
             "descriptionCount": len(descriptions),

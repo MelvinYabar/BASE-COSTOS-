@@ -6,6 +6,12 @@ También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen men
 
 La sección **Compras por proveedor** usa el registro general de facturas y el consolidado de productos comprados. Separa las coincidencias exactas de GTIN de las propuestas por similitud; una propuesta nunca se considera confirmada automáticamente.
 
+En **Conciliación GTIN**, las descripciones pendientes son botones. Al abrir una se muestran candidatos del maestro oficial de productos ordenados por semejanza de nombre, concentración y presentación. El maestro `20615607160-LISTA-PRODUCTOS-26-10-2026.xlsx` define el nombre, el código interno, el código de barras y el estado; ventas y catálogos de distribuidores solo aportan alias. Una cantidad por caja distinta reduce el puntaje y se muestra como advertencia, pero no elimina el candidato: el mismo producto puede comprarse en presentaciones diferentes. La selección humana se guarda como `Confirmado manualmente`.
+
+Las asociaciones manuales se conservan en el navegador. **Descargar asociaciones** genera un respaldo JSON y **Cargar asociaciones** permite llevarlo a otra PC. Ese respaldo es también el insumo de revisión para incorporar posteriormente las equivalencias confirmadas a la fuente central; seleccionar un GTIN no confirma por sí solo las unidades por envase usadas en el costo.
+
+Las decisiones de unidades se centralizan desde una exportación completa de **Revisión de costos** mediante `python scripts/import_cost_unit_decisions.py "revision_costos.xlsx"`. El archivo generado en `data/cost_unit_decisions.json` conserva la decisión por fila de la BD madre y `prepare_costs.py` la incorpora al sitio.
+
 ## Ventas
 
 El reporte `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` se prepara localmente con:
@@ -40,6 +46,8 @@ La conciliación usa tres niveles:
 - **Coincidencia exacta:** nombre normalizado único, con GTIN utilizable.
 - **Propuesta alta / revisar propuesta:** candidato por nombre, concentración y presentación; requiere confirmación humana.
 - **Sin coincidencia:** permanece sin GTIN. No se elige el candidato más parecido solo para aumentar cobertura.
+- **Confirmado manualmente:** un usuario seleccionó el GTIN desde la lista de candidatos. Se conserva separado de las coincidencias automáticas y puede deshacerse.
+- **GTIN fuera del maestro:** una asociación guardada anteriormente ya no existe en el maestro vigente y debe reasociarse.
 
 El maestro tributario aplica factor 1 a ALFARO, CASTILLO, EBENEL, FDS y FP MAYORISTA (QUÍMICA SUIZA). Los demás proveedores usan factor 1.18 conforme a la regla vigente. Los proveedores no se fusionan por razón social parecida sin evidencia explícita.
 
@@ -51,6 +59,7 @@ Reglas de cálculo:
 - **Sin código:** se conserva el registro y se agrupa por descripción exacta, sin vincularlo automáticamente a un GTIN.
 - **Cantidades e importes:** se conservan los signos originales y las ventas de importe cero. Si los signos son incompatibles, la fila permanece en los totales pero no recibe un margen de referencia.
 - **Costo de referencia:** después de confirmar unidad e IGV comparables. Se usa el costo unitario explícito de ventas o se recalcula cada compra: `importe de la línea × factor IGV / (envases comprados × unidades por envase)`. El factor es 1 para los proveedores con IGV incluido y 1.18 para los demás. Con GTIN exacto se pondera por unidades del mismo mes o último anterior. Una cantidad X inequívoca del nombre puede recuperar unidades antes asumidas. Los conflictos nombre–catálogo, varias cantidades X, presentaciones distintas y meses posteriores se excluyen del cruce. No es un costo de inventario FIFO ni el costo real de la unidad vendida.
+- **Proveedor de emergencia:** Santa Úrsula permanece visible en el histórico de compras, pero se excluye del costo ponderado oficial y de la referencia usada para márgenes.
 - **Margen sobre costo:** importe / costo total de referencia − 1. La tabla exige costo en todas las filas de cada grupo; la tarjeta muestra únicamente la población con costo comparable e indica su cobertura. El resultado se presenta como porcentaje.
 - **Volumen de compras:** importes impresos del histórico; excluye bonificaciones y líneas sin importe. No reconstruye importes desde precios de lista ni uniformiza el IGV.
 - **Volumen de ventas:** importes del archivo de ventas. El reporte original no identifica distribuidor: se muestra `Sin distribuidor` y cero distribuidores identificados. No se asignan ventas a proveedores de compra por inferencia.
@@ -101,11 +110,12 @@ ALFARO, CASTILLO, EBENEL, FP MAYORISTA (QUÍMICA SUIZA) y FDS facturan con IGV i
 
 ## Actualización de datos
 
-1. Guarda la nueva base en la carpeta superior con un nombre que comience por `BD_MADRE_DE_COSTOS`.
-2. Ejecuta `python scripts/prepare_costs.py`; el script toma automáticamente el archivo más reciente y regenera `dist/costs.json`.
-3. Ejecuta `python scripts/validate_costs.py`.
-4. Revisa manualmente las advertencias de GTIN ausente y unidades por envase asumidas.
-5. Publica los cambios en `main`. Render actualizará el sitio estático desde `dist/`.
+1. Actualiza primero `dist/invoices.json` mediante el flujo de facturas. Su campo `meta.to` define el último día real disponible.
+2. Guarda la base histórica en la carpeta superior con un nombre que comience por `BD_MADRE_DE_COSTOS`.
+3. Ejecuta `python scripts/prepare_costs.py`. El script conserva la base histórica, corrige el mes usando la fecha real del comprobante e integra septiembre y octubre desde `dist/invoices.json`. Nunca publica meses posteriores a `meta.to`.
+4. Ejecuta `python scripts/validate_costs.py` y `python -m unittest scripts.test_cost_dates`.
+5. Revisa manualmente las advertencias de GTIN ausente y unidades por envase asumidas.
+6. Publica los cambios en `main`. Render actualizará el sitio estático desde `dist/`.
 
 Para actualizar el histórico de precios, reemplaza `BD_HISTORICO_PRECIOS/historico_precios.csv` en la carpeta superior y ejecuta `python scripts/prepare_data.py` antes de validar y publicar.
 

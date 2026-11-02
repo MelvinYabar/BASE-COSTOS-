@@ -39,6 +39,7 @@ async function loadSales() {
     if (payload) {
       analytics.data = payload.rows;
       analytics.meta = payload.meta;
+      analytics.comparable = AC.salesComparisonConfirmed(payload.rows, payload.meta);
     }
   } catch (e) { analytics.error = e.message; }
   analytics.loading = false;
@@ -47,7 +48,7 @@ async function loadSales() {
 
 function salesScope() {
   const q = AC.normalize(analytics.query);
-  if (!analytics.costIndex) analytics.costIndex = AC.costIndex(state.costs);
+  if (!analytics.costIndex) analytics.costIndex = AC.costIndex(state.costs, costUnitDecisions);
   return AC.attachCosts(analytics.data.filter(r =>
     (!analytics.from || r.date >= analytics.from) && (!analytics.to || r.date <= analytics.to) &&
     (!analytics.provider || r.provider === analytics.provider) &&
@@ -113,7 +114,7 @@ function bindAnalyticsPager() {
 function salesTable(groups, daily) {
   const pagination = analyticsPager(groups.length);
   const page = groups.slice(analytics.page * 50, (analytics.page + 1) * 50);
-  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr>${daily ? '<th>Fecha</th>' : ''}<th>Código producto</th><th>Medicamento / insumo</th><th>Unidad</th><th>Cantidad reportada</th><th>Importe vendido</th><th>Precio ponderado</th><th>Costo de referencia / unidad</th><th>Margen sobre costo</th><th>Estado del costo</th></tr></thead><tbody>${page.map(r => `<tr>${daily ? `<td>${dateFmt(r.date)}</td>` : ''}<td class="mono">${esc(r.code || 'Sin código')}</td><td><b>${esc(r.product)}</b>${r.descriptions > 1 ? `<small class="cell-note">${r.descriptions} descripciones para el mismo código</small>` : ''}</td><td>${esc(r.unit)}</td><td class="numeric">${quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td class="numeric">${preciseMoney(r.price)}</td><td class="numeric">${preciseMoney(r.unitCost)}</td><td class="numeric ${r.margin != null && r.margin < 0 ? 'negative' : ''}">${percentage(r.margin)}</td><td><span class="tag ${r.missingCost ? 'bonus' : ''}">${r.missingCost ? (analytics.comparable ? `${r.missingCost} filas con costo pendiente` : `${r.missingCost} filas: confirmar unidad/IGV`) : 'Referencia disponible'}</span>${r.missingCost && analytics.comparable ? `<small class="cell-note">${r.costIssues.map(([reason,n])=>esc(`${n}: ${reason}`)).join('<br>')}</small>` : ''}</td></tr>`).join('') || `<tr><td colspan="${daily ? 11 : 10}"><div class="empty"><b>Sin ventas para estos filtros</b>Prueba otro rango o limpia los filtros.</div></td></tr>`}</tbody></table></div>${pagination}`;
+  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr>${daily ? '<th>Fecha</th>' : ''}<th>Código producto</th><th>Medicamento / insumo</th><th>Unidad</th><th>Cantidad reportada</th><th>Importe vendido</th><th>Precio ponderado</th><th>Costo de referencia / unidad</th><th>Margen sobre costo</th><th>Estado del costo</th></tr></thead><tbody>${page.map(r => `<tr>${daily ? `<td>${dateFmt(r.date)}</td>` : ''}<td class="mono">${esc(r.code || 'Sin código')}</td><td><b>${esc(r.product)}</b>${r.descriptions > 1 ? `<small class="cell-note">${r.descriptions} descripciones para el mismo código</small>` : ''}</td><td>${esc(r.unit)}</td><td class="numeric">${quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td class="numeric">${preciseMoney(r.price)}</td><td class="numeric">${preciseMoney(r.unitCost)}</td><td class="numeric ${r.margin != null && r.margin < 0 ? 'negative' : ''}">${percentage(r.margin)}</td><td><span class="tag ${r.missingCost ? 'bonus' : ''}">${r.missingCost ? (analytics.comparable ? `${r.missingCost} ${r.missingCost===1?'fila':'filas'} con costo pendiente` : `${r.missingCost} ${r.missingCost===1?'fila':'filas'}: confirmar unidad/IGV`) : 'Referencia disponible'}</span>${r.missingCost && analytics.comparable ? `<small class="cell-note">${r.costIssues.map(([reason,n])=>esc(`${n}: ${reason}`)).join('<br>')}</small>` : ''}</td></tr>`).join('') || `<tr><td colspan="${daily ? 11 : 10}"><div class="empty"><b>Sin ventas para estos filtros</b>Prueba otro rango o limpia los filtros.</div></td></tr>`}</tbody></table></div>${pagination}`;
 }
 
 function renderSales(daily = false) {
@@ -126,7 +127,7 @@ function renderSales(daily = false) {
     <section class="kpis">${kpi('S/', money(total.amount), 'Importe vendido', 'según filtros')}${kpi('▦', unique(scope.map(r => r.unit)).length <= 1 ? quantity(total.qty) : '—', 'Cantidad reportada', `${quantity(groups.length)} ${daily ? 'grupos día–producto' : 'grupos producto–unidad'}`)}${kpi('⇄', percentage(covered.margin), 'Margen en ventas comparables', `${quantity(covered.count)} de ${quantity(total.count)} filas`)}${kpi('!', quantity(total.missingCost), analytics.comparable ? 'Filas con costo pendiente' : 'Filas pendientes de confirmar', 'incluidas en ventas')}</section>
     <div class="cost-note"><b>Precio de venta:</b> suma de importes ÷ suma de cantidades del mismo código y unidad. Conserva importes cero, negativos y cantidades tal como aparecen en la fuente. <b>Margen sobre costo:</b> (precio ÷ costo − 1) × 100. Se deja vacío si falta costo en alguna fila del grupo.</div>
     <details class="analytics-method"><summary>Costo usado en el margen y criterios de comparación</summary><p>Primero se usa el costo unitario del archivo de ventas, si existe. En su ausencia, se busca el GTIN exacto en el detalle de costos y se calcula un promedio ponderado por unidades compradas del mes. Si no hubo compra en ese mes, se toma el último mes anterior disponible. El costo se recalcula desde el importe de compra y los envases × unidades por envase. Se aplica IGV solo donde corresponde. Las unidades asumidas se recuperan cuando el nombre indica una X de cantidad inequívoca. Se bloquean las contradicciones de presentación, los GTIN marcados como distintos y los meses posteriores.</p><p>Es una referencia mensual de compras de todos los proveedores, no el costo real del inventario vendido. No asigna el distribuidor de la venta. Los importes de compra pueden tener tratamientos de IGV distintos; la referencia de costos ya incorpora las reglas de la BD madre.</p></details>
-    <label class="cost-confirm"><input id="salesComparable" type="checkbox" ${analytics.comparable ? 'checked' : ''}> Confirmo que las ventas están por tableta/unidad y tienen un tratamiento de IGV comparable con el costo final.</label>
+    <label class="cost-confirm"><input id="salesComparable" type="checkbox" ${analytics.comparable ? 'checked' : ''} ${AC.salesComparisonConfirmed(analytics.data,analytics.meta)?'disabled':''}> ${AC.salesComparisonConfirmed(analytics.data,analytics.meta)?'Validación automática: el reporte oficial está en UNIDAD VENDIDA y sus importes incluyen IGV.':'Confirmo que las ventas están por tableta/unidad y tienen un tratamiento de IGV comparable con el costo final.'}</label>
     ${!analytics.comparable ? '<div class="assumption">Confirma la unidad de venta y el IGV para habilitar los costos y márgenes de referencia.</div>' : ''}
     ${analytics.loading ? '<div class="empty"><b>Cargando histórico de ventas…</b></div>' : !analytics.data.length ? '<div class="empty sales-empty"><b>Carga el histórico de ventas</b>Admite el reporte «PRODUCTOS / SERVICIOS VENDIDOS POR DÍA» de tu sistema o la plantilla CSV. La base de compras se conserva.</div>' : `
     <div class="cost-toolbar">${daily ? '<span class="muted">Detalle diario por código y unidad</span>' : `<div class="cost-tabs">${[['products','Precios y cantidades'],['prices','BD de precios'],['quantities','BD de cantidades'],['margins','Márgenes'],['detail','Base de ventas']].map(([id,label]) => `<button data-sales-tab="${id}" class="${analytics.tab === id ? 'active' : ''}">${label}</button>`).join('')}</div>`}<button id="exportSales" class="btn secondary">Exportar Excel</button></div>
@@ -188,7 +189,7 @@ function downloadCSV(filename, matrix) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function downloadWorkbook(filename, matrix, sheetName, criteriaRows = null) {
+function downloadWorkbook(filename, matrix, sheetName, criteriaRows = null, extraSheets = []) {
   const prepared = matrix.map((row,r) => r ? row.map((v,c) => typeof v === 'number' && /importe/.test(matrix[0][c]) ? Math.round(v * 100) / 100 : v) : row);
   const sheet = XLSX.utils.aoa_to_sheet(prepared);
   sheet['!cols'] = matrix[0].map(h => ({wch: /producto|origen/.test(h) ? 48 : /codigo/.test(h) ? 20 : 23}));
@@ -203,6 +204,20 @@ function downloadWorkbook(filename, matrix, sheetName, criteriaRows = null) {
     }
   }
   const book = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(book,sheet,sheetName);
+  for (const extra of extraSheets) {
+    if (!extra?.matrix?.length || !extra.matrix[0]?.length) continue;
+    const extraSheet = XLSX.utils.aoa_to_sheet(extra.matrix);
+    extraSheet['!cols'] = extra.matrix[0].map(h => ({wch: /producto|motivo|observacion|fuente/.test(h) ? 45 : /codigo|gtin/.test(h) ? 22 : 20}));
+    extraSheet['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0},e:{r:extra.matrix.length-1,c:extra.matrix[0].length-1}})};
+    for (let c=0;c<extra.matrix[0].length;c++) {
+      const header = extra.matrix[0][c];
+      for (let r=1;r<extra.matrix.length;r++) {
+        const cell = extraSheet[XLSX.utils.encode_cell({r,c})];
+        if (/codigo|gtin/.test(header) && cell) {cell.t='s';cell.z='@';}
+      }
+    }
+    XLSX.utils.book_append_sheet(book,extraSheet,extra.name.slice(0,31));
+  }
   const control = XLSX.utils.aoa_to_sheet(criteriaRows || [
     ['Criterio','Valor'],['Fuente',state.view === 'volume' && analytics.source === 'purchases' ? 'Histórico de compras data.json' : analytics.meta?.source || 'Sin fuente'],
     ['Desde',analytics.from || 'Toda la cobertura'],['Hasta',analytics.to || 'Toda la cobertura'],['Distribuidor',analytics.provider || 'Todos'],['Búsqueda',analytics.query],
@@ -289,7 +304,7 @@ async function confirmSalesImport() {
     const payload = {meta:{source:staged.file, sheet:staged.sheetName, from:dates[0], to:dates.at(-1), amountTotal:total.amount, qtyTotal:total.qty, rowCount:result.rows.length}, rows:result.rows};
     let persisted = true;
     try { await salesDatabase('put', payload); } catch (_) { persisted = false; }
-    analytics.data = payload.rows; analytics.meta = payload.meta; analytics.comparable = false;
+    analytics.data = payload.rows; analytics.meta = payload.meta; analytics.comparable = AC.salesComparisonConfirmed(payload.rows,payload.meta);
     analytics.from = analytics.to = analytics.provider = analytics.query = ''; analytics.page = 0;
     analytics.message = `Base reemplazada: ${quantity(total.count)} filas y ${money(total.amount)}.${reported ? ' Total conciliado con el reporte.' : ''}${persisted ? ' Guardada en este navegador.' : ' Solo disponible durante esta sesión: no se pudo guardar en el navegador.'}`;
     analytics.error = ''; $('#salesImportDialog').close(); analytics.staged = null; render();
