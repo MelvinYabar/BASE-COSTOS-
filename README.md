@@ -1,5 +1,7 @@
 # Avanti — Histórico de precios
 
+La sección **Calidad de datos** resume la cobertura observable de GTIN, unidades por envase, tratamiento IGV, asociaciones de compras y PDF enlazados. Sus porcentajes se calculan desde los JSON publicados; las unidades asumidas y los faltantes se muestran por separado. Un enlace de PDF no garantiza por sí solo que el archivo responda en producción.
+
 Dashboard estático para consultar el histórico de precios y la base de costos de Avanti Pharma Group S.A.C.
 
 También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen mensual**, con compras y ventas separadas. La pestaña de ventas contiene la base de precios, la base de cantidades, los márgenes de referencia y el detalle de origen. Los reportes se exportan a Excel con códigos como texto y cifras numéricas.
