@@ -74,6 +74,12 @@ function pager(total,page,type){const pages=Math.ceil(total/(type==='trace'?75:5
 
 function initEvents(){document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;render()});$('#providerFilter').onchange=e=>{state.provider=e.target.value;state.selectedProduct='';render()};$('#monthFilter').onchange=e=>{state.month=e.target.value;state.selectedProduct='';render()};$('#clearFilters').onclick=()=>{state.provider=state.month=state.search='';$('#providerFilter').value=$('#monthFilter').value=$('#globalSearch').value='';render()};$('#helpBtn').onclick=()=>$('#criteriaDialog').showModal();$('.dialog-close').onclick=()=>$('#criteriaDialog').close();const input=$('#globalSearch'),box=$('#searchResults');input.oninput=e=>{state.search=e.target.value.trim();if(!state.search){box.classList.add('hidden');return}const q=state.search.toLowerCase(),matches=products().filter(([p])=>p.toLowerCase().includes(q)).slice(0,10);box.innerHTML=matches.map(([p,n])=>`<button class="search-result" data-product="${esc(p)}"><b>${esc(p)}</b><small>${n} líneas · ${unique(productRows(p).map(r=>r.provider)).length} proveedores</small></button>`).join('')||'<div class="empty" style="padding:20px">Sin coincidencias</div>';box.classList.remove('hidden');box.querySelectorAll('button').forEach(b=>b.onclick=()=>{state.selectedProduct=b.dataset.product;state.view='product';input.value=b.dataset.product;box.classList.add('hidden');render()})};document.addEventListener('click',e=>{if(!e.target.closest('.search'))box.classList.add('hidden')});document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();input.focus()}})}
 
+document.addEventListener('input',event=>{
+  if(event.target.id!=='costSearch')return;
+  const caret=event.target.selectionStart;
+  queueMicrotask(()=>{const search=document.querySelector('#costSearch');if(search){search.focus();search.setSelectionRange(caret,caret)}});
+},true);
+
 async function loadBaseFile(name){
   let response;
   try{response=await fetch(`${name}?v=22`)}catch(error){throw new Error(`${name}: no se pudo conectar con el servidor (${error.message}).`)}

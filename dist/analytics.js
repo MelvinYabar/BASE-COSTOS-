@@ -1,11 +1,11 @@
 /* Sales stay local to this dashboard. Importing replaces the current sales dataset. */
 const analytics = {
   data: [], meta: null, loading: true, message: '', error: '', tab: 'products',
-  from: '', to: '', provider: '', query: '', page: 0, source: 'purchases',
+  from: '', to: '', provider: '', query: '', marginFilter: '', page: 0, source: 'purchases',
   comparable: false, costIndex: null, staged: null
 };
 const AC = AvantiAnalytics;
-const quantity = n => n == null ? '—' : new Intl.NumberFormat('es-PE', {maximumFractionDigits: 2}).format(n);
+const quantity = n => n == null ? '—' : new Intl.NumberFormat('es-PE', {maximumFractionDigits: 4}).format(n);
 const preciseMoney = n => n == null ? '—' : new Intl.NumberFormat('es-PE', {style: 'currency', currency: 'PEN', minimumFractionDigits: 4, maximumFractionDigits: 4}).format(n);
 const percentage = n => n == null ? '—' : new Intl.NumberFormat('es-PE', {style: 'percent', maximumFractionDigits: 1}).format(n);
 
@@ -121,6 +121,11 @@ function renderSales(daily = false) {
   const scope = salesScope(), total = AC.summarize(scope);
   const covered = AC.summarize(scope.filter(r => r.cost != null));
   const groups = AC.aggregate(scope, daily ? 'daily' : 'product');
+  const marginGroups = groups.filter(r => analytics.marginFilter === 'missing' ? r.margin == null :
+    analytics.marginFilter === 'negative' ? r.margin != null && r.margin < 0 :
+    analytics.marginFilter === 'low' ? r.margin != null && r.margin >= 0 && r.margin < .2 :
+    analytics.marginFilter === 'medium' ? r.margin != null && r.margin >= .2 && r.margin < .5 :
+    analytics.marginFilter === 'high' ? r.margin != null && r.margin >= .5 : true);
   content.innerHTML = `<div class="view">
     <div class="section-head"><div><p class="eyebrow">VENTAS Y RENTABILIDAD</p><h2>${daily ? 'Vendidos por día' : 'Precios y cantidades'}</h2><p>${daily ? 'Cantidad e importe por fecha y medicamento.' : 'Base de precios de venta y cantidades por código de producto.'}</p></div>${salesToolbar()}</div>
     ${salesNotices()}${analyticsFilters(analytics.data)}
@@ -130,14 +135,15 @@ function renderSales(daily = false) {
     <label class="cost-confirm"><input id="salesComparable" type="checkbox" ${analytics.comparable ? 'checked' : ''} ${AC.salesComparisonConfirmed(analytics.data,analytics.meta)?'disabled':''}> ${AC.salesComparisonConfirmed(analytics.data,analytics.meta)?'Validación automática: el reporte oficial está en UNIDAD VENDIDA y sus importes incluyen IGV.':'Confirmo que las ventas están por tableta/unidad y tienen un tratamiento de IGV comparable con el costo final.'}</label>
     ${!analytics.comparable ? '<div class="assumption">Confirma la unidad de venta y el IGV para habilitar los costos y márgenes de referencia.</div>' : ''}
     ${analytics.loading ? '<div class="empty"><b>Cargando histórico de ventas…</b></div>' : !analytics.data.length ? '<div class="empty sales-empty"><b>Carga el histórico de ventas</b>Admite el reporte «PRODUCTOS / SERVICIOS VENDIDOS POR DÍA» de tu sistema o la plantilla CSV. La base de compras se conserva.</div>' : `
-    <div class="cost-toolbar">${daily ? '<span class="muted">Detalle diario por código y unidad</span>' : `<div class="cost-tabs">${[['products','Precios y cantidades'],['prices','BD de precios'],['quantities','BD de cantidades'],['margins','Márgenes'],['detail','Base de ventas']].map(([id,label]) => `<button data-sales-tab="${id}" class="${analytics.tab === id ? 'active' : ''}">${label}</button>`).join('')}</div>`}<button id="exportSales" class="btn secondary">Exportar Excel</button></div>
-    ${daily ? salesTable(groups, true) : analytics.tab === 'detail' ? salesDetailTable(scope) : analytics.tab === 'products' ? salesTable(groups, false) : analytics.tab === 'margins' ? salesTable(groups.slice().sort((a,b) => (a.margin ?? Infinity) - (b.margin ?? Infinity)), false) : salesSimpleTable(groups, analytics.tab)}
+    <div class="cost-toolbar">${daily ? '<span class="muted">Detalle diario por código y unidad</span>' : `<div class="cost-tabs">${[['products','Precios y cantidades'],['prices','BD de precios'],['quantities','BD de cantidades'],['margins','Márgenes'],['detail','Base de ventas']].map(([id,label]) => `<button data-sales-tab="${id}" class="${analytics.tab === id ? 'active' : ''}">${label}</button>`).join('')}</div>`}${!daily && analytics.tab === 'margins' ? `<label class="margin-filter">Filtrar margen<select id="marginFilter"><option value="">Todos</option><option value="negative" ${analytics.marginFilter==='negative'?'selected':''}>Pérdida (&lt; 0%)</option><option value="low" ${analytics.marginFilter==='low'?'selected':''}>0% a &lt; 20%</option><option value="medium" ${analytics.marginFilter==='medium'?'selected':''}>20% a &lt; 50%</option><option value="high" ${analytics.marginFilter==='high'?'selected':''}>50% o más</option><option value="missing" ${analytics.marginFilter==='missing'?'selected':''}>Sin margen comparable</option></select></label>` : ''}<button id="exportSales" class="btn secondary">Exportar Excel</button></div>
+    ${daily ? salesTable(groups, true) : analytics.tab === 'detail' ? salesDetailTable(scope) : analytics.tab === 'products' ? salesTable(groups, false) : analytics.tab === 'margins' ? salesTable(marginGroups.slice().sort((a,b) => (a.margin ?? Infinity) - (b.margin ?? Infinity)), false) : salesSimpleTable(groups, analytics.tab)}
     ${analytics.comparable ? `<p class="analytics-footnote">El margen de la tarjeta considera únicamente ${money(covered.amount)} de ventas con costo comparable (${quantity(covered.count)} filas). En la tabla, cada producto requiere costo en todas sus filas filtradas. En Márgenes, los menores porcentajes aparecen primero.</p>` : ''}
     <p class="analytics-footnote">Los totales corresponden a todas las filas filtradas, incluidas las páginas que no se muestran. Las cantidades de unidades diferentes se mantienen separadas.</p>`}
   </div>`;
   bindAnalyticsFilters(); bindSalesToolbar(); bindAnalyticsPager();
   $('#salesComparable').onchange = e => { analytics.comparable = e.target.checked; render(); };
   document.querySelectorAll('[data-sales-tab]').forEach(b => b.onclick = () => { analytics.tab = b.dataset.salesTab; analytics.page = 0; render(); });
+  if ($('#marginFilter')) $('#marginFilter').onchange = e => { analytics.marginFilter = e.target.value; analytics.page = 0; render(); };
   if ($('#exportSales')) $('#exportSales').onclick = () => exportSales(scope, groups, daily);
 }
 

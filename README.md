@@ -4,6 +4,8 @@ La sección **Calidad de datos** resume la cobertura observable de GTIN, unidade
 
 La vista temporal **Pendientes 30%** se retiró de la publicación. Los registros siguen en las fuentes y los faltantes de costo continúan señalados en las vistas de ventas y calidad; ocultar la vista no equivale a validar esos costos.
 
+Para consultar el margen en Render, cargar el reporte de ventas en **Precios y cantidades → Cargar ventas** en ese navegador y abrir la pestaña **Márgenes**. El selector filtra pérdidas, tramos positivos o productos sin margen comparable. La BD de costos admite búsqueda por GTIN en su campo propio; las cantidades se muestran hasta con cuatro decimales cuando la fuente los contiene.
+
 Dashboard estático para consultar el histórico de precios y la base de costos de Avanti Pharma Group S.A.C.
 
 También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen mensual**, con compras y ventas separadas. La pestaña de ventas contiene la base de precios, la base de cantidades, los márgenes de referencia y el detalle de origen. Los reportes se exportan a Excel con códigos como texto y cifras numéricas.
