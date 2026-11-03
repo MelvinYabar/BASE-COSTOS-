@@ -20,7 +20,6 @@
         <button class="nav-item" data-view="product"><span>⌕</span> Ficha de producto</button>
         <button class="nav-item" data-view="compare"><span>⇄</span> Comparativo</button>
         <button class="nav-item" data-view="costs"><span>S/</span> BD de costos</button>
-        <button class="nav-item" data-view="pending" title="Revisión temporal de ventas sin costo"><span>!</span> Pendientes 30%</button>
         <button class="nav-item" data-view="purchases" title="Compras por proveedor"><span>▣</span> Compras por proveedor</button>
         <button class="nav-item" data-view="invoices" title="Histórico por factura"><span>⌑</span> Facturas y medicamentos</button>
         <button class="nav-item" data-view="sales" title="Precios y cantidades"><span>▦</span> Precios y cantidades</button>
@@ -64,17 +63,14 @@
 
   <dialog id="purchaseMatchDialog" class="match-dialog" aria-labelledby="purchaseMatchTitle"></dialog>
   <dialog id="costUnitDialog" class="match-dialog" aria-labelledby="costUnitTitle"></dialog>
-  <dialog id="pendingDecisionDialog" class="match-dialog" aria-labelledby="pendingDecisionTitle"></dialog>
 
   <script src="vendor/xlsx.full.min.js"></script>
   <script src="analytics-core.js"></script>
-  <script src="pending-review-core.js"></script>
   <script src="purchase-matching.js"></script>
   <script src="app.js?v=22"></script>
   <script src="quality.js"></script>
   <script src="analytics.js"></script>
   <script src="cost-review.js"></script>
-  <script src="pending-review.js"></script>
   <script src="purchases.js"></script>
   <script src="invoices.js"></script>
 </body>

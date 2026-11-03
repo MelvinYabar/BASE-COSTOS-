@@ -2,6 +2,8 @@
 
 La sección **Calidad de datos** resume la cobertura observable de GTIN, unidades por envase, tratamiento IGV, asociaciones de compras y PDF enlazados. Sus porcentajes se calculan desde los JSON publicados; las unidades asumidas y los faltantes se muestran por separado. Un enlace de PDF no garantiza por sí solo que el archivo responda en producción.
 
+La vista temporal **Pendientes 30%** se retiró de la publicación. Los registros siguen en las fuentes y los faltantes de costo continúan señalados en las vistas de ventas y calidad; ocultar la vista no equivale a validar esos costos.
+
 Dashboard estático para consultar el histórico de precios y la base de costos de Avanti Pharma Group S.A.C.
 
 También incluye **Precios y cantidades**, **Vendidos por día** y **Volumen mensual**, con compras y ventas separadas. La pestaña de ventas contiene la base de precios, la base de cantidades, los márgenes de referencia y el detalle de origen. Los reportes se exportan a Excel con códigos como texto y cifras numéricas.

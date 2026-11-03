@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const A = require('../dist/analytics-core.js');
-const Pending = require('../dist/pending-review-core.js');
+const Pending = require('./pending-review-core.js');
 const sale = (overrides = {}) => ({date:'2026-06-12',code:'00123',product:'Medicamento',qty:2,amount:30,unit:'UNIDAD VENDIDA',provider:'Distribuidor A',cost:10,...overrides});
 const close = (observed, expected) => assert.ok(Math.abs(observed - expected) < 1e-7, `${observed} != ${expected}`);
 

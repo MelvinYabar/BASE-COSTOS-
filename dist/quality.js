@@ -6,7 +6,7 @@ function renderQuality(){
   const pct=(part,total)=>total?`${(part/total*100).toFixed(1)}%`:'—';
   const linked=count(detail,r=>Boolean(String(r.gtin||'').trim()));
   const unitKnown=count(detail,r=>Number(r.unitsPerBox)>0);
-  const assumed=count(detail,r=>/asumid/i.test(String(r.unitsSource||'')));
+  const assumed=count(detail,r=>/asum/i.test(String(r.unitsSource||'')));
   const taxed=count(detail,r=>Boolean(String(r.tax||'').trim()));
   const mapped=count(mappings,r=>Boolean(String(r.gtin||'').trim())&&r.masterValid!==false);
   const pdf=count(invoices,r=>Boolean(r.pdf_url));
