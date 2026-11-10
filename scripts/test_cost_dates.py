@@ -16,7 +16,6 @@ class CostDateIntegrationTests(unittest.TestCase):
     def test_published_months_stop_at_real_invoice_cutoff(self):
         cutoff = date.fromisoformat(self.payload["meta"]["effectiveThrough"])
         self.assertEqual(self.payload["meta"]["months"], MONTHS[4:cutoff.month])
-        self.assertNotIn("Noviembre", self.payload["meta"]["months"])
         self.assertNotIn("Diciembre", self.payload["meta"]["months"])
 
     def test_september_and_october_are_populated(self):
@@ -39,7 +38,7 @@ class CostDateIntegrationTests(unittest.TestCase):
 
     def test_base_has_observed_costs_in_both_new_months(self):
         month_index = {month: index for index, month in enumerate(self.payload["meta"]["months"])}
-        for month in ("Septiembre", "Octubre"):
+        for month in ("Septiembre", "Octubre", "Noviembre"):
             observed = [
                 row for row in self.payload["base"]
                 if row["costs"][month_index[month]]["value"] is not None

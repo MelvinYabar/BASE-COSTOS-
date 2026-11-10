@@ -87,6 +87,7 @@ def main():
     parser.add_argument("--purchases-dir", required=True, type=Path)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--index-output", type=Path)
+    parser.add_argument("--merge-index", type=Path, help="Índice publicado previo que debe conservarse")
     parser.add_argument("--months", nargs="+", default=["2026-08", "2026-09", "2026-10"])
     parser.add_argument("--plan", action="store_true")
     args = parser.parse_args()
@@ -97,7 +98,8 @@ def main():
     if not args.output_dir or not args.index_output:
         parser.error("--output-dir y --index-output son obligatorios sin --plan")
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    index, errors = {}, []
+    previous = json.loads(args.merge_index.read_text(encoding="utf-8")) if args.merge_index else {}
+    index, errors = dict(previous.get("documents", {})), []
     for position, (document, (kind, path, member)) in enumerate(sorted(items.items()), 1):
         try:
             if kind == "file":
@@ -120,7 +122,9 @@ def main():
                 print(f"Procesados {position}/{len(items)}")
         except Exception as exc:
             errors.append({"document": document, "source": str(path), "error": str(exc)})
-    args.index_output.write_text(json.dumps({"documents": index, "errors": errors}, ensure_ascii=False, indent=2), encoding="utf-8")
+    previous["documents"] = index
+    previous["errors"] = list(previous.get("errors", [])) + errors
+    args.index_output.write_text(json.dumps(previous, ensure_ascii=False, indent=2), encoding="utf-8")
     size = sum(item.stat().st_size for item in args.output_dir.glob("*.*"))
     print(json.dumps({"generated": len(index), "errors": len(errors), "size_mb": round(size / 1024 / 1024, 2)}, indent=2))
 

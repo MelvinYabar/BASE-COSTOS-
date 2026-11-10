@@ -9,7 +9,7 @@ const rows=()=>state.data.rows.filter(r=>(!state.provider||r.provider===state.pr
 const productRows=name=>rows().filter(r=>effProduct(r)===name);
 const products=()=>{const counts=new Map();rows().forEach(r=>counts.set(effProduct(r),(counts.get(effProduct(r))||0)+1));return [...counts].sort((a,b)=>b[1]-a[1]);};
 const lastBy=(arr,key)=>Object.values(arr.reduce((o,r)=>{const k=r[key];if(!o[k]||r.date>o[k].date)o[k]=r;return o},{}));
-const daysSince=s=>Math.max(0,Math.round((new Date('2026-10-19T00:00:00Z')-new Date(s+'T00:00:00Z'))/86400000));
+const daysSince=s=>Math.max(0,Math.floor((Date.now()-new Date(s+'T00:00:00Z').getTime())/86400000));
 
 function alertData(scope=rows()){
   const priced=scope.filter(r=>!r.bonus&&r.price!=null).sort((a,b)=>a.date.localeCompare(b.date));
@@ -82,7 +82,7 @@ document.addEventListener('input',event=>{
 
 async function loadBaseFile(name){
   let response;
-  try{response=await fetch(`${name}?v=22`)}catch(error){throw new Error(`${name}: no se pudo conectar con el servidor (${error.message}).`)}
+  try{response=await fetch(`${name}?v=24`)}catch(error){throw new Error(`${name}: no se pudo conectar con el servidor (${error.message}).`)}
   if(!response.ok)throw new Error(`${name}: el servidor respondió ${response.status}.`);
   try{return await response.json()}catch(_){throw new Error(`${name}: el archivo no contiene JSON válido.`)}
 }

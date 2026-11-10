@@ -210,6 +210,68 @@ def electronic_records(purchases_dir: Path, months):
     return records, documents, files
 
 
+def ebenel_pdf_records(purchases_dir: Path, months):
+    """Lee líneas impresas de EBENEL que no tienen XML en la descarga."""
+    import fitz
+
+    rows, rejected = [], []
+    for month in months:
+        for folder in (purchases_dir / "EBENEL").rglob(month):
+            for path in sorted(folder.glob("*.pdf")):
+                pdf = fitz.open(path)
+                text = "\n".join(page.get_text() for page in pdf)
+                pdf.close()
+                document = normalize_document(path.stem)
+                issued = re.search(r"FECHA EMISION\s*:?\s*(\d{1,2}/\d{1,2}/\d{4})", text)
+                section = text.split("IMP. NETO", 1)[-1].split("SON :", 1)[0]
+                chunks = re.split(r"(?m)^\s*(\d+(?:[.,]\d+)?)\s+(CJA|CAJA|UND|UNID|FCO|FRASCO|AMP|SOB)\s*$", section)
+                found = []
+                for position in range(1, len(chunks), 3):
+                    qty, unit, body = chunks[position:position + 3]
+                    expiry = re.search(r"\b\d{2}/\d{2}/\d{2,4}\b", body)
+                    if not expiry:
+                        continue
+                    description = clean_text(body[:expiry.start()])
+                    numbers = re.findall(r"(?m)^\s*(\d[\d,]*\.\d{1,2}|\d+)\s*$", body[expiry.end():])
+                    if not description or len(numbers) < 3:
+                        continue
+                    price, discount, amount = [number(value.replace(",", "")) for value in numbers[-3:]]
+                    quantity = number(qty.replace(",", "."))
+                    if not quantity or amount is None or price is None or abs(quantity * price - amount - discount) > .06:
+                        continue
+                    pack, reason = units_per_package(description)
+                    found.append({
+                        "proveedor": "EBENEL", "fecha": date(*reversed([int(part) for part in issued.group(1).split("/")])).isoformat() if issued else "",
+                        "fecha_valida": bool(issued), "documento": document, "producto": description,
+                        "producto_norm": normalize(description), "cantidad": quantity, "um": unit,
+                        "precio_unitario": price, "importe_total": amount, "unidades_caja": pack,
+                        "unidades_totales": quantity * pack if pack else None,
+                        "costo_unidad": amount / (quantity * pack) if pack else None,
+                        "metodo_deteccion": reason + " | PDF EBENEL | importe de línea con IGV",
+                        "fuente": path.relative_to(purchases_dir.parent).as_posix(),
+                        "pdf_status": "encontrado", "pdf_match_motivo": "documento exacto",
+                        "pdf_candidates": [path.relative_to(purchases_dir.parent).as_posix()],
+                        "sin_costo": not bool(pack), "duplicado": False,
+                    })
+                if not document or not issued or not found:
+                    rejected.append(path.name)
+                else:
+                    combined = {}
+                    for item in found:
+                        key = (item["documento"], item["producto_norm"], item["precio_unitario"])
+                        if key not in combined:
+                            combined[key] = item
+                        else:
+                            target = combined[key]
+                            target["cantidad"] += item["cantidad"]
+                            target["importe_total"] += item["importe_total"]
+                            if target["unidades_caja"]:
+                                target["unidades_totales"] = target["cantidad"] * target["unidades_caja"]
+                                target["costo_unidad"] = target["importe_total"] / target["unidades_totales"]
+                    rows.extend(combined.values())
+    return rows, rejected
+
+
 def merge_records(base, new):
     def key(row):
         return (normalize(row.get("documento")), normalize(row.get("producto")))
@@ -245,8 +307,11 @@ def main():
     parser.add_argument("--months", nargs="+", default=["2026-08", "2026-09"])
     args = parser.parse_args()
     base_payload = json.loads(args.base_json.read_text(encoding="utf-8-sig"))
-    base = base_payload.get("registros", [])
+    # A published dashboard can be the base for the next monthly import.
+    base = base_payload.get("records", base_payload.get("registros", []))
     electronic, documents, files = electronic_records(args.purchases_dir, args.months)
+    pdf_rows, rejected_pdfs = ebenel_pdf_records(args.purchases_dir, args.months)
+    electronic.extend(pdf_rows)
     records, added, replaced = merge_records(base, electronic)
     pdf_documents, pdf_paths = {}, {}
     if args.pdf_index and args.pdf_index.exists():
@@ -276,6 +341,8 @@ def main():
             "from": min(valid_dates) if valid_dates else None,
             "to": max(valid_dates) if valid_dates else None,
             "electronicFilesParsed": files,
+            "ebenelPdfRowsParsed": len(pdf_rows),
+            "ebenelPdfsRejected": rejected_pdfs,
             "electronicDocuments": len(documents),
             "newRows": added,
             "replacedRows": replaced,

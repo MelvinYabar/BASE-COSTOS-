@@ -1,5 +1,7 @@
 # Avanti — Histórico de precios
 
+Actualización de facturas del 10 de noviembre de 2026: el histórico integrado llega al **10-11-2026** (1,133 documentos, 6,626 líneas). La BD madre y el filtro de precios incluyen noviembre. Los PDF nuevos están en `dist/invoice-pdfs/`; 17 facturas de EBENEL se extrajeron de PDF y sus importes de línea se conciliaron contra el total impreso. Tres líneas nuevas de DIMEXA conservan su XML de origen, pero no tenían PDF en la descarga. Las guías de remisión no se tratan como facturas con costo.
+
 La sección **Calidad de datos** resume la cobertura observable de GTIN, unidades por envase, tratamiento IGV, asociaciones de compras y PDF enlazados. Sus porcentajes se calculan desde los JSON publicados; las unidades asumidas y los faltantes se muestran por separado. Un enlace de PDF no garantiza por sí solo que el archivo responda en producción.
 
 La vista temporal **Pendientes 30%** se retiró de la publicación. Los registros siguen en las fuentes y los faltantes de costo continúan señalados en las vistas de ventas y calidad; ocultar la vista no equivale a validar esos costos.
