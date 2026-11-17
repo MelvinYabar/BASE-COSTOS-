@@ -139,6 +139,15 @@ def main():
         errors.append(f"unitDecisionConflicts: meta={meta.get('unitDecisionConflicts')}; datos={len(unit_conflicts)}")
     if meta.get("incompatibleGtinsRejected") != len(rejected_gtins):
         errors.append(f"incompatibleGtinsRejected: meta={meta.get('incompatibleGtinsRejected')}; datos={len(rejected_gtins)}")
+    audited_units = sum(row.get("unitAudit") == "confirmado por descripción de factura" for row in payload["detail"])
+    if meta.get("assumedUnitsConfirmed") != audited_units:
+        errors.append(f"assumedUnitsConfirmed: meta={meta.get('assumedUnitsConfirmed')}; datos={audited_units}")
+    catalog_audits = sum(row.get("unitAudit") == "confirmado por factura y maestro" for row in payload["detail"])
+    if meta.get("catalogUnitsConfirmed") != catalog_audits:
+        errors.append(f"catalogUnitsConfirmed: meta={meta.get('catalogUnitsConfirmed')}; datos={catalog_audits}")
+    corrected_audits = sum(row.get("unitAudit") == "corregido con factura y maestro" for row in payload["detail"])
+    if meta.get("auditedUnitCorrections") != corrected_audits:
+        errors.append(f"auditedUnitCorrections: meta={meta.get('auditedUnitCorrections')}; datos={corrected_audits}")
     assumed_units = sum(1 for row in payload["detail"] if "se asume 1" in row.get("unitsSource", ""))
     warnings.extend([
         f"Filas de detalle sin GTIN: {missing_gtin}",

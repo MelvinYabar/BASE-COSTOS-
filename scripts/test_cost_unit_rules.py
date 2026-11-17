@@ -14,6 +14,8 @@ class CostUnitRulesTest(unittest.TestCase):
         self.assertEqual(explicit_pack("JARDIANCE DUO FRASCO X 60 COMP")[0], 60)
         self.assertEqual(explicit_pack("DEBLAX CAJA CAPS X 2")[0], 2)
         self.assertEqual(explicit_pack("SOBRES X 20 SOB")[0], 20)
+        self.assertIsNone(explicit_pack("VIAL X 10 ML X 1")[0])
+        self.assertIsNone(explicit_pack("SOBRE X 10 ML")[0])
 
     def test_ambiguous_pack(self):
         self.assertIsNone(explicit_pack("CAJA X 10 TAB X 20 TAB")[0])

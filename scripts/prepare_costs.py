@@ -151,6 +151,25 @@ def safe_invoice_pack(description, inferred, reason):
     return False
 
 
+def catalog_confirms_whole(invoice_name, system_name):
+    inferred, _ = explicit_pack(system_name)
+    if inferred != 1:
+        return False
+    invoice_brand = re.match(r"[A-Z0-9]+", clean(invoice_name).upper())
+    system_brand = re.match(r"[A-Z0-9]+", clean(system_name).upper())
+    if not invoice_brand or not system_brand or invoice_brand.group() != system_brand.group():
+        return False
+    measure = re.compile(r"(\d+(?:[.,]\d+)?)[ ]*(ML|GR|G|DOSIS)\b", re.I)
+    def last_measure(name):
+        matches = measure.findall(name)
+        if not matches:
+            return None
+        value, unit = matches[-1]
+        return float(value.replace(",", ".")), "G" if unit.upper() == "GR" else unit.upper()
+    invoice_size, system_size = last_measure(invoice_name), last_measure(system_name)
+    return not (invoice_size and system_size and invoice_size != system_size)
+
+
 def main():
     central = central_associations()
     catalog = load_catalog()
@@ -318,6 +337,9 @@ def main():
     validated_decisions = {}
     decision_conflicts = []
     unit_corrections = 0
+    assumed_units_confirmed = 0
+    catalog_units_confirmed = 0
+    audited_unit_corrections = 0
     for item in detail:
         inferred, evidence = explicit_pack(item["description"])
         decision_key = f"ROW:{item['n']}"
@@ -337,6 +359,14 @@ def main():
         if chosen is None and not item.get("unitDecisionConflict") and safe_invoice_pack(item["description"], inferred, evidence):
             chosen, source = inferred, evidence
         old_pack = item.get("unitsPerBox")
+        if inferred == 1 and old_pack == 1 and not item.get("unitDecisionConflict") and "se asume 1" in item.get("unitsSource", ""):
+            item["unitsSource"] = f"Factura: {evidence}; una unidad vendible por envase"
+            item["unitAudit"] = "confirmado por descripción de factura"
+            assumed_units_confirmed += 1
+        elif old_pack == 1 and not item.get("unitDecisionConflict") and "se asume 1" in item.get("unitsSource", "") and catalog_confirms_whole(item["description"], item.get("systemName", "")):
+            item["unitsSource"] = "Factura y producto asociado: una unidad vendible por envase"
+            item["unitAudit"] = "confirmado por factura y maestro"
+            catalog_units_confirmed += 1
         if chosen is None or old_pack == chosen:
             continue
         boxes, amount = item.get("boxes"), item.get("invoiceAmount")
@@ -350,6 +380,10 @@ def main():
             item["finalCost"] = round(amount * row_factor(item) / units, 6)
         item["unitsSource"] = f"{source}; corregido desde factura/decisión"
         item["unitAdjustment"] = source
+        if decision and decision.get("evidence"):
+            item["unitAudit"] = "corregido con factura y maestro"
+            item["unitAuditEvidence"] = decision["evidence"]
+            audited_unit_corrections += 1
         unit_corrections += 1
         if item.get("gtin"):
             corrected_provider_keys.add((str(item["gtin"]), provider_name(item["provider"])))
@@ -456,6 +490,9 @@ def main():
             "incompatibleGtinsRejected": len(rejected_gtins), "originalGtinsRestored": len(restored_gtins),
             "centralUnitDecisions": len(validated_decisions), "unitDecisionConflicts": len(decision_conflicts),
             "unitCorrectionsApplied": unit_corrections, "igvIncludedProviders": sorted(IGV_INCLUDED_PROVIDERS),
+            "assumedUnitsConfirmed": assumed_units_confirmed,
+            "catalogUnitsConfirmed": catalog_units_confirmed,
+            "auditedUnitCorrections": audited_unit_corrections,
             "excludedCostProviders": sorted(EXCLUDED_COST_PROVIDERS), "igvCorrectionsApplied": sorted(providers_needing_correction),
             "alfaroCorrectionApplied": "ALFARO" in providers_needing_correction,
         },

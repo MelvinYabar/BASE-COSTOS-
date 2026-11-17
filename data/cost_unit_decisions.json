@@ -438,11 +438,12 @@
       "sourceRow": 539
     },
     "ROW:580": {
-      "mode": "whole",
-      "quantity": 1,
+      "mode": "split",
+      "quantity": 20,
       "product": "3-GEL 10ML X20SCH (Hidróxido de Al, Hidroxido de Mg,",
       "provider": "CASTILLO",
-      "sourceRow": 580
+      "sourceRow": 580,
+      "evidence": "Factura F100-654692: 4 cajas X20 sobres; maestro 16-11-2026 vende por sobre"
     },
     "ROW:890": {
       "mode": "whole",
@@ -1010,6 +1011,94 @@
       "product": "CUTENOX 40 MG/0.4 ML SOLUCION INYECTABLE (ENOXAPARINA DE SODIO)",
       "provider": "MYM",
       "sourceRow": 2626
+    },
+    "ROW:621": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CLACIER X30VIALES",
+      "provider": "CASTILLO",
+      "sourceRow": 621,
+      "evidence": "Factura F100-656191: cajas X30 viales; maestro 16-11-2026 vende por vial"
+    },
+    "ROW:672": {
+      "mode": "split",
+      "quantity": 2,
+      "product": "KEVAL COMP 40 MGX2",
+      "provider": "CASTILLO",
+      "sourceRow": 672,
+      "evidence": "Factura F100-653858: cajas X2 comprimidos; maestro 16-11-2026 vende por tableta"
+    },
+    "ROW:673": {
+      "mode": "split",
+      "quantity": 2,
+      "product": "KEVAL COMP 40 MGX2",
+      "provider": "CASTILLO",
+      "sourceRow": 673,
+      "evidence": "Factura F100-656291: cajas X2 comprimidos; maestro 16-11-2026 vende por tableta"
+    },
+    "ROW:811": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CLACIER X30VIALES",
+      "provider": "CASTILLO",
+      "sourceRow": 811,
+      "evidence": "Factura F100-663029: cajas X30 viales; maestro 16-11-2026 vende por vial"
+    },
+    "ROW:812": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CLACIER X30VIALES",
+      "provider": "CASTILLO",
+      "sourceRow": 812,
+      "evidence": "Factura F100-666801: cajas X30 viales; maestro 16-11-2026 vende por vial"
+    },
+    "ROW:954": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CLACIER X30VIALES",
+      "provider": "CASTILLO",
+      "sourceRow": 954,
+      "evidence": "Factura F100-669302: cajas X30 viales; maestro 16-11-2026 vende por vial"
+    },
+    "ROW:955": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "CLACIER X30VIALES",
+      "provider": "CASTILLO",
+      "sourceRow": 955,
+      "evidence": "Factura F100-669368: cajas X30 viales; maestro 16-11-2026 vende por vial"
+    },
+    "ROW:990": {
+      "mode": "split",
+      "quantity": 2,
+      "product": "KEVAL COMP 40 MGX2",
+      "provider": "CASTILLO",
+      "sourceRow": 990,
+      "evidence": "Factura F100-670732: cajas X2 comprimidos; maestro 16-11-2026 vende por tableta"
+    },
+    "ROW:1427": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "BART H 150MG +12,5MG X 30CPR",
+      "provider": "DIMEXA",
+      "sourceRow": 1427,
+      "evidence": "Factura F100-863897: cajas X30 comprimidos; maestro 16-11-2026 vende por comprimido"
+    },
+    "ROW:2461": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "ISOFACE 10MG X30CGB",
+      "provider": "MYM",
+      "sourceRow": 2461,
+      "evidence": "Factura FF04-381084: cajas X30 cápsulas; maestro 16-11-2026 vende por cápsula"
+    },
+    "ROW:2462": {
+      "mode": "split",
+      "quantity": 30,
+      "product": "ISOFACE 10MG X30CGB",
+      "provider": "MYM",
+      "sourceRow": 2462,
+      "evidence": "Factura FF04-381084: cajas X30 cápsulas; maestro 16-11-2026 vende por cápsula"
     }
   },
   "rejected": []

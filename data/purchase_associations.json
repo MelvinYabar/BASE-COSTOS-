@@ -1163,12 +1163,13 @@
       "mappingKey": "ALFARO|DEBLAX 100000 UI X 1 CAP BLANDA",
       "provider": "ALFARO",
       "description": "DEBLAX 100000 UI x 1 Cap Blanda",
-      "gtin": "7730979097918",
-      "systemName": "DEBLAX 100000 UI CAJA CAPS X 2 (COLECALCIFEROL)",
-      "catalogName": "",
-      "systemCode": "7730979097918",
-      "barcode": "7730979097918",
-      "savedAt": "2026-10-26T16:18:54.079Z"
+      "gtin": "7730979097925",
+      "systemName": "DEBLAX 100000 UI [CAJA CAPS 1] (COLECALCIFEROL (VITAMINA D3))",
+      "catalogName": "DEBLAX 100000 UI [CAJA CAPS 1] (COLECALCIFEROL (VITAMINA D3))",
+      "systemCode": "7730979097925",
+      "barcode": "7730979097925",
+      "savedAt": "2026-10-26T16:18:54.079Z",
+      "auditNote": "Presentación X1 confirmada con maestro 16-11-2026"
     },
     {
       "mappingKey": "ALFARO|DEFEROL 2000 UI X 30 CBG",
@@ -6891,17 +6892,6 @@
       "savedAt": "2026-10-26T16:58:34.848Z"
     },
     {
-      "mappingKey": "DIMEXA|CLAVUMOX 250 MG SUSP FCO 60 ML",
-      "provider": "DIMEXA",
-      "description": "CLAVUMOX 250 MG SUSP FCO 60 ML",
-      "gtin": "7750304010382",
-      "systemName": "CLAVUMOX 400 MG/57 ML/5ML PVO P/SOL.ORAL FRASCO X 120 ML",
-      "catalogName": "CLAVUMOX 400 MG/5 ML PVO P/SOL.ORAL FRASCO X 120 ML",
-      "systemCode": "7750304010382",
-      "barcode": "7750304010382",
-      "savedAt": "2026-10-26T16:58:39.252Z"
-    },
-    {
       "mappingKey": "DIMEXA|CLAVUMOX 500 125MG X12 TAB REC",
       "provider": "DIMEXA",
       "description": "CLAVUMOX 500/125MG X12 COMP REC",
@@ -10667,12 +10657,13 @@
       "mappingKey": "EBENEL|DEBLAX 100.000 UI CAJA 1",
       "provider": "EBENEL",
       "description": "DEBLAX 100.000 UI CJA*1 - Tecnofarma",
-      "gtin": "7730979097918",
-      "systemName": "DEBLAX 100000 UI CAJA CAPS X 2 (COLECALCIFEROL)",
-      "catalogName": "",
-      "systemCode": "7730979097918",
-      "barcode": "7730979097918",
-      "savedAt": "2026-10-26T19:08:12.546Z"
+      "gtin": "7730979097925",
+      "systemName": "DEBLAX 100000 UI [CAJA CAPS 1] (COLECALCIFEROL (VITAMINA D3))",
+      "catalogName": "DEBLAX 100000 UI [CAJA CAPS 1] (COLECALCIFEROL (VITAMINA D3))",
+      "systemCode": "7730979097925",
+      "barcode": "7730979097925",
+      "savedAt": "2026-10-26T19:08:12.546Z",
+      "auditNote": "Verificado con factura y maestro de productos 16-11-2026"
     },
     {
       "mappingKey": "EBENEL|DEBLAX 100.000 UI CAJA 2",
@@ -12020,12 +12011,13 @@
       "mappingKey": "EBENEL|MOVIFLEX SPRAY FCO 50ML",
       "provider": "EBENEL",
       "description": "MOVIFLEX SPRAY FCO 50ML - Deutsche pharma",
-      "gtin": "7751940001017",
-      "systemName": "MOVIFLEX 1% SOL SPRAY X 100ML (INDOMETACINA)",
-      "catalogName": "",
-      "systemCode": "7751940001017",
-      "barcode": "7751940001017",
-      "savedAt": "2026-10-26T17:57:03.906Z"
+      "gtin": "7751940000324",
+      "systemName": "MOVIFLEX 1% SOL SPRAY X 50ML",
+      "catalogName": "MOVIFLEX 1% SOL SPRAY X 50ML",
+      "systemCode": "7751940000324",
+      "barcode": "7751940000324",
+      "savedAt": "2026-10-26T17:57:03.906Z",
+      "auditNote": "Verificado con factura y maestro de productos 16-11-2026"
     },
     {
       "mappingKey": "EBENEL|MUCOCAR 600 MG CAJA 20",
@@ -12251,12 +12243,13 @@
       "mappingKey": "EBENEL|QUANOX GTS SUS 5ML",
       "provider": "EBENEL",
       "description": "QUANOX GTS SUS 5ML - Siegfried",
-      "gtin": "T3SO_6722",
-      "systemName": "TUSICLOX 35.4MG/5ML SUSPENSION ORAL",
-      "catalogName": "",
-      "systemCode": "T3SO_6722",
-      "barcode": "",
-      "savedAt": "2026-10-26T18:12:51.036Z"
+      "gtin": "7707355059761",
+      "systemName": "QUANOX 6 MG/ML [FRASCO GOTERO X 5 ML 1] (IVERMECTINA)",
+      "catalogName": "QUANOX 6 MG/ML [FRASCO GOTERO X 5 ML 1] (IVERMECTINA)",
+      "systemCode": "7707355059761",
+      "barcode": "7707355059761",
+      "savedAt": "2026-10-26T18:12:51.036Z",
+      "auditNote": "Verificado con factura y maestro de productos 16-11-2026"
     },
     {
       "mappingKey": "EBENEL|RELESTAT 0.5MG GTS OFT 5ML",
@@ -13505,12 +13498,13 @@
       "mappingKey": "MYM|CEFALOGEN IV X1GRX1AMP CEFTRIAXONA",
       "provider": "MYM",
       "description": "CEFALOGEN IV X1GRX1AMP(CEFTRIAXONA)",
-      "gtin": "7891317207311",
-      "systemName": "CEFALOGEN I.M. AMP X 1GR POLVO PARA SOLUCION INYECTABLE",
-      "catalogName": "CEFALOGEN I.M. AMPX1GR POLVO PARA SOLUCION INYECTABLE",
-      "systemCode": "7891317207311",
-      "barcode": "7891317207311",
-      "savedAt": "2026-10-26T16:27:38.379Z"
+      "gtin": "7891317207304",
+      "systemName": "CEFALOGEN I.V X 1GR POLVO PARA SOLUCION INYECTABLE",
+      "catalogName": "CEFALOGEN I.V X 1GR POLVO PARA SOLUCION INYECTABLE",
+      "systemCode": "7891317207304",
+      "barcode": "7891317207304",
+      "savedAt": "2026-10-26T16:27:38.379Z",
+      "auditNote": "Verificado con factura y maestro de productos 16-11-2026"
     },
     {
       "mappingKey": "MYM|CLAVAM DUO 400MG+57MG 5ML X70ML",
