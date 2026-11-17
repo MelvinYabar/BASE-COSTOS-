@@ -7,6 +7,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from prepare_purchases import core_name, provider_name
+from cost_unit_rules import explicit_pack, strong_form_conflict
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +20,7 @@ OUTPUT = SITE / "dist" / "costs.json"
 INVOICES = SITE / "dist" / "invoices.json"
 CENTRAL_ASSOCIATIONS = SITE / "data" / "purchase_associations.json"
 COST_UNIT_DECISIONS = SITE / "data" / "cost_unit_decisions.json"
+PRODUCT_CATALOG = SITE / "dist" / "purchases.json"
 MONTHS_ALL = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 START_MONTH = 5
 INVOICE_INTEGRATION_FROM = "2026-09-01"
@@ -110,8 +112,22 @@ def load_invoices():
     return json.loads(INVOICES.read_text(encoding="utf-8"))
 
 
+def load_catalog():
+    if not PRODUCT_CATALOG.exists():
+        return {}
+    payload = json.loads(PRODUCT_CATALOG.read_text(encoding="utf-8"))
+    return {str(item["gtin"]): item.get("systemName", "") for item in payload.get("catalog", []) if item.get("gtin")}
+
+
 def final_factor(provider):
     return 1 if provider_name(provider).upper() in IGV_INCLUDED_PROVIDERS else 1.18
+
+
+def row_factor(item):
+    tax_text = " ".join(str(item.get(field) or "") for field in ("tax", "description", "amountSource"))
+    if re.search(r"S\s*/\s*IGV|SIN\s+IGV|IGV\s+INCLUIDO|EXONERAD[AO]|INAFECT[AO]", tax_text, re.I):
+        return 1
+    return final_factor(item.get("provider", ""))
 
 
 def detail_cost_parts(item):
@@ -123,11 +139,21 @@ def detail_cost_parts(item):
     units = boxes * pack
     if units <= 0 or amount <= 0.10:
         return None
-    return units, amount * final_factor(item.get("provider", ""))
+    return units, amount * row_factor(item)
+
+
+def safe_invoice_pack(description, inferred, reason):
+    if inferred == 1 and reason.startswith("envase completo"):
+        return True
+    if inferred and inferred > 1 and reason.startswith("cantidad discreta"):
+        return bool(re.search(r"\b(?:TAB|COMP|CAP|OVU|SOB|SCH|SACH)\w*\b", description, re.I)
+                    or re.search(r"\b(?:CJA|CAJA)\b", description, re.I))
+    return False
 
 
 def main():
     central = central_associations()
+    catalog = load_catalog()
     unit_decisions = central_unit_decisions()
     invoice_data = load_invoices()
     invoice_records = invoice_data.get("records", [])
@@ -268,19 +294,87 @@ def main():
         existing_keys.add(key)
         integrated_invoice_rows += 1
 
+    rejected_gtins = []
+    restored_gtins = []
+    for item in detail:
+        gtin = str(item.get("gtin", ""))
+        if not gtin or not strong_form_conflict(item["description"], catalog.get(gtin) or item.get("systemName", "")):
+            continue
+        original = str(item.get("centralGtinConflict", ""))
+        item["rejectedGtin"] = gtin
+        if original and catalog.get(original) and not strong_form_conflict(item["description"], catalog[original]):
+            item["gtin"] = original
+            item["systemName"] = catalog[original]
+            item["gtinSource"] = "Excel restaurado: asociación manual incompatible"
+            restored_gtins.append(item["n"])
+        else:
+            item["gtin"] = ""
+            item["systemName"] = ""
+            item["gtinSource"] = "Relación rechazada: presentación incompatible"
+            rejected_gtins.append(item["n"])
+
+    corrected_month_keys = set()
+    corrected_provider_keys = set()
+    validated_decisions = {}
+    decision_conflicts = []
+    unit_corrections = 0
+    for item in detail:
+        inferred, evidence = explicit_pack(item["description"])
+        decision_key = f"ROW:{item['n']}"
+        decision = unit_decisions.get(decision_key) if item["n"] <= source_detail_rows else None
+        chosen = None
+        source = ""
+        if decision:
+            manual_pack = num(decision.get("quantity"))
+            if inferred is not None and manual_pack != inferred:
+                item["unitDecisionConflict"] = f"Decisión manual {manual_pack} frente a factura {inferred:g}"
+                decision_conflicts.append({"row": item["n"], "invoice": item["invoice"],
+                                           "description": item["description"], "manual": manual_pack,
+                                           "invoicePack": inferred})
+            elif manual_pack and manual_pack > 0:
+                validated_decisions[decision_key] = decision
+                chosen, source = manual_pack, "decisión manual validada"
+        if chosen is None and not item.get("unitDecisionConflict") and safe_invoice_pack(item["description"], inferred, evidence):
+            chosen, source = inferred, evidence
+        old_pack = item.get("unitsPerBox")
+        if chosen is None or old_pack == chosen:
+            continue
+        boxes, amount = item.get("boxes"), item.get("invoiceAmount")
+        if not all(isinstance(value, (int, float)) and value > 0 for value in (boxes, amount)):
+            continue
+        units = boxes * chosen
+        item["unitsPerBox"] = chosen
+        item["units"] = round(units, 6)
+        if amount > .10:
+            item["costWithoutTax"] = round(amount / units, 6)
+            item["finalCost"] = round(amount * row_factor(item) / units, 6)
+        item["unitsSource"] = f"{source}; corregido desde factura/decisión"
+        item["unitAdjustment"] = source
+        unit_corrections += 1
+        if item.get("gtin"):
+            corrected_provider_keys.add((str(item["gtin"]), provider_name(item["provider"])))
+            corrected_month_keys.add((str(item["gtin"]), provider_name(item["provider"]), item["month"]))
+
     observed = defaultdict(lambda: [0.0, 0.0])
     integrated_units = defaultdict(float)
+    recomputed_units = defaultdict(float)
     for item in detail:
-        if item["month"] not in months[4:]:
-            continue
+        provider = provider_name(item["provider"])
+        provider_key = (str(item.get("gtin", "")), provider)
         parts = detail_cost_parts(item)
+        if provider_key in corrected_provider_keys and parts is not None:
+            recomputed_units[provider_key] += parts[0]
+        month_key = (str(item.get("gtin", "")), provider_name(item["provider"]), item["month"])
+        if item["month"] not in months[4:] and month_key not in corrected_month_keys:
+            continue
         if not item.get("gtin") or parts is None or provider_name(item["provider"]).upper() in EXCLUDED_COST_PROVIDERS:
             continue
         units, final_amount = parts
         key = (str(item["gtin"]), provider_name(item["provider"]), item["month"])
         observed[key][0] += units
         observed[key][1] += final_amount
-        integrated_units[(str(item["gtin"]), provider_name(item["provider"]))] += units
+        if item["month"] in months[4:]:
+            integrated_units[(str(item["gtin"]), provider_name(item["provider"]))] += units
 
     base_by_key = {(str(item["gtin"]), provider_name(item["provider"])): item for item in base if item["gtin"]}
     product_by_gtin = {}
@@ -303,16 +397,18 @@ def main():
 
     for row in base:
         key = (str(row.get("gtin", "")), provider_name(row["provider"]))
-        for month_index in range(4, len(months)):
+        for month_index in range(len(months)):
             month = months[month_index]
             units, total = observed.get((key[0], key[1], month), (0, 0))
-            if units > 0:
+            was_corrected = (key[0], key[1], month) in corrected_month_keys
+            if units > 0 and (month_index >= 4 or was_corrected):
                 row["costs"][month_index] = {"value": round(total / units, 4), "carried": False}
-            else:
+            elif month_index >= 4 or row["costs"][month_index]["carried"]:
                 previous = next((entry["value"] for entry in reversed(row["costs"][:month_index]) if entry["value"] is not None), None)
                 row["costs"][month_index] = {"value": previous, "carried": previous is not None}
         row["monthsPurchased"] = sum(1 for entry in row["costs"] if entry["value"] is not None and not entry["carried"])
-        row["unitsPurchased"] = round((row.get("unitsPurchased") or 0) + integrated_units.get(key, 0), 6)
+        row["unitsPurchased"] = round(recomputed_units[key] if key in corrected_provider_keys else
+                                      (row.get("unitsPurchased") or 0) + integrated_units.get(key, 0), 6)
 
     providers_by_product = defaultdict(set)
     for row in base:
@@ -355,13 +451,16 @@ def main():
             "gtinCount": len({x["gtin"] for x in base if x["gtin"]}), "comparisons": len(comparisons),
             "differentPresentations": len(presentations), "detailRows": len(detail),
             "missingGtinBefore": missing_gtin_before, "missingGtinAfter": sum(1 for item in detail if not item["gtin"]),
-            "centralAssociationsApplied": central_applied, "centralAssociationConflicts": central_conflicts,
-            "centralUnitDecisions": len(unit_decisions), "igvIncludedProviders": sorted(IGV_INCLUDED_PROVIDERS),
+            "centralAssociationsApplied": sum(item["gtinSource"] == "Asociación manual central" for item in detail),
+            "centralAssociationConflicts": central_conflicts,
+            "incompatibleGtinsRejected": len(rejected_gtins), "originalGtinsRestored": len(restored_gtins),
+            "centralUnitDecisions": len(validated_decisions), "unitDecisionConflicts": len(decision_conflicts),
+            "unitCorrectionsApplied": unit_corrections, "igvIncludedProviders": sorted(IGV_INCLUDED_PROVIDERS),
             "excludedCostProviders": sorted(EXCLUDED_COST_PROVIDERS), "igvCorrectionsApplied": sorted(providers_needing_correction),
             "alfaroCorrectionApplied": "ALFARO" in providers_needing_correction,
         },
         "base": base, "comparisons": comparisons, "presentations": presentations,
-        "unitDecisions": unit_decisions, "detail": detail,
+        "unitDecisions": validated_decisions, "unitDecisionConflicts": decision_conflicts, "detail": detail,
     }
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(json.dumps(payload["meta"], ensure_ascii=False, indent=2))

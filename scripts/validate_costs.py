@@ -105,10 +105,17 @@ def main():
         boxes = row.get("boxes")
         units_per_box = row.get("unitsPerBox")
         units = row.get("units")
+        if any(isinstance(value, (int, float)) and value < 0 for value in (boxes, units_per_box, units)):
+            errors.append(f"Detalle {row.get('n')}: cantidad negativa")
         if None not in (boxes, units_per_box, units) and not close(boxes * units_per_box, units, 0.01):
             errors.append(f"Detalle {row.get('n')}: cajas × unidades/caja no coincide con unidades")
         without_tax = row.get("costWithoutTax")
         final_cost = row.get("finalCost")
+        amount = row.get("invoiceAmount")
+        if all(isinstance(value, (int, float)) and value > 0 for value in (boxes, units_per_box, amount)) and amount > .10:
+            expected = amount / (boxes * units_per_box)
+            if without_tax is not None and not close(expected, without_tax, .0051):
+                errors.append(f"Detalle {row.get('n')}: costo sin IGV no coincide con importe / unidades")
         if row.get("provider", "").upper() in igv_included_providers:
             if row.get("tax") != "IGV incluido":
                 errors.append(f"Detalle {row.get('n')}: {row.get('provider')} debe marcar IGV incluido")
@@ -126,12 +133,20 @@ def main():
         errors.append(f"centralAssociationsApplied: meta={meta.get('centralAssociationsApplied')}; datos={central_applied}")
     if meta.get("centralAssociationConflicts") != central_conflicts:
         errors.append(f"centralAssociationConflicts: meta={meta.get('centralAssociationConflicts')}; datos={central_conflicts}")
+    unit_conflicts = [row for row in payload["detail"] if row.get("unitDecisionConflict")]
+    rejected_gtins = [row for row in payload["detail"] if row.get("rejectedGtin") and not row.get("gtin")]
+    if meta.get("unitDecisionConflicts") != len(unit_conflicts):
+        errors.append(f"unitDecisionConflicts: meta={meta.get('unitDecisionConflicts')}; datos={len(unit_conflicts)}")
+    if meta.get("incompatibleGtinsRejected") != len(rejected_gtins):
+        errors.append(f"incompatibleGtinsRejected: meta={meta.get('incompatibleGtinsRejected')}; datos={len(rejected_gtins)}")
     assumed_units = sum(1 for row in payload["detail"] if "se asume 1" in row.get("unitsSource", ""))
     warnings.extend([
         f"Filas de detalle sin GTIN: {missing_gtin}",
         f"Filas recuperadas con asociaciones centrales: {central_applied}",
         f"GTIN originales reemplazados por asociación manual central: {central_conflicts}",
         f"Filas con una unidad por envase asumida: {assumed_units}",
+        f"Decisiones manuales en conflicto con la presentación: {len(unit_conflicts)}",
+        f"GTIN incompatibles apartados: {len(rejected_gtins)}",
     ])
 
     if args.published_only:

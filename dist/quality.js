@@ -11,6 +11,8 @@ function renderQuality(){
   const mapped=count(mappings,r=>Boolean(String(r.gtin||'').trim())&&r.masterValid!==false);
   const pdf=count(invoices,r=>Boolean(r.pdf_url));
   const low=count(price.rows||[],r=>!r.bonus&&r.price!=null&&r.price<=.1);
+  const unitConflicts=count(detail,r=>Boolean(r.unitDecisionConflict));
+  const rejectedGtins=count(detail,r=>Boolean(r.rejectedGtin)&&!r.gtin);
   const items=[
     ['GTIN en costos',linked,detail.length,'costs','Abrir BD de costos'],
     ['Unidad por envase definida',unitKnown,detail.length,'costs','Revisar unidades e IGV'],
@@ -24,6 +26,8 @@ function renderQuality(){
       ${alertItem('amber',n(detail.length-linked)+' líneas de costo sin GTIN','Relacionar con el maestro interno','Revisar')}
       ${alertItem('amber',n(detail.length-unitKnown)+' líneas sin unidad por envase definida','Confirmar si se parte y en cuántas unidades','Revisar')}
       ${alertItem('amber',n(assumed)+' unidades asumidas','Contrastar la presentación con la factura','Validar')}
+      ${alertItem('amber',n(unitConflicts)+' decisiones de unidad contradictorias','La cantidad manual difiere de la factura; revisar antes de aplicar','Revisar')}
+      ${alertItem('amber',n(rejectedGtins)+' GTIN incompatibles apartados','La forma farmacéutica no coincide con el producto relacionado','Revisar')}
       ${alertItem('amber',n(low)+' precios ≤ S/ 0.10','Excluidos de alertas y comparativos','Validar')}
     </article><article class="card"><div class="card-header"><div><h3>Vigencia de las fuentes</h3><p>Las fechas se toman del contenido cargado.</p></div></div>
       <p>Histórico de precios: <b>${esc(price.meta.months?.[0]||'—')} a ${esc(price.meta.months?.at(-1)||'—')}</b> · ${n(price.rows?.length)} líneas.</p>

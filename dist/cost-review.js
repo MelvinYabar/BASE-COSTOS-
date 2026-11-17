@@ -11,8 +11,8 @@ function costReviewRows() {
     const decisions=effectiveCostUnitDecisions(),row=AC.applyUnitDecision(original,decisions);
     const calc = AC.purchaseCost(row, state.costs.meta.igvIncludedProviders);
     const changed = calc.unitCost != null && (row.finalCost == null || Math.abs(calc.unitCost - row.finalCost) > .0015);
-    const status = calc.issue ? 'Revisar cálculo' : changed ? 'Difiere del publicado' : !row.gtin ? 'Falta GTIN' : blocked.has(row.gtin) ? 'Revisar presentación' : calc.recovered ? 'Unidades recuperadas' : 'Cálculo consistente';
-    const reason = [calc.issue, !row.gtin ? 'Falta GTIN para relacionar la compra con ventas.' : '', row.gtinSource==='Asociación manual central' ? 'GTIN recuperado de una asociación manual validada.' : '', row.centralGtinConflict ? `La asociación manual central reemplazó el GTIN original ${row.centralGtinConflict}.` : '', blocked.has(row.gtin) ? 'El GTIN está marcado con presentaciones distintas; no se cruza automáticamente con ventas.' : '', changed ? 'El costo recalculado difiere del publicado; contrastar con la factura.' : '', calc.source].filter(Boolean).join(' ');
+    const status = calc.issue ? 'Revisar cálculo' : row.unitDecisionConflict ? 'Revisar decisión' : changed ? 'Difiere del publicado' : !row.gtin ? 'Falta GTIN' : blocked.has(row.gtin) ? 'Revisar presentación' : calc.recovered ? 'Unidades recuperadas' : 'Cálculo consistente';
+    const reason = [calc.issue, row.unitDecisionConflict ? `${row.unitDecisionConflict}. Confirmar con la factura antes de aplicar la decisión.` : '', row.rejectedGtin ? `GTIN ${row.rejectedGtin} apartado por presentación incompatible.` : '', !row.gtin ? 'Falta GTIN para relacionar la compra con ventas.' : '', row.gtinSource==='Asociación manual central' ? 'GTIN recuperado de una asociación manual validada.' : '', row.centralGtinConflict ? `La asociación manual central reemplazó el GTIN original ${row.centralGtinConflict}.` : '', blocked.has(row.gtin) ? 'El GTIN está marcado con presentaciones distintas; no se cruza automáticamente con ventas.' : '', changed ? 'El costo recalculado difiere del publicado; contrastar con la factura.' : '', calc.source].filter(Boolean).join(' ');
     const unitKey=AC.costUnitKey(row);
     return {...calc, status, reason, changed,unitKey,decision:decisions[unitKey]||decisions[`ROW:${row.n}`]||null};
   });
@@ -59,8 +59,8 @@ function renderCostReview() {
   const all = costReviewRows().filter(c => (!costReview.provider || c.row.provider === costReview.provider) &&
     (!costReview.month || c.row.month === costReview.month) && (!q || AC.normalize([c.row.gtin,c.row.description,c.row.invoice,c.row.provider].join(' ')).includes(q)));
   const filtered = all.filter(c => !costReview.status || (costReview.status === '__recovered' ? c.recovered && !c.issue : c.status === costReview.status));
-  const pendingCorrections = all.filter(c => c.issue || !c.row.gtin);
-  const rank = c => c.issue ? 0 : c.changed ? 1 : !c.row.gtin ? 2 : 3;
+  const pendingCorrections = all.filter(c => c.issue || c.row.unitDecisionConflict || !c.row.gtin);
+  const rank = c => c.issue || c.row.unitDecisionConflict ? 0 : c.changed ? 1 : !c.row.gtin ? 2 : 3;
   filtered.sort((a,b) => rank(a)-rank(b) || a.row.n-b.row.n);
   const pages = Math.max(1,Math.ceil(filtered.length/40)); costReview.page = Math.min(costReview.page,pages-1);
   const page = filtered.slice(costReview.page*40,(costReview.page+1)*40);
