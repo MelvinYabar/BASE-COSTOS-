@@ -155,6 +155,14 @@ test('Santa Úrsula queda visible en compras pero no alimenta el costo oficial',
   assert.equal(index.has('00456'),true);
   assert.match([...index.diagnostics.get('00123')].join(' '),/proveedor no oficial/);
 });
+test('Glucophage bonificado no reduce artificialmente el costo de compras pagadas', () => {
+  const detail=[
+    {gtin:'7891721029189',month:'Octubre',description:'GLUCOPHAGE XR 1000 CJA X 30 COMP',boxes:12,unitsPerBox:30,unitsSource:'Factura',invoiceAmount:1016.16,provider:'FDS'},
+    {gtin:'7891721029189',month:'Octubre',description:'BONI GLUCOPHAGE XR 1000 CJA X 30 COMP',boxes:8,unitsPerBox:30,unitsSource:'Factura',invoiceAmount:.08,provider:'FDS'},
+  ];
+  const index=A.costIndex({meta:{source:'COSTOS_2026.xlsx'},presentations:[],detail});
+  close(index.get('7891721029189')[0].cost,84.68/30);
+});
 const salesPath = process.env.AVANTI_SALES_JSON || path.join(__dirname,'../dist/sales.json');
 test('Histórico real concilia con los controles independientes del Excel', {skip:!fs.existsSync(salesPath)}, () => {
   const payload = JSON.parse(fs.readFileSync(salesPath,'utf8'));

@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 
 from prepare_purchases import core_name, provider_name
 from cost_unit_rules import explicit_pack, strong_form_conflict
+from glucophage_rules import SKU_BY_KEY, sku_key
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -84,7 +85,7 @@ def central_unit_decisions():
     return payload.get("decisions", {})
 
 
-def association_for(central, provider, description, excel_gtin=""):
+def association_for(central, provider, description, excel_gtin="", catalog=None):
     mapping_key = f"{provider_name(provider)}|{core_name(description)}"
     association = central.get(mapping_key, {})
     associated_gtin = str(association.get("gtin", ""))
@@ -103,6 +104,14 @@ def association_for(central, provider, description, excel_gtin=""):
         source = "Excel"
     else:
         source = "Sin relación"
+    glucophage = sku_key(provider_name(provider), description)
+    if glucophage:
+        expected = SKU_BY_KEY[glucophage]["gtin"]
+        if gtin and gtin != expected:
+            conflict = gtin
+        gtin = expected
+        association = {"gtin": expected, "systemName": (catalog or {}).get(expected) or SKU_BY_KEY[glucophage]["label"]}
+        source = "Presentación FDS Glucophage verificada"
     return association, gtin, source, conflict
 
 
@@ -212,6 +221,10 @@ def main():
         provider = provider_name(clean(base_v.cell(r, 4).value))
         if not (product or provider):
             continue
+        if provider == "FDS" and not gtin and sku_key(provider, product):
+            # The source workbook contains unmapped duplicate Glucophage rows.
+            # Their invoice-backed costs are rebuilt below under the verified GTIN.
+            continue
         costs = []
         for offset, _month in enumerate(months):
             c = 5 + offset
@@ -242,7 +255,7 @@ def main():
         description = clean(row[2])
         excel_gtin = clean(row[1])
         missing_gtin_before += int(not excel_gtin)
-        association, gtin, gtin_source, original_gtin_conflict = association_for(central, provider, description, excel_gtin)
+        association, gtin, gtin_source, original_gtin_conflict = association_for(central, provider, description, excel_gtin, catalog)
         central_applied += int(gtin_source == "Asociación manual central")
         central_conflicts += int(bool(original_gtin_conflict))
 
@@ -288,7 +301,7 @@ def main():
         key = (provider, normalize_document(invoice), core_name(description))
         if key in existing_keys:
             continue
-        association, gtin, gtin_source, conflict = association_for(central, provider, description)
+        association, gtin, gtin_source, conflict = association_for(central, provider, description, catalog=catalog)
         # The consolidated invoice source does not provide our internal GTIN;
         # every appended row starts unlinked before applying the central map.
         missing_gtin_before += 1
@@ -388,6 +401,13 @@ def main():
         if item.get("gtin"):
             corrected_provider_keys.add((str(item["gtin"]), provider_name(item["provider"])))
             corrected_month_keys.add((str(item["gtin"]), provider_name(item["provider"]), item["month"]))
+
+    for item in detail:
+        if (item.get("gtin") and sku_key(item["provider"], item["description"])
+                and item.get("invoiceAmount") is not None and item["invoiceAmount"] > .10):
+            provider = provider_name(item["provider"])
+            corrected_provider_keys.add((str(item["gtin"]), provider))
+            corrected_month_keys.add((str(item["gtin"]), provider, item["month"]))
 
     observed = defaultdict(lambda: [0.0, 0.0])
     integrated_units = defaultdict(float)

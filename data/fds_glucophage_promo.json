@@ -1,0 +1,15 @@
+{
+  "provider": "FDS",
+  "paidBoxes": 12,
+  "bonusBoxes": 4,
+  "bonusSku": "xr_1000",
+  "skus": [
+    {"key": "regular_500", "label": "Glucophage 500", "mg": 500, "xr": false, "gtin": "4054839427152"},
+    {"key": "regular_850", "label": "Glucophage 850", "mg": 850, "xr": false, "gtin": "4054839427145"},
+    {"key": "regular_1000", "label": "Glucophage 1000", "mg": 1000, "xr": false, "gtin": "4054839427169"},
+    {"key": "xr_500", "label": "Glucophage XR 500", "mg": 500, "xr": true, "gtin": "7891721028816"},
+    {"key": "xr_750", "label": "Glucophage XR 750", "mg": 750, "xr": true, "gtin": "7891721029097"},
+    {"key": "xr_850", "label": "Glucophage XR 850", "mg": 850, "xr": true, "gtin": "4065271152861"},
+    {"key": "xr_1000", "label": "Glucophage XR 1000", "mg": 1000, "xr": true, "gtin": "7891721029189"}
+  ]
+}

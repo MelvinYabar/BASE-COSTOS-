@@ -190,7 +190,7 @@
       const r = applyUnitDecision(original, effectiveDecisions);
       const m = months.indexOf(normalize(r.month));
       const calculation = purchaseCost(r, costs.meta.igvIncludedProviders);
-      if (excludedProviders.has(normalize(r.provider)) || !r.gtin || blocked.has(String(r.gtin)) || m < 0 || calculation.issue || !(calculation.unitCost > 0)) continue;
+      if (excludedProviders.has(normalize(r.provider)) || !r.gtin || blocked.has(String(r.gtin)) || m < 0 || calculation.issue || !(calculation.unitCost > 0) || Number(r.invoiceAmount) <= .10 || /\bBONI(?:FICACION)?\b/.test(normalize(r.description))) continue;
       const month = `${year}-${String(m + 1).padStart(2, '0')}`;
       const key = JSON.stringify([String(r.gtin), month]);
       if (!groups.has(key)) groups.set(key, {code: String(r.gtin), month, units: 0, total: 0, providers: new Set()});

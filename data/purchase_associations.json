@@ -12926,12 +12926,13 @@
       "mappingKey": "FDS|GLUCOPHAGE 1000 MG CAJA X 30 TAB CLORHIDRATO DE METFORMINA",
       "provider": "FDS",
       "description": "GLUCOPHAGE 1000 MG CJA X 30 COMP (Clorhidrato de Metformina) - N",
-      "gtin": "7891721029189",
-      "systemName": "GLUCOPHAGE XR 1000MG X 30 COMP. S/IGV",
-      "catalogName": "",
-      "systemCode": "7891721029189",
-      "barcode": "7891721029189",
-      "savedAt": "2026-10-26T19:13:02.626Z"
+      "gtin": "4054839427169",
+      "systemName": "GLUCOPHAGE 1000 M X 30 S/IGV",
+      "catalogName": "GLUCOPHAGE 1000 M X 30 S/IGV",
+      "systemCode": "4054839427169",
+      "barcode": "4054839427169",
+      "savedAt": "2026-10-26T19:13:02.626Z",
+      "auditNote": "Presentación sin XR confirmada con factura F002-00069721 y maestro 16-11-2026"
     },
     {
       "mappingKey": "FDS|GLUCOPHAGE 500 MG CAJA X 50 TAB CLORHIDRATO DE METFORMINA N Y09083 31 12 2028 74.49 0.00 0.00 0.00 0.00 893.88",
