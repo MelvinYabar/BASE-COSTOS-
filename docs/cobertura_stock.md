@@ -1,6 +1,6 @@
 # Cobertura de stock
 
-La vista **Cobertura de stock** cruza por código exacto las ventas diarias de `ventas_totales.xlsx` con el reporte más reciente `20615607160-LISTA-PRODUCTOS-DD-MM-AAAA.xlsx`. Solo entran productos con estado `Activo`. No se relacionan registros por parecido de nombre.
+La vista **Cobertura de stock** cruza por código exacto las ventas diarias de `ventas_totales.xlsx` con el reporte más reciente `20615607160-LISTA-PRODUCTOS-DD-MM-AAAA.xlsx`. Solo entran productos con estado `Activo`. Cuando una venta viene sin código, se asocia únicamente si su nombre coincide exactamente tras normalizar espacios con un solo producto activo y OKFAC también registra ese mismo nombre bajo su GTIN único. El código crudo permanece vacío y la cantidad recuperada se muestra aparte. No se relacionan registros por parecido de nombre.
 
 El stock corresponde a la fecha de descarga del maestro. Para evitar un día parcial, las ventas de esa misma fecha se excluyen. La cobertura en días se calcula como `stock × días del período ÷ unidades vendidas`. La vista usa 30 días completos como indicador principal y muestra también 90 días y todo el período disponible. El stock y las ventas se toman en la unidad que usa el mismo código de Okfac.
 

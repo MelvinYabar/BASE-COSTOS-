@@ -55,6 +55,28 @@
     if (!rows.length && !errors.length) errors.push('La hoja no contiene filas de ventas.');
     return {rows, errors};
   }
+  function resolveMissingCodes(rows, products) {
+    const nameKey = value => normalize(value).replace(/\s+/g, '');
+    const active = new Map(), observed = new Map();
+    for (const product of products || []) {
+      const key = nameKey(product.name);
+      if (!active.has(key)) active.set(key, new Set());
+      active.get(key).add(String(product.code));
+    }
+    for (const row of rows) {
+      if (!row.code) continue;
+      const key = nameKey(row.product);
+      if (!observed.has(key)) observed.set(key, new Set());
+      observed.get(key).add(String(row.code));
+    }
+    return rows.map(row => {
+      if (row.code) return row;
+      const key = nameKey(row.product), possible = active.get(key), seen = observed.get(key);
+      if (possible?.size !== 1 || seen?.size !== 1) return row;
+      const code = [...possible][0];
+      return seen.has(code) ? {...row, code, codeSource: 'Nombre exacto; código vacío en OKFAC'} : row;
+    });
+  }
   function summarize(rows) {
     let qty = 0, amount = 0, costTotal = 0, missingCost = 0;
     const costIssues = new Map();
@@ -84,6 +106,7 @@
       groups.get(key).push(r);
     }
     return [...groups.values()].map(rs => ({...summarize(rs), code: rs[0].code, product: rs[0].product,
+      matchedByName: rs.filter(r => r.codeSource).length,
       date: mode === 'daily' ? rs[0].date : '', unit: rs[0].unit,
       providers: [...new Set(rs.map(r => r.provider))].sort().join(', '),
       descriptions: new Set(rs.map(r => normalize(r.product))).size,
@@ -223,7 +246,7 @@
       return {...r, cost: ref?.cost ?? null, costOrigin: ref ? `Referencia ${ref.month}: ${ref.providers.join(', ')}` : missing};
     });
   }
-  const api = {normalize, number, date, aliases, detectColumns, importRows, summarize, aggregate, volume, purchases, salesComparisonConfirmed, packFromName, costUnitKey, applyUnitDecision, purchaseCost, costIndex, attachCosts};
+  const api = {normalize, number, date, aliases, detectColumns, importRows, resolveMissingCodes, summarize, aggregate, volume, purchases, salesComparisonConfirmed, packFromName, costUnitKey, applyUnitDecision, purchaseCost, costIndex, attachCosts};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AvantiAnalytics = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

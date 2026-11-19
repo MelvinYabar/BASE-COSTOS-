@@ -99,9 +99,9 @@ def main():
     selected = leaders + random_codes
 
     report = ["# Auditoría OKFAC · diez medicamentos", "",
-              f"Período: **{START.isoformat()} al {END.isoformat()}** (92 días completos). Fuente independiente: `{SOURCE.name}`. Se cotejó cada combinación código–día contra `dist/sales.json`, que alimenta **Vendidos por día** y **Precios y cantidades**.", "",
+              f"Período: **{START.isoformat()} al {END.isoformat()}** (92 días completos). Fuente independiente: `{SOURCE.name}`. Se cotejó cada combinación de código original y día contra `dist/sales.json`.", "",
               "Selección: cinco mayores por importe vendido y cinco seleccionados al azar con semilla 20261119 entre los puestos 6–100 (al menos ocho días de venta; sin accesorios). La muestra es reproducible.", "",
-              "| Grupo | Código | Producto | Días con venta | Cantidad OKFAC | Importe OKFAC | Cruce diario |",
+              "| Grupo | Código | Producto | Días con venta | Cantidad con GTIN | Importe con GTIN | Cruce diario |",
               "| --- | --- | --- | ---: | ---: | ---: | --- |"]
     detail = []
     for index, code in enumerate(selected):
@@ -116,8 +116,10 @@ def main():
     total_amount = sum((row["amount"] for row in source), Decimal(0))
     total_qty = sum((row["qty"] for row in source), Decimal(0))
     no_code_amount = sum((row["amount"] for row in source if not row["code"]), Decimal(0))
-    report += ["", f"**Control de toda la ventana:** {len(source):,} líneas, {total_qty:,.2f} cantidades reportadas y S/ {total_amount:,.2f}. Las líneas sin código suman S/ {no_code_amount:,.2f}; se incluyen en las ventas totales, pero quedan fuera de la muestra por producto.", "",
-               f"Los diez códigos cuadran en cantidad e importe en **{sum(len(item['days']) for item in detail)} combinaciones producto–día**, y por suma también en la pestaña de ventas. Esta conciliación confirma la transcripción de OKFAC; no valida que una cantidad represente siempre la misma unidad de presentación ni que el precio de lista coincida con el importe cobrado. Para margen, el costo debe cotejarse por unidad y factura.", ""]
+    report += ["", f"**Control de toda la ventana:** {len(source):,} líneas, {total_qty:,.2f} cantidades reportadas y S/ {total_amount:,.2f}. Las líneas sin código suman S/ {no_code_amount:,.2f}; se incluyen en el total de ventas.", "",
+               f"Los diez códigos originales cuadran en cantidad e importe en **{sum(len(item['days']) for item in detail)} combinaciones producto–día**. La tabla anterior muestra únicamente filas que ya tenían GTIN en OKFAC. El dashboard actual suma además las ventas sin código cuando el nombre coincide de forma inequívoca con un producto activo y con una venta codificada. Por eso, la cifra de la pestaña de ventas puede ser mayor que la columna «Cantidad con GTIN».", "",
+               "**Jardiance Duo 12.5/1000:** 13,800 unidades y S/ 36,003 con GTIN `4048846019820`, más 600 unidades y S/ 2,970 en ocho filas sin código del mismo nombre. La pestaña de ventas muestra 14,400 unidades y S/ 38,973 para ese GTIN en el período. La fuente original conserva esas ocho filas sin código.", "",
+               "Esta conciliación confirma la transcripción de OKFAC; no valida que una cantidad represente siempre la misma unidad de presentación ni que el precio de lista coincida con el importe cobrado. Para margen, el costo debe cotejarse por unidad y factura.", ""]
     OUTPUT.mkdir(exist_ok=True)
     path = OUTPUT / "auditoria_10_okfac_2026-11-19.md"
     path.write_text("\n".join(report), encoding="utf-8")

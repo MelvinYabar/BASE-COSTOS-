@@ -130,6 +130,19 @@ test('El reporte oficial no confirma la unidad si no figura en cada línea', () 
   assert.equal(A.salesComparisonConfirmed([{unit:'CAJA'}],{...meta,costComparisonConfirmed:true,unitBasisVerified:true}),false);
   assert.equal(A.salesComparisonConfirmed(rows,{source:'archivo.xlsx',sheet:'Hoja1'}),false);
 });
+test('Las ventas sin código se asocian solo con nombre y GTIN únicos observados', () => {
+  const catalog=[{code:'123',name:'JARDIANCE (X 60)'}];
+  const rows=[sale({code:'123',product:'JARDIANCE (X 60)',qty:60,amount:180}),
+    sale({code:'',product:'JARDIANCE(X 60)',qty:60,amount:336})];
+  const linked=A.resolveMissingCodes(rows,catalog);
+  assert.equal(linked[1].code,'123');
+  assert.match(linked[1].codeSource,/Nombre exacto/);
+  assert.equal(A.aggregate(linked)[0].qty,120);
+  assert.equal(A.aggregate(linked)[0].matchedByName,1);
+  assert.equal(rows[1].code,'');
+  assert.equal(A.resolveMissingCodes(rows,[...catalog,{code:'456',name:'JARDIANCE(X 60)'}])[1].code,'');
+  assert.equal(A.resolveMissingCodes([...rows,sale({code:'456',product:'JARDIANCE(X 60)'})],catalog)[1].code,'');
+});
 test('Unidades contradictorias y cantidades ausentes quedan pendientes en vez de inventar costos', () => {
   const row = {description:'MEDICAMENTO CAJA X30',boxes:3,unitsPerBox:20,unitsSource:'catálogo',invoiceAmount:180,provider:'FDS'};
   assert.match(A.purchaseCost(row).issue,/catálogo/);

@@ -2,7 +2,7 @@
 const analytics = {
   data: [], meta: null, loading: true, message: '', error: '', tab: 'products',
   from: '', to: '', provider: '', query: '', marginFilter: '', page: 0, source: 'purchases',
-  comparable: false, costIndex: null, staged: null
+  comparable: false, costIndex: null, staged: null, resolvedRows: null, resolvedSource: null, resolvedCatalog: null
 };
 const AC = AvantiAnalytics;
 const quantity = n => n == null ? '—' : new Intl.NumberFormat('es-PE', {maximumFractionDigits: 4}).format(n);
@@ -46,10 +46,19 @@ async function loadSales() {
   if (state.data && ['sales', 'daily', 'volume'].includes(state.view)) render();
 }
 
+function salesRows() {
+  if (analytics.resolvedSource !== analytics.data || analytics.resolvedCatalog !== state.stockCover) {
+    analytics.resolvedRows = AC.resolveMissingCodes(analytics.data, state.stockCover?.products);
+    analytics.resolvedSource = analytics.data;
+    analytics.resolvedCatalog = state.stockCover;
+  }
+  return analytics.resolvedRows;
+}
+
 function salesScope() {
   const q = AC.normalize(analytics.query);
   if (!analytics.costIndex) analytics.costIndex = AC.costIndex(state.costs, costUnitDecisions);
-  return AC.attachCosts(analytics.data.filter(r =>
+  return AC.attachCosts(salesRows().filter(r =>
     (!analytics.from || r.date >= analytics.from) && (!analytics.to || r.date <= analytics.to) &&
     (!analytics.provider || r.provider === analytics.provider) &&
     (!q || AC.normalize(r.code + ' ' + r.product).includes(q))), analytics.costIndex, analytics.comparable);
@@ -90,12 +99,14 @@ function bindSalesToolbar() {
 }
 
 function salesNotices() {
-  const missing = analytics.data.filter(r => !r.code).length;
+  const resolved = salesRows(), linked = resolved.filter(r => r.codeSource).length;
+  const missing = resolved.filter(r => !r.code).length;
   const adjustments = analytics.data.filter(r => r.qty * r.amount < 0).length;
   return `${analytics.error ? `<div class="import-error" role="alert">${esc(analytics.error)}</div>` : ''}
     ${analytics.message ? `<div class="cost-note" role="status">${esc(analytics.message)}</div>` : ''}
     ${analytics.meta ? `<div class="sales-provenance"><span>Fuente: <b>${esc(analytics.meta.source)}</b></span><span>${quantity(analytics.data.length)} filas · ${dateFmt(analytics.meta.from)} al ${dateFmt(analytics.meta.to)}</span><span>Ventas guardadas en este navegador al importar.</span></div>` : ''}
-    ${missing ? `<div class="quality-alert"><span><b>${quantity(missing)} filas sin código.</b> Se incluyen en los importes y se agrupan por descripción exacta, separadas de los productos con código. No se les asigna un costo automáticamente.</span></div>` : ''}
+    ${linked ? `<div class="cost-note"><b>${quantity(linked)} ventas sin código asociadas por nombre exacto.</b> Cada nombre corresponde a un solo producto activo y también aparece con ese GTIN en OKFAC. El código original sigue vacío en la fuente; las cantidades se suman al producto y al stock sin duplicar el importe.</div>` : ''}
+    ${missing ? `<div class="quality-alert"><span><b>${quantity(missing)} filas sin código aún sin asociar.</b> Se incluyen en los importes y se agrupan por descripción, separadas de los productos con código.</span></div>` : ''}
     ${adjustments ? `<div class="quality-alert"><span><b>${quantity(adjustments)} filas con cantidad e importe de signos distintos.</b> Se conservan tal como aparecen para cuadrar con el reporte. Su margen queda pendiente de revisar el ajuste.</span></div>` : ''}`;
 }
 
@@ -114,7 +125,7 @@ function bindAnalyticsPager() {
 function salesTable(groups, daily) {
   const pagination = analyticsPager(groups.length);
   const page = groups.slice(analytics.page * 50, (analytics.page + 1) * 50);
-  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr>${daily ? '<th>Fecha</th>' : ''}<th>Código producto</th><th>Medicamento / insumo</th><th>Unidad</th><th>Cantidad reportada</th><th>Importe vendido</th><th>Precio ponderado</th><th>Costo de referencia / unidad</th><th>Margen sobre costo</th><th>Estado del costo</th></tr></thead><tbody>${page.map(r => `<tr>${daily ? `<td>${dateFmt(r.date)}</td>` : ''}<td class="mono">${esc(r.code || 'Sin código')}</td><td><b>${esc(r.product)}</b>${r.descriptions > 1 ? `<small class="cell-note">${r.descriptions} descripciones para el mismo código</small>` : ''}</td><td>${esc(r.unit)}</td><td class="numeric">${quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td class="numeric">${preciseMoney(r.price)}</td><td class="numeric">${preciseMoney(r.unitCost)}</td><td class="numeric ${r.margin != null && r.margin < 0 ? 'negative' : ''}">${percentage(r.margin)}</td><td><span class="tag ${r.missingCost ? 'bonus' : ''}">${r.missingCost ? (analytics.comparable ? `${r.missingCost} ${r.missingCost===1?'fila':'filas'} con costo pendiente` : `${r.missingCost} ${r.missingCost===1?'fila':'filas'}: confirmar unidad/IGV`) : 'Referencia disponible'}</span>${r.missingCost && analytics.comparable ? `<small class="cell-note">${r.costIssues.map(([reason,n])=>esc(`${n}: ${reason}`)).join('<br>')}</small>` : ''}</td></tr>`).join('') || `<tr><td colspan="${daily ? 11 : 10}"><div class="empty"><b>Sin ventas para estos filtros</b>Prueba otro rango o limpia los filtros.</div></td></tr>`}</tbody></table></div>${pagination}`;
+  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr>${daily ? '<th>Fecha</th>' : ''}<th>Código producto</th><th>Medicamento / insumo</th><th>Unidad</th><th>Cantidad reportada</th><th>Importe vendido</th><th>Precio ponderado</th><th>Costo de referencia / unidad</th><th>Margen sobre costo</th><th>Estado del costo</th></tr></thead><tbody>${page.map(r => `<tr>${daily ? `<td>${dateFmt(r.date)}</td>` : ''}<td class="mono">${esc(r.code || 'Sin código')}</td><td><b>${esc(r.product)}</b>${r.descriptions > 1 ? `<small class="cell-note">${r.descriptions} descripciones para el mismo código</small>` : ''}${r.matchedByName ? `<small class="cell-note">${quantity(r.matchedByName)} ${r.matchedByName===1?'fila':'filas'} sin código asociadas por nombre exacto</small>` : ''}</td><td>${esc(r.unit)}</td><td class="numeric">${quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td class="numeric">${preciseMoney(r.price)}</td><td class="numeric">${preciseMoney(r.unitCost)}</td><td class="numeric ${r.margin != null && r.margin < 0 ? 'negative' : ''}">${percentage(r.margin)}</td><td><span class="tag ${r.missingCost ? 'bonus' : ''}">${r.missingCost ? (analytics.comparable ? `${r.missingCost} ${r.missingCost===1?'fila':'filas'} con costo pendiente` : `${r.missingCost} ${r.missingCost===1?'fila':'filas'}: confirmar unidad/IGV`) : 'Referencia disponible'}</span>${r.missingCost && analytics.comparable ? `<small class="cell-note">${r.costIssues.map(([reason,n])=>esc(`${n}: ${reason}`)).join('<br>')}</small>` : ''}</td></tr>`).join('') || `<tr><td colspan="${daily ? 11 : 10}"><div class="empty"><b>Sin ventas para estos filtros</b>Prueba otro rango o limpia los filtros.</div></td></tr>`}</tbody></table></div>${pagination}`;
 }
 
 function renderSales(daily = false) {
@@ -152,12 +163,12 @@ function renderSales(daily = false) {
 function salesSimpleTable(groups, type) {
   const pagination = analyticsPager(groups.length), page = groups.slice(analytics.page * 50, (analytics.page + 1) * 50);
   const prices = type === 'prices';
-  return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Código</th><th>Producto</th><th>Unidad</th><th>${prices ? 'Precio de venta ponderado' : 'Cantidad reportada vendida'}</th><th>Importe vendido</th><th>Última venta</th></tr></thead><tbody>${page.map(r => `<tr><td class="mono">${esc(r.code || 'Sin código')}</td><td>${esc(r.product)}</td><td>${esc(r.unit)}</td><td class="numeric">${prices ? preciseMoney(r.price) : quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td>${dateFmt(r.lastDate)}</td></tr>`).join('') || '<tr><td colspan="6">Sin registros para estos filtros.</td></tr>'}</tbody></table></div>${pagination}`;
+  return `<div class="table-wrap"><table class="data-table"><thead><tr><th>Código</th><th>Producto</th><th>Unidad</th><th>${prices ? 'Precio de venta ponderado' : 'Cantidad reportada vendida'}</th><th>Importe vendido</th><th>Última venta</th></tr></thead><tbody>${page.map(r => `<tr><td class="mono">${esc(r.code || 'Sin código')}</td><td>${esc(r.product)}${r.matchedByName ? `<small class="cell-note">${quantity(r.matchedByName)} ${r.matchedByName===1?'fila':'filas'} asociadas por nombre</small>` : ''}</td><td>${esc(r.unit)}</td><td class="numeric">${prices ? preciseMoney(r.price) : quantity(r.qty)}</td><td class="numeric">${money(r.amount)}</td><td>${dateFmt(r.lastDate)}</td></tr>`).join('') || '<tr><td colspan="6">Sin registros para estos filtros.</td></tr>'}</tbody></table></div>${pagination}`;
 }
 
 function salesDetailTable(scope) {
   const pagination = analyticsPager(scope.length), page = scope.slice(analytics.page * 50, (analytics.page + 1) * 50);
-  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr><th>Fecha</th><th>Código</th><th>Producto</th><th>Distribuidor</th><th>Cantidad</th><th>Importe</th><th>Costo / unidad</th><th>Origen del costo</th><th>Fila fuente</th></tr></thead><tbody>${page.map(r => `<tr><td>${dateFmt(r.date)}</td><td class="mono">${esc(r.code || 'Sin código')}</td><td>${esc(r.product)}</td><td>${esc(r.provider)}</td><td>${quantity(r.qty)} ${esc(r.unit)}</td><td>${money(r.amount)}</td><td>${preciseMoney(r.cost)}</td><td>${esc(r.costOrigin)}</td><td>${r.sourceRow}</td></tr>`).join('') || '<tr><td colspan="9">Sin registros para estos filtros.</td></tr>'}</tbody></table></div>${pagination}`;
+  return `<div class="table-wrap"><table class="data-table sales-table"><thead><tr><th>Fecha</th><th>Código</th><th>Producto</th><th>Distribuidor</th><th>Cantidad</th><th>Importe</th><th>Costo / unidad</th><th>Origen del costo</th><th>Fila fuente</th></tr></thead><tbody>${page.map(r => `<tr><td>${dateFmt(r.date)}</td><td class="mono">${esc(r.code || 'Sin código')}${r.codeSource ? '<small class="cell-note">Código ausente; asociado por nombre</small>' : ''}</td><td>${esc(r.product)}</td><td>${esc(r.provider)}</td><td>${quantity(r.qty)} ${esc(r.unit)}</td><td>${money(r.amount)}</td><td>${preciseMoney(r.cost)}</td><td>${esc(r.costOrigin)}</td><td>${r.sourceRow}</td></tr>`).join('') || '<tr><td colspan="9">Sin registros para estos filtros.</td></tr>'}</tbody></table></div>${pagination}`;
 }
 
 function renderVolume() {
@@ -243,9 +254,9 @@ function downloadWorkbook(filename, matrix, sheetName, criteriaRows = null, extr
 
 function exportSales(scope, groups, daily) {
   if (!daily && analytics.tab === 'detail') {
-    downloadWorkbook('base_ventas.xlsx', [['fecha','codigo','producto','cantidad','importe','distribuidor','unidad','costo_unitario','origen_costo','fila_fuente'], ...scope.map(r => [r.date,r.code,r.product,r.qty,r.amount,r.provider,r.unit,r.cost,r.costOrigin,r.sourceRow])], 'Base de ventas');
+    downloadWorkbook('base_ventas.xlsx', [['fecha','codigo','codigo_original_okfac','origen_codigo','producto','cantidad','importe','distribuidor','unidad','costo_unitario','origen_costo','fila_fuente'], ...scope.map(r => [r.date,r.code,r.codeSource?'':r.code,r.codeSource||'OKFAC',r.product,r.qty,r.amount,r.provider,r.unit,r.cost,r.costOrigin,r.sourceRow])], 'Base de ventas');
   } else {
-    downloadWorkbook(daily ? 'vendidos_por_dia.xlsx' : 'precios_cantidades.xlsx', [['fecha','codigo','producto','unidad','cantidad','importe','precio_ponderado','costo_referencia_unitario','margen_sobre_costo','filas_sin_costo'], ...groups.map(r => [r.date,r.code,r.product,r.unit,r.qty,r.amount,r.price,r.unitCost,r.margin,r.missingCost])], daily ? 'Vendidos por día' : 'Precios y cantidades');
+    downloadWorkbook(daily ? 'vendidos_por_dia.xlsx' : 'precios_cantidades.xlsx', [['fecha','codigo','producto','unidad','cantidad','importe','precio_ponderado','costo_referencia_unitario','margen_sobre_costo','filas_sin_costo','filas_asociadas_por_nombre'], ...groups.map(r => [r.date,r.code,r.product,r.unit,r.qty,r.amount,r.price,r.unitCost,r.margin,r.missingCost,r.matchedByName])], daily ? 'Vendidos por día' : 'Precios y cantidades');
   }
 }
 

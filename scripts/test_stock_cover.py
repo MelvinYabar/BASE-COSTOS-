@@ -6,10 +6,27 @@ from datetime import datetime
 
 from openpyxl import load_workbook
 
-from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity, price_levels_need_review, suggested_order
+from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity, price_levels_need_review, suggested_order, exact_name_matches, name_key
 
 
 class StockCoverTest(unittest.TestCase):
+    def test_exact_name_requires_unique_active_and_observed_code(self):
+        active = {'123': {'code': '123', 'name': 'JARDIANCE (X 60)'}}
+        rows = [(None, '18/11/2026', '123', None, 'JARDIANCE (X 60)', 'Producto'),
+                (None, '17/11/2026', None, None, 'JARDIANCE (X 60)', 'N/A')]
+        snapshot = datetime(2026, 11, 19).date()
+        self.assertEqual(exact_name_matches(active, rows, snapshot), {'JARDIANCE(X60)': '123'})
+        self.assertEqual(exact_name_matches({**active, '456': {'code': '456', 'name': 'JARDIANCE (X 60)'}}, rows, snapshot), {})
+        self.assertEqual(exact_name_matches(active, [rows[0], (None, '18/11/2026', '456', None, 'JARDIANCE(X60)', 'Producto')], snapshot), {})
+
+    def test_jardiance_uncoded_sales_are_included_once(self):
+        data = json.loads(OUTPUT.read_text(encoding='utf-8'))
+        item = next(p for p in data['products'] if p['code'] == '4048846019820')
+        self.assertEqual(item['matchedByNameHistory'], 600)
+        self.assertEqual(item['matchedByName30'], 240)
+        self.assertEqual(item['sold30'], 3180)
+        self.assertEqual(item['suggestedOrder15'], 270)
+
     def test_order_suggestion_uses_30_day_rate_and_rounds_up(self):
         self.assertEqual(suggested_order(630, 3900, False), 1320)
         self.assertEqual(suggested_order(10, 21, False), 1)
@@ -23,7 +40,7 @@ class StockCoverTest(unittest.TestCase):
         self.assertFalse(price_levels_need_review([1.6, 1.6, 2.1, 2.1]))
         data = json.loads(OUTPUT.read_text(encoding="utf-8"))
         trayenta = next(p for p in data["products"] if p["code"] == "4048846020178")
-        self.assertEqual(trayenta["cover30"], 21)
+        self.assertEqual(trayenta["cover30"], round(trayenta["stock"] * 30 / trayenta["sold30"], 2))
         self.assertTrue(trayenta["reviewUnit90"])
         self.assertIsNone(trayenta["cover90"])
 
@@ -46,7 +63,7 @@ class StockCoverTest(unittest.TestCase):
         sold30 = 0
         book = load_workbook(SALES, read_only=True, data_only=True)
         for row in book.active.iter_rows(min_row=8, values_only=True):
-            if code(row[2]) != code_xr or row[5] != "Producto":
+            if code(row[2]) != code_xr and not (not code(row[2]) and name_key(row[4]) == name_key(published['name'])):
                 continue
             day = datetime.strptime(row[1], "%d/%m/%Y").date()
             if start30 <= day < snapshot:

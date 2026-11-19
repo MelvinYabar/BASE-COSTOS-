@@ -1,6 +1,8 @@
 """Calcula días de cobertura del stock actual con ventas por código de Okfac."""
 
 import json
+import re
+import unicodedata
 from math import ceil
 from statistics import median
 from collections import Counter, defaultdict
@@ -41,6 +43,30 @@ def quantity(value):
         except ValueError:
             pass
     return None
+
+
+def name_key(value):
+    normalized = unicodedata.normalize('NFKD', str(value or ''))
+    return re.sub(r'\s+', '', ''.join(c for c in normalized if not unicodedata.combining(c))).upper()
+
+
+def exact_name_matches(products, sales_rows, snapshot):
+    """Use only unique active names that OKFAC also sold under the same unique code."""
+    active = defaultdict(set)
+    observed = defaultdict(set)
+    for product in products.values():
+        active[name_key(product['name'])].add(product['code'])
+    for row in sales_rows:
+        if row[5] != 'Producto' or not code(row[2]):
+            continue
+        try:
+            sold_at = datetime.strptime(row[1], '%d/%m/%Y').date()
+        except (TypeError, ValueError):
+            continue
+        if sold_at < snapshot:
+            observed[name_key(row[4])].add(code(row[2]))
+    return {name: next(iter(codes)) for name, codes in active.items()
+            if len(codes) == 1 and codes == observed[name]}
 
 
 def price_levels_need_review(prices):
@@ -93,9 +119,12 @@ def main():
         products[item_code] = {"code": item_code, "name": str(row[3] or ""),
                                "category": str(row[4] or ""), "stock": stock,
                                "unit": str(row[5] or ""), "sold30": 0, "sold90": 0,
-                               "soldHistory": 0, "lastSale": ""}
+                               "soldHistory": 0, "matchedByName30": 0, "matchedByName90": 0,
+                               "matchedByNameHistory": 0, "lastSale": ""}
     product_book.close()
 
+    sales_rows = list(sales_rows)
+    name_matches = exact_name_matches(products, sales_rows, snapshot)
     counters = Counter()
     unlinked = Counter()
     unit_prices = defaultdict(lambda: {"30": [], "90": [], "History": []})
@@ -112,30 +141,41 @@ def main():
             continue
         if sold_at < first_source_date:
             raise ValueError(f"Venta anterior al inicio declarado: {sold_at}")
-        if row[5] != "Producto" or not code(row[2]):
+        raw_code = code(row[2])
+        if row[5] != "Producto" and not (row[5] == "N/A" and not raw_code):
+            counters["excludedNonProduct"] += 1
+            continue
+        item_code = raw_code or name_matches.get(name_key(row[4]), "")
+        if not item_code:
             counters["excludedWithoutProductCode"] += 1
             continue
         qty = quantity(row[6])
         if qty is None or qty < 0:
             counters["invalidQuantity"] += 1
             continue
-        item_code = code(row[2])
         product = products.get(item_code)
         if not product:
             counters["salesRowsOutsideActiveCatalog"] += 1
             unlinked[item_code] += 1
             continue
         counters["matchedRows"] += 1
+        if not raw_code:
+            counters["matchedByExactName"] += 1
+            product["matchedByNameHistory"] += qty
         product["soldHistory"] += qty
         amount = quantity(row[7])
         if qty > 0 and amount is not None and amount > 0:
             unit_prices[item_code]["History"].append(amount / qty)
         if sold_at >= start90:
             product["sold90"] += qty
+            if not raw_code:
+                product["matchedByName90"] += qty
             if qty > 0 and amount is not None and amount > 0:
                 unit_prices[item_code]["90"].append(amount / qty)
         if sold_at >= start30:
             product["sold30"] += qty
+            if not raw_code:
+                product["matchedByName30"] += qty
             if qty > 0 and amount is not None and amount > 0:
                 unit_prices[item_code]["30"].append(amount / qty)
         if sold_at.isoformat() > product["lastSale"]:
