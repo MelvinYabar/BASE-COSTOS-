@@ -28,7 +28,7 @@ El reporte `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` se prepara localmente con:
 python scripts/prepare_sales.py
 ```
 
-También se puede indicar otra ruta: `python scripts/prepare_sales.py "C:\ruta\reporte.xlsx"`. El generador encuentra los encabezados del reporte, conserva códigos con ceros iniciales y compara la suma de las filas con el total declarado antes de escribir `dist/sales.json`. También busca el reporte en la carpeta superior. El Excel fuente y ese JSON local están excluidos de Git. No se publican las ventas automáticamente en GitHub ni Render; la publicación privada de Sites puede incluir el JSON generado dentro de su paquete privado.
+También se puede indicar otra ruta: `python scripts/prepare_sales.py "C:\ruta\reporte.xlsx"`; para el histórico total actual, usar `python scripts/prepare_sales.py ..\ventas_totales.xlsx`. El generador reconoce tanto el formato anterior como el de OKFAC con la columna adicional **Categoría**, conserva códigos con ceros iniciales y compara la suma de cantidades e importes con los totales declarados antes de escribir `dist/sales.json`. Sin ruta explícita, busca reportes `*PRODUCTOS-VENDIDOS-POR-DIA*.xlsx` en la carpeta superior. El Excel fuente y ese JSON local están excluidos de Git. No se publican las ventas automáticamente en GitHub ni Render; la publicación privada de Sites puede incluir el JSON generado dentro de su paquete privado.
 
 ## Compras por proveedor y conciliación GTIN
 

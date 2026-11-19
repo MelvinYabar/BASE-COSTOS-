@@ -1,6 +1,7 @@
 """Prepare the daily sales report without publishing the private Excel source."""
 import argparse
 import json
+import unicodedata
 from collections import Counter
 from datetime import datetime, date
 from decimal import Decimal
@@ -18,6 +19,18 @@ def number(value):
     return Decimal(str(value).replace("S/", "").replace(",", "").strip())
 
 
+def heading(value):
+    value = unicodedata.normalize("NFKD", str(value or "").strip().lower())
+    return "".join(char for char in value if not unicodedata.combining(char))
+
+
+def columns_for(cells):
+    labels = {heading(value): index for index, value in enumerate(cells) if value is not None}
+    fields = {"date": "fecha", "code": "codigo", "product": "producto / servicio",
+              "type": "tipo", "qty": "cantidad", "amount": "total vendido"}
+    return {key: labels.get(label) for key, label in fields.items()} if all(label in labels for label in fields.values()) else None
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", nargs="?", type=Path)
@@ -29,36 +42,38 @@ def main():
     workbook = load_workbook(source, read_only=True, data_only=True)
     sheet = workbook["VENTAS-DIARIAS-POR-ITEM"]
     rows, qty_total, amount_total, reported = [], Decimal(0), Decimal(0), None
-    header_found = False
+    columns = None
     for n, cells in enumerate(sheet.iter_rows(values_only=True), 1):
-        cells = list(cells) + [None] * 7
-        if cells[1] == "Fecha" and cells[6] == "Total Vendido":
-            header_found = True
+        cells = list(cells)
+        detected = columns_for(cells)
+        if detected:
+            columns = detected
             continue
-        if not header_found:
+        if not columns:
             continue
-        if str(cells[1]).strip().upper() == "TOTALES:":
-            reported = (number(cells[5]), number(cells[6]))
+        if heading(cells[columns["date"]]) == "totales:":
+            reported = (number(cells[columns["qty"]]), number(cells[columns["amount"]]))
             continue
-        if all(v is None for v in cells[:7]):
+        if all(v is None for v in cells):
             continue
         try:
-            day = cells[1]
+            day = cells[columns["date"]]
             day = day.date() if isinstance(day, datetime) else day
             if not isinstance(day, date):
                 day = datetime.strptime(str(day), "%d/%m/%Y").date()
-            code = "" if cells[2] is None else str(cells[2]).strip()
-            if isinstance(cells[2], (int, float)):
-                if int(cells[2]) != cells[2] or abs(cells[2]) > 2**53 - 1:
+            raw_code = cells[columns["code"]]
+            code = "" if raw_code is None else str(raw_code).strip()
+            if isinstance(raw_code, (int, float)):
+                if int(raw_code) != raw_code or abs(raw_code) > 2**53 - 1:
                     raise ValueError("Código numérico inválido; conservar como texto")
-                code = str(int(cells[2]))
-            qty, amount = number(cells[5]), number(cells[6])
-            if qty == 0 or not cells[3]:
+                code = str(int(raw_code))
+            qty, amount = number(cells[columns["qty"]]), number(cells[columns["amount"]])
+            if qty == 0 or not cells[columns["product"]]:
                 raise ValueError("Cantidad, importe o descripción inválidos")
-            rows.append({"date": day.isoformat(), "code": code, "product": str(cells[3]).strip(),
+            rows.append({"date": day.isoformat(), "code": code, "product": str(cells[columns["product"]]).strip(),
                          "qty": float(qty), "amount": float(amount), "provider": "Sin distribuidor",
                          "unit": "UNIDAD VENDIDA", "cost": None, "document": "", "sourceRow": n,
-                         "type": str(cells[4] or ""), "signIssue": qty * amount < 0})
+                         "type": str(cells[columns["type"]] or ""), "signIssue": qty * amount < 0})
             qty_total += qty
             amount_total += amount
         except Exception as exc:
