@@ -49,7 +49,7 @@
       let issue = !d ? 'fecha inválida (AAAA-MM-DD o DD/MM/AAAA)' : !text(get('product')) ? 'falta producto' : qty == null || qty === 0 ? 'cantidad inválida o cero' : amount == null ? 'importe inválido' : costText && (cost == null || cost < 0) ? 'costo unitario inválido' : '';
       if (issue) { errors.push(`Fila ${index + 2}: ${issue}.`); return; }
       rows.push({date: d, code: text(get('code')), product: text(get('product')), qty, amount,
-        provider: text(get('provider')) || 'Sin distribuidor', unit: normalize(get('unit')) || 'UNIDAD VENDIDA',
+        provider: text(get('provider')) || 'Sin distribuidor', unit: normalize(get('unit')) || 'NO INFORMADA',
         cost, signIssue: qty * amount < 0, document: text(get('document')), sourceRow: index + 2});
     });
     if (!rows.length && !errors.length) errors.push('La hoja no contiene filas de ventas.');
@@ -107,9 +107,8 @@
   }
   function salesComparisonConfirmed(rows, meta) {
     if (!rows?.length) return false;
-    if (meta?.costComparisonConfirmed === true) return true;
-    const officialReport = meta?.sheet === 'VENTAS-DIARIAS-POR-ITEM' && /PRODUCTOS-VENDIDOS-POR-DIA/i.test(meta?.source || '');
-    return officialReport && rows.every(row => ['UNIDAD VENDIDA','UNIDAD'].includes(normalize(row.unit)));
+    return meta?.costComparisonConfirmed === true && meta?.unitBasisVerified === true &&
+      rows.every(row => ['UNIDAD VENDIDA', 'UNIDAD'].includes(normalize(row.unit)));
   }
   function packFromName(description) {
     const name = normalize(description).replace(/×/g, ' X ');

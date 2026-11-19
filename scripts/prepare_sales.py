@@ -72,7 +72,7 @@ def main():
                 raise ValueError("Cantidad, importe o descripción inválidos")
             rows.append({"date": day.isoformat(), "code": code, "product": str(cells[columns["product"]]).strip(),
                          "qty": float(qty), "amount": float(amount), "provider": "Sin distribuidor",
-                         "unit": "UNIDAD VENDIDA", "cost": None, "document": "", "sourceRow": n,
+                         "unit": "NO INFORMADA", "cost": None, "document": "", "sourceRow": n,
                          "type": str(cells[columns["type"]] or ""), "signIssue": qty * amount < 0})
             qty_total += qty
             amount_total += amount
@@ -89,8 +89,8 @@ def main():
         "reportedQty": float(reported[0]), "reportedAmount": float(reported[1]),
         "signIssues": sum(r["signIssue"] for r in rows),
         "types": dict(Counter(r["type"] for r in rows)), "hasDistributor": False,
-        "unitBasis": "UNIDAD VENDIDA", "salesIncludesIgv": True,
-        "costComparisonConfirmed": True}, "rows": rows}
+        "unitBasis": "NO INFORMADA", "unitBasisVerified": False,
+        "salesIncludesIgv": True, "costComparisonConfirmed": False}, "rows": rows}
     output = ROOT / "dist" / "sales.json"
     output.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Ventas conciliadas: {len(rows):,} filas; cantidad {qty_total:,.2f}; S/ {amount_total:,.2f}")

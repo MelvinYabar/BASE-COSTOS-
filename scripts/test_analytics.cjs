@@ -121,11 +121,13 @@ test('S/IGV, sin IGV, exonerado o inafecto no reciben 18% adicional', () => {
   assert.equal(A.purchaseCost({...row,tax:'+18%'}).factor,1.18);
 });
 
-test('El reporte oficial de ventas confirma automáticamente unidad e IGV', () => {
+test('El reporte oficial no confirma la unidad si no figura en cada línea', () => {
   const rows=[{unit:'UNIDAD VENDIDA'},{unit:'UNIDAD VENDIDA'}];
   const meta={source:'20615607160-PRODUCTOS-VENDIDOS-POR-DIA-23-10-2026.xlsx',sheet:'VENTAS-DIARIAS-POR-ITEM'};
-  assert.equal(A.salesComparisonConfirmed(rows,meta),true);
-  assert.equal(A.salesComparisonConfirmed([{unit:'CAJA'}],meta),false);
+  assert.equal(A.salesComparisonConfirmed(rows,meta),false);
+  assert.equal(A.salesComparisonConfirmed(rows,{...meta,costComparisonConfirmed:true}),false);
+  assert.equal(A.salesComparisonConfirmed(rows,{...meta,costComparisonConfirmed:true,unitBasisVerified:true}),true);
+  assert.equal(A.salesComparisonConfirmed([{unit:'CAJA'}],{...meta,costComparisonConfirmed:true,unitBasisVerified:true}),false);
   assert.equal(A.salesComparisonConfirmed(rows,{source:'archivo.xlsx',sheet:'Hoja1'}),false);
 });
 test('Unidades contradictorias y cantidades ausentes quedan pendientes en vez de inventar costos', () => {
