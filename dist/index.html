@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="stock-cover.css?v=28">
 </head>
 <body>
   <div class="shell">
@@ -21,6 +22,7 @@
         <button class="nav-item" data-view="compare"><span>⇄</span> Comparativo</button>
         <button class="nav-item" data-view="costs"><span>S/</span> BD de costos</button>
         <button class="nav-item" data-view="fdsBonus"><span>＋</span> Bonificación FDS</button>
+        <button class="nav-item" data-view="stockCover"><span>◫</span> Cobertura de stock</button>
         <button class="nav-item" data-view="purchases" title="Compras por proveedor"><span>▣</span> Compras por proveedor</button>
         <button class="nav-item" data-view="invoices" title="Histórico por factura"><span>⌑</span> Facturas y medicamentos</button>
         <button class="nav-item" data-view="sales" title="Precios y cantidades"><span>▦</span> Precios y cantidades</button>
@@ -66,14 +68,15 @@
   <dialog id="costUnitDialog" class="match-dialog" aria-labelledby="costUnitTitle"></dialog>
 
   <script src="vendor/xlsx.full.min.js"></script>
-  <script src="analytics-core.js?v=27"></script>
-  <script src="glucophage-bonus-core.js?v=27"></script>
+  <script src="analytics-core.js?v=28"></script>
+  <script src="glucophage-bonus-core.js?v=28"></script>
   <script src="purchase-matching.js"></script>
-  <script src="app.js?v=27"></script>
+  <script src="app.js?v=28"></script>
   <script src="quality.js?v=25"></script>
   <script src="analytics.js?v=23"></script>
   <script src="cost-review.js?v=26"></script>
-  <script src="fds-bonus.js?v=27"></script>
+  <script src="fds-bonus.js?v=28"></script>
+  <script src="stock-cover.js?v=28"></script>
   <script src="purchases.js"></script>
   <script src="invoices.js?v=24"></script>
 </body>
