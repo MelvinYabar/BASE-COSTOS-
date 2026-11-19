@@ -1,6 +1,7 @@
 """Calcula días de cobertura del stock actual con ventas por código de Okfac."""
 
 import json
+from statistics import median
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -38,6 +39,16 @@ def quantity(value):
         except ValueError:
             pass
     return None
+
+
+def price_levels_need_review(prices):
+    positive = sorted(price for price in prices if price > 0)
+    if len(positive) < 4 or positive[-1] / positive[0] < 10:
+        return False
+    split = (positive[0] * positive[-1]) ** .5
+    low = [price for price in positive if price <= split]
+    high = [price for price in positive if price > split]
+    return len(low) >= 2 and len(high) >= 2 and median(high) / median(low) >= 10
 
 
 def source_rows(path, start):
@@ -78,6 +89,7 @@ def main():
 
     counters = Counter()
     unlinked = Counter()
+    unit_prices = defaultdict(lambda: {"30": [], "90": [], "History": []})
     for row in sales_rows:
         try:
             sold_at = datetime.strptime(row[1], "%d/%m/%Y").date()
@@ -106,10 +118,17 @@ def main():
             continue
         counters["matchedRows"] += 1
         product["soldHistory"] += qty
+        amount = quantity(row[7])
+        if qty > 0 and amount is not None and amount > 0:
+            unit_prices[item_code]["History"].append(amount / qty)
         if sold_at >= start90:
             product["sold90"] += qty
+            if qty > 0 and amount is not None and amount > 0:
+                unit_prices[item_code]["90"].append(amount / qty)
         if sold_at >= start30:
             product["sold30"] += qty
+            if qty > 0 and amount is not None and amount > 0:
+                unit_prices[item_code]["30"].append(amount / qty)
         if sold_at.isoformat() > product["lastSale"]:
             product["lastSale"] = sold_at.isoformat()
     sales_book.close()
@@ -117,7 +136,9 @@ def main():
     for product in products.values():
         for period, days in (("30", 30), ("90", 90), ("History", days_history)):
             sold = product["sold" + period]
-            product["cover" + period] = round(product["stock"] * days / sold, 2) if sold > 0 and product["stock"] >= 0 else None
+            review = price_levels_need_review(unit_prices[product["code"]][period])
+            product["reviewUnit" + period] = review
+            product["cover" + period] = round(product["stock"] * days / sold, 2) if sold > 0 and product["stock"] >= 0 and not review else None
         for key in ("sold30", "sold90", "soldHistory"):
             product[key] = round(product[key], 4)
     payload = {"meta": {"productFile": PRODUCTS.name, "salesFile": SALES.name,
@@ -125,11 +146,15 @@ def main():
                         "start30": start30.isoformat(), "start90": start90.isoformat(),
                         "historyStart": first_source_date.isoformat(), "historyDays": days_history,
                         "activeProducts": len(products), "inactiveExcluded": inactive,
-                        "salesQuality": dict(counters), "unlinkedCodes": len(unlinked)},
+                        "salesQuality": dict(counters), "unlinkedCodes": len(unlinked),
+                        "unitReview30": sum(p["reviewUnit30"] for p in products.values()),
+                        "unitReview90": sum(p["reviewUnit90"] for p in products.values()),
+                        "unitReviewHistory": sum(p["reviewUnitHistory"] for p in products.values())},
                "products": sorted(products.values(), key=lambda row: row["name"])}
     OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     groups = Counter("stock negativo" if p["stock"] < 0 else "sin stock" if p["stock"] == 0 else
-                     "sin venta 30d" if p["sold30"] == 0 else "menos de 15d" if p["cover30"] < 15 else
+                     "sin venta 30d" if p["sold30"] == 0 else "revisar unidad" if p["reviewUnit30"] else
+                     "menos de 15d" if p["cover30"] < 15 else
                      "15-30d" if p["cover30"] < 30 else "30d+" for p in products.values())
     print(f"{len(products)} activos, {inactive} inactivos excluidos; grupos: {dict(groups)}")
     print(f"Ventas: {dict(counters)}; códigos fuera del catálogo activo: {len(unlinked)}")

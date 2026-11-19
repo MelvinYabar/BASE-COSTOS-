@@ -2,3 +2,4 @@
 @media(max-width:720px){.stock-controls label,.stock-controls label:first-child,.stock-controls .btn{width:100%}.stock-controls select,.stock-controls input{width:100%}}
 .stock-table{min-width:1240px}.stock-table th:nth-child(n+2):nth-child(-n+8){text-align:right}
 .stock-pager{display:flex;gap:8px;align-items:center}.stock-pager button{width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink);cursor:pointer}.stock-pager button:disabled{opacity:.4;cursor:default}
+.stock-tag.review{background:#fff1d7;color:#865b12}

@@ -6,10 +6,19 @@ from datetime import datetime
 
 from openpyxl import load_workbook
 
-from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity
+from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity, price_levels_need_review
 
 
 class StockCoverTest(unittest.TestCase):
+    def test_mixed_price_levels_hold_ambiguous_coverage(self):
+        self.assertTrue(price_levels_need_review([1.6, 1.6, 126.75, 126.75]))
+        self.assertFalse(price_levels_need_review([1.6, 1.6, 2.1, 2.1]))
+        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+        trayenta = next(p for p in data["products"] if p["code"] == "4048846020178")
+        self.assertEqual(trayenta["cover30"], 21)
+        self.assertTrue(trayenta["reviewUnit90"])
+        self.assertIsNone(trayenta["cover90"])
+
     def test_code_and_formatted_quantity(self):
         self.assertEqual(code(300651510454), "300651510454")
         self.assertEqual(quantity("1,020.00"), 1020)

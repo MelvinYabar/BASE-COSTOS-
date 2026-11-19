@@ -82,7 +82,7 @@ document.addEventListener('input',event=>{
 
 async function loadBaseFile(name){
   let response;
-  try{response=await fetch(`${name}?v=28`)}catch(error){throw new Error(`${name}: no se pudo conectar con el servidor (${error.message}).`)}
+  try{response=await fetch(`${name}?v=29`)}catch(error){throw new Error(`${name}: no se pudo conectar con el servidor (${error.message}).`)}
   if(!response.ok)throw new Error(`${name}: el servidor respondió ${response.status}.`);
   try{return await response.json()}catch(_){throw new Error(`${name}: el archivo no contiene JSON válido.`)}
 }
