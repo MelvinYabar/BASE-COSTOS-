@@ -1,6 +1,7 @@
 """Calcula días de cobertura del stock actual con ventas por código de Okfac."""
 
 import json
+from math import ceil
 from statistics import median
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
@@ -20,6 +21,7 @@ def product_date(path):
 PRODUCTS = max(SOURCE.glob("20615607160-LISTA-PRODUCTOS-??-??-????.xlsx"), key=product_date)
 SALES = SOURCE / "ventas_totales.xlsx"
 OUTPUT = SITE / "dist" / "stock-cover.json"
+TARGET_DAYS = 15
 
 
 def code(value):
@@ -49,6 +51,13 @@ def price_levels_need_review(prices):
     low = [price for price in positive if price <= split]
     high = [price for price in positive if price > split]
     return len(low) >= 2 and len(high) >= 2 and median(high) / median(low) >= 10
+
+
+def suggested_order(stock, sold30, review_unit):
+    """Unidades faltantes para 15 días al ritmo de los últimos 30 días completos."""
+    if stock < 0 or sold30 <= 0 or review_unit:
+        return None
+    return max(0, ceil(TARGET_DAYS * sold30 / 30 - stock))
 
 
 def source_rows(path, start):
@@ -139,12 +148,14 @@ def main():
             review = price_levels_need_review(unit_prices[product["code"]][period])
             product["reviewUnit" + period] = review
             product["cover" + period] = round(product["stock"] * days / sold, 2) if sold > 0 and product["stock"] >= 0 and not review else None
+        product["suggestedOrder15"] = suggested_order(product["stock"], product["sold30"], product["reviewUnit30"])
         for key in ("sold30", "sold90", "soldHistory"):
             product[key] = round(product[key], 4)
     payload = {"meta": {"productFile": PRODUCTS.name, "salesFile": SALES.name,
                         "snapshot": snapshot.isoformat(), "lastCompleteDay": last_complete.isoformat(),
                         "start30": start30.isoformat(), "start90": start90.isoformat(),
                         "historyStart": first_source_date.isoformat(), "historyDays": days_history,
+                        "orderTargetDays": TARGET_DAYS,
                         "activeProducts": len(products), "inactiveExcluded": inactive,
                         "salesQuality": dict(counters), "unlinkedCodes": len(unlinked),
                         "unitReview30": sum(p["reviewUnit30"] for p in products.values()),

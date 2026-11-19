@@ -6,10 +6,18 @@ from datetime import datetime
 
 from openpyxl import load_workbook
 
-from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity, price_levels_need_review
+from prepare_stock_cover import PRODUCTS, SALES, OUTPUT, code, quantity, price_levels_need_review, suggested_order
 
 
 class StockCoverTest(unittest.TestCase):
+    def test_order_suggestion_uses_30_day_rate_and_rounds_up(self):
+        self.assertEqual(suggested_order(630, 3900, False), 1320)
+        self.assertEqual(suggested_order(10, 21, False), 1)
+        self.assertEqual(suggested_order(11, 21, False), 0)
+        self.assertEqual(suggested_order(0, 0, False), None)
+        self.assertEqual(suggested_order(-2, 10, False), None)
+        self.assertEqual(suggested_order(0, 10, True), None)
+
     def test_mixed_price_levels_hold_ambiguous_coverage(self):
         self.assertTrue(price_levels_need_review([1.6, 1.6, 126.75, 126.75]))
         self.assertFalse(price_levels_need_review([1.6, 1.6, 2.1, 2.1]))
@@ -46,6 +54,7 @@ class StockCoverTest(unittest.TestCase):
         book.close()
         self.assertEqual(published["sold30"], sold30)
         self.assertEqual(published["cover30"], round(active[0][17] * 30 / sold30, 2))
+        self.assertEqual(published["suggestedOrder15"], suggested_order(active[0][17], sold30, published["reviewUnit30"]))
 
     def test_only_active_codes_and_sane_periods(self):
         data = json.loads(OUTPUT.read_text(encoding="utf-8"))
