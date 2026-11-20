@@ -63,20 +63,27 @@ const rows = input.map((row, offset) => {
   const oldCost = Number(row.listCost);
   const referenceCost = current?.cost ?? directReference;
   const differencePct = referenceCost ? (oldCost / referenceCost - 1) * 100 : null;
+  const systemCost = row.systemCost ?? null;
+  const systemDifferencePct = referenceCost && systemCost != null ? (systemCost / referenceCost - 1) * 100 : null;
+  const referenceMonth = current?.month || (directReference ? '2026-07' : '');
   const monthCosts = sourceRows.map(item => item.costPerUnit);
   const spreadPct = monthCosts.length > 1 ? (Math.max(...monthCosts) / Math.min(...monthCosts) - 1) * 100 : 0;
   const status = blocked.has(code) || ambiguous.has(code) ? 'Revisar presentación' : !referenceCost ? 'Sin compra verificada' :
     spreadPct > 20 ? 'Revisar variación entre facturas' :
-    Math.abs(differencePct) <= 5 ? 'Costo coincide con compra' : 'Actualizar costo de lista';
+    Math.abs(differencePct) <= 5 ? 'Costo coincide con compra' : 'Lista difiere de compra';
+  const systemStatus = !referenceCost ? status : systemDifferencePct == null ? 'OKFAC sin costo' :
+    Math.abs(systemDifferencePct) <= 5 ? 'OKFAC cercano a compra' :
+    referenceMonth >= '2026-09' ? 'Revisar OKFAC: compra reciente' : 'Revisar OKFAC: referencia antigua';
   return {row: offset + 2, code, product: String(row.product).trim(), listCost: oldCost,
-    systemCost: row.systemCost ?? null,
+    systemCost,
     systemPrice: row.systemPrice ?? null,
-    referenceCost, referenceMonth: current?.month || (directReference ? '2026-07' : ''),
-    differencePct, spreadPct, status, detailLines: all.length, sourceRows};
+    referenceCost, referenceMonth, differencePct, systemDifferencePct, spreadPct,
+    status, systemStatus, detailLines: all.length, sourceRows};
 });
 const result = {meta: {source: inputFile.source, productMaster: inputFile.productMaster,
   purchaseThrough: costs.meta.effectiveThrough, count: rows.length,
-  statusCounts: Object.fromEntries([...new Set(rows.map(row => row.status))].map(status => [status, rows.filter(row => row.status === status).length]))}, rows};
+  statusCounts: Object.fromEntries([...new Set(rows.map(row => row.status))].map(status => [status, rows.filter(row => row.status === status).length])),
+  systemStatusCounts: Object.fromEntries([...new Set(rows.map(row => row.systemStatus))].map(status => [status, rows.filter(row => row.systemStatus === status).length]))}, rows};
 const output = path.join(root, 'dist', 'cost-audit-75.json');
 fs.mkdirSync(path.dirname(output), {recursive: true});
 fs.writeFileSync(output, JSON.stringify(result, null, 2));

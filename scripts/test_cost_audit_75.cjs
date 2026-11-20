@@ -7,11 +7,16 @@ const costs = require('../dist/costs.json');
 assert.equal(audit.rows.length, 75);
 assert.equal(new Set(audit.rows.map(row => row.code)).size, 75);
 assert.equal(Object.values(audit.meta.statusCounts).reduce((a, b) => a + b, 0), 75);
+assert.equal(Object.values(audit.meta.systemStatusCounts).reduce((a, b) => a + b, 0), 75);
+assert.equal(audit.meta.systemStatusCounts['OKFAC cercano a compra'], 35);
+assert.equal(audit.meta.systemStatusCounts['Revisar OKFAC: compra reciente'], 5);
+assert.equal(audit.meta.systemStatusCounts['Revisar OKFAC: referencia antigua'], 17);
 const byCode = new Map(audit.rows.map(row => [row.code, row]));
 const near = (actual, expected) => assert.ok(Math.abs(actual - expected) < .01, `${actual} vs ${expected}`);
 
 near(byCode.get('7730979098120').referenceCost, 384.89 / 30); // Eutebrol XML amount already includes IGV.
 near(byCode.get('7591821102071').referenceCost, 208.33 * 1.18 / 90); // Correct Natal variant.
+assert.equal(byCode.get('7800060150409').systemStatus, 'OKFAC cercano a compra'); // Lista differs; OKFAC is aligned.
 near(byCode.get('7613326037037').referenceCost, 835.14 * 1.18 / 180); // Madopar by tablet.
 assert.equal(byCode.get('7703153018849').referenceCost, null); // 2 mL invoice cannot cost 1 mL SKU.
 assert.equal(byCode.get('7707239275775').referenceCost, null); // T4 is not T4-O.

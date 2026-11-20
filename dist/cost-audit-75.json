@@ -5,10 +5,17 @@
     "purchaseThrough": "2026-11-10",
     "count": 75,
     "statusCounts": {
-      "Actualizar costo de lista": 18,
+      "Lista difiere de compra": 18,
       "Costo coincide con compra": 39,
       "Sin compra verificada": 16,
       "Revisar presentación": 2
+    },
+    "systemStatusCounts": {
+      "Revisar OKFAC: referencia antigua": 17,
+      "OKFAC cercano a compra": 35,
+      "Sin compra verificada": 16,
+      "Revisar presentación": 2,
+      "Revisar OKFAC: compra reciente": 5
     }
   },
   "rows": [
@@ -22,8 +29,10 @@
       "referenceCost": 1.040052,
       "referenceMonth": "2026-05",
       "differencePct": 15.37884644229326,
+      "systemDifferencePct": 15.37884644229326,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -53,8 +62,10 @@
       "referenceCost": 2.5688999999999997,
       "referenceMonth": "2026-08",
       "differencePct": 0.04281988399703618,
+      "systemDifferencePct": 0.04281988399703618,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -84,8 +95,10 @@
       "referenceCost": 60,
       "referenceMonth": "2026-10",
       "differencePct": 0,
+      "systemDifferencePct": 0,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 6,
       "sourceRows": [
         {
@@ -115,8 +128,10 @@
       "referenceCost": 0.182,
       "referenceMonth": "2026-08",
       "differencePct": 0,
+      "systemDifferencePct": 15.384615384615374,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -146,8 +161,10 @@
       "referenceCost": 4.7096,
       "referenceMonth": "2026-08",
       "differencePct": 16.782741634109044,
+      "systemDifferencePct": 16.782741634109044,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -177,8 +194,10 @@
       "referenceCost": 0.26666666666666666,
       "referenceMonth": "2026-06",
       "differencePct": -25,
+      "systemDifferencePct": 5.000000000000004,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -208,8 +227,10 @@
       "referenceCost": 40.539941176470585,
       "referenceMonth": "2026-08",
       "differencePct": 35.66867243488267,
+      "systemDifferencePct": 35.66867243488267,
       "spreadPct": 0.0004851189754573326,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -269,8 +290,10 @@
       "referenceCost": 2.08575,
       "referenceMonth": "2026-11",
       "differencePct": -2.1934555915138376,
+      "systemDifferencePct": -2.1934555915138376,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -300,8 +323,10 @@
       "referenceCost": 6.428571428571429,
       "referenceMonth": "2026-10",
       "differencePct": 0.022222222222212373,
+      "systemDifferencePct": 0.022222222222212373,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 12,
       "sourceRows": [
         {
@@ -331,8 +356,10 @@
       "referenceCost": 0.5972327272727271,
       "referenceMonth": "2026-05",
       "differencePct": 3.812127448413616,
+      "systemDifferencePct": 3.812127448413616,
       "spreadPct": 4.209386912645652,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -377,8 +404,10 @@
       "referenceCost": 3.2425,
       "referenceMonth": "2026-08",
       "differencePct": 46.800308404009236,
+      "systemDifferencePct": 46.800308404009236,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -408,8 +437,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -423,8 +454,10 @@
       "referenceCost": 6.274611111111112,
       "referenceMonth": "2026-06",
       "differencePct": -0.07348839680194619,
+      "systemDifferencePct": -0.07348839680194619,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -454,8 +487,10 @@
       "referenceCost": 4.54425,
       "referenceMonth": "2026-09",
       "differencePct": -0.09352478406777776,
+      "systemDifferencePct": -0.09352478406777776,
       "spreadPct": 0.0029341431568408183,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 6,
       "sourceRows": [
         {
@@ -500,8 +535,10 @@
       "referenceCost": 3.161023333333333,
       "referenceMonth": "2026-06",
       "differencePct": -0.032373482427094924,
+      "systemDifferencePct": -0.032373482427094924,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 3,
       "sourceRows": [
         {
@@ -531,8 +568,10 @@
       "referenceCost": 4.525975,
       "referenceMonth": "2026-10",
       "differencePct": 0.08893111429029155,
+      "systemDifferencePct": 0.08893111429029155,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 8,
       "sourceRows": [
         {
@@ -562,8 +601,10 @@
       "referenceCost": 57.95535384615384,
       "referenceMonth": "2026-05",
       "differencePct": -0.37158576708117286,
+      "systemDifferencePct": -0.37158576708117286,
       "spreadPct": 4.774060367176802,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -608,8 +649,10 @@
       "referenceCost": 2.731437777777778,
       "referenceMonth": "2026-08",
       "differencePct": 2899.885286300174,
+      "systemDifferencePct": 2899.885286300174,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -639,8 +682,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -654,8 +699,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -669,8 +716,10 @@
       "referenceCost": 3.91825,
       "referenceMonth": "2026-11",
       "differencePct": -0.46576915714924283,
+      "systemDifferencePct": -0.46576915714924283,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 15,
       "sourceRows": [
         {
@@ -700,8 +749,10 @@
       "referenceCost": 1.4836666666666667,
       "referenceMonth": "2026-05",
       "differencePct": 75.9155246012132,
+      "systemDifferencePct": 75.9155246012132,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -731,8 +782,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -746,8 +799,10 @@
       "referenceCost": 35.095,
       "referenceMonth": "2026-11",
       "differencePct": -0.2706938310300555,
+      "systemDifferencePct": -0.2706938310300555,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -777,8 +832,10 @@
       "referenceCost": 43.21,
       "referenceMonth": "2026-09",
       "differencePct": -4.8599861143253875,
+      "systemDifferencePct": -4.8599861143253875,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -808,8 +865,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -823,8 +882,10 @@
       "referenceCost": 4.462999999999999,
       "referenceMonth": "2026-09",
       "differencePct": -49.8095451490029,
+      "systemDifferencePct": -0.06721935917542998,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -854,8 +915,10 @@
       "referenceCost": 12.829666666666666,
       "referenceMonth": "2026-10",
       "differencePct": 0.002598144924537138,
+      "systemDifferencePct": 0.002598144924537138,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 3,
       "sourceRows": [
         {
@@ -900,8 +963,10 @@
       "referenceCost": 1.5543714285714285,
       "referenceMonth": "2026-05",
       "differencePct": 1.6488061320147906,
+      "systemDifferencePct": 19.662518611106016,
       "spreadPct": 13.95179216449014,
       "status": "Costo coincide con compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -946,8 +1011,10 @@
       "referenceCost": 1.686,
       "referenceMonth": "2026-08",
       "differencePct": -3.3214709371293005,
+      "systemDifferencePct": -3.3214709371293005,
       "spreadPct": 2.220446049250313e-14,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -1007,8 +1074,10 @@
       "referenceCost": 33.50333333333334,
       "referenceMonth": "2026-08",
       "differencePct": -1.5023380758133587,
+      "systemDifferencePct": -1.5023380758133587,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1038,8 +1107,10 @@
       "referenceCost": 2.7605555555555554,
       "referenceMonth": "2026-09",
       "differencePct": -0.020124773596297274,
+      "systemDifferencePct": -0.020124773596297274,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1069,8 +1140,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Revisar presentación",
+      "systemStatus": "Revisar presentación",
       "detailLines": 5,
       "sourceRows": []
     },
@@ -1084,8 +1157,10 @@
       "referenceCost": 42.635,
       "referenceMonth": "2026-10",
       "differencePct": 0.011727453969756496,
+      "systemDifferencePct": 0.011727453969756496,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1115,8 +1190,10 @@
       "referenceCost": 2.7375,
       "referenceMonth": "2026-06",
       "differencePct": 0.09132420091324533,
+      "systemDifferencePct": 76.43835616438356,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1146,8 +1223,10 @@
       "referenceCost": 88.98379999999999,
       "referenceMonth": "2026-08",
       "differencePct": 0.006967560387405314,
+      "systemDifferencePct": 0.006967560387405314,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1177,8 +1256,10 @@
       "referenceCost": 4.029686046511628,
       "referenceMonth": "2026-10",
       "differencePct": 7.204381436605645,
+      "systemDifferencePct": 7.204381436605645,
       "spreadPct": 17.738446969696973,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: compra reciente",
       "detailLines": 28,
       "sourceRows": [
         {
@@ -1223,8 +1304,10 @@
       "referenceCost": 4.009228571428572,
       "referenceMonth": "2026-10",
       "differencePct": -6.465796768883236,
+      "systemDifferencePct": 5.756005786649365,
       "spreadPct": 15.121777777777767,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: compra reciente",
       "detailLines": 17,
       "sourceRows": [
         {
@@ -1299,8 +1382,10 @@
       "referenceCost": 7.112166666666667,
       "referenceMonth": "2026-10",
       "differencePct": 1.2349729337051585,
+      "systemDifferencePct": 1.2349729337051585,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1330,8 +1415,10 @@
       "referenceCost": 75.27833333333334,
       "referenceMonth": "2026-09",
       "differencePct": -0.36973896871610457,
+      "systemDifferencePct": -4.354949409967457,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1361,8 +1448,10 @@
       "referenceCost": 12.442333333333332,
       "referenceMonth": "2026-09",
       "differencePct": 2.3923701342192016,
+      "systemDifferencePct": 2.3923701342192016,
       "spreadPct": 2.855435502366066,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 5,
       "sourceRows": [
         {
@@ -1407,8 +1496,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1422,8 +1513,10 @@
       "referenceCost": 5.474806666666667,
       "referenceMonth": "2026-07",
       "differencePct": 2899.9232849622695,
+      "systemDifferencePct": 2899.9232849622695,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1453,8 +1546,10 @@
       "referenceCost": 2.238,
       "referenceMonth": "2026-09",
       "differencePct": -9.740840035746201,
+      "systemDifferencePct": -9.740840035746201,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: compra reciente",
       "detailLines": 6,
       "sourceRows": [
         {
@@ -1484,8 +1579,10 @@
       "referenceCost": 2.645,
       "referenceMonth": "2026-10",
       "differencePct": 0.1890359168241984,
+      "systemDifferencePct": 92.43856332703213,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "Revisar OKFAC: compra reciente",
       "detailLines": 4,
       "sourceRows": [
         {
@@ -1515,8 +1612,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1530,8 +1629,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1545,8 +1646,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1560,8 +1663,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1575,8 +1680,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1590,8 +1697,10 @@
       "referenceCost": 123.9,
       "referenceMonth": "2026-07",
       "differencePct": 0,
+      "systemDifferencePct": 51.9047619047619,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1621,8 +1730,10 @@
       "referenceCost": 30.22,
       "referenceMonth": "2026-05",
       "differencePct": 0,
+      "systemDifferencePct": 0,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1652,8 +1763,10 @@
       "referenceCost": 8.541142857142857,
       "referenceMonth": "2026-07",
       "differencePct": -24.71733458219041,
+      "systemDifferencePct": 16.846189870877115,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1683,8 +1796,10 @@
       "referenceCost": 5.4525,
       "referenceMonth": "2026-10",
       "differencePct": -24.98853736817973,
+      "systemDifferencePct": -24.98853736817973,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: compra reciente",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1714,8 +1829,10 @@
       "referenceCost": 4.3875,
       "referenceMonth": "2026-11",
       "differencePct": 0.056980056980049376,
+      "systemDifferencePct": -0.17094017094018144,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 8,
       "sourceRows": [
         {
@@ -1745,8 +1862,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1760,8 +1879,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1775,8 +1896,10 @@
       "referenceCost": 138.6736,
       "referenceMonth": "2026-08",
       "differencePct": -0.0025960240449540706,
+      "systemDifferencePct": -0.0025960240449540706,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1806,8 +1929,10 @@
       "referenceCost": 0.9198099999999999,
       "referenceMonth": "2026-05",
       "differencePct": 0.020656439916955094,
+      "systemDifferencePct": 0.020656439916955094,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -1837,8 +1962,10 @@
       "referenceCost": 3.45024625,
       "referenceMonth": "2026-05",
       "differencePct": 1.4420347533165234,
+      "systemDifferencePct": 1.4420347533165234,
       "spreadPct": 1.0200582890450782,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -1883,8 +2010,10 @@
       "referenceCost": 5.38906,
       "referenceMonth": "2026-08",
       "differencePct": 0.017442745116968972,
+      "systemDifferencePct": 0.017442745116968972,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 7,
       "sourceRows": [
         {
@@ -1929,8 +2058,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1944,8 +2075,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -1959,8 +2092,10 @@
       "referenceCost": 107.16000000000001,
       "referenceMonth": "2026-07",
       "differencePct": -1.1102230246251565e-14,
+      "systemDifferencePct": -1.1102230246251565e-14,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 0,
       "sourceRows": [
         {
@@ -1990,8 +2125,10 @@
       "referenceCost": 3.2487083333333335,
       "referenceMonth": "2026-07",
       "differencePct": 5900.230860983212,
+      "systemDifferencePct": 7217.061909220331,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 6,
       "sourceRows": [
         {
@@ -2021,8 +2158,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Revisar presentación",
+      "systemStatus": "Revisar presentación",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -2036,8 +2175,10 @@
       "referenceCost": null,
       "referenceMonth": "",
       "differencePct": null,
+      "systemDifferencePct": null,
       "spreadPct": 0,
       "status": "Sin compra verificada",
+      "systemStatus": "Sin compra verificada",
       "detailLines": 0,
       "sourceRows": []
     },
@@ -2051,8 +2192,10 @@
       "referenceCost": 37.32,
       "referenceMonth": "2026-05",
       "differencePct": 18.5155412647374,
+      "systemDifferencePct": 18.5155412647374,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -2082,8 +2225,10 @@
       "referenceCost": 25.483333333333334,
       "referenceMonth": "2026-11",
       "differencePct": -0.013080444735125152,
+      "systemDifferencePct": -0.013080444735125152,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 3,
       "sourceRows": [
         {
@@ -2113,8 +2258,10 @@
       "referenceCost": 46.44,
       "referenceMonth": "2026-11",
       "differencePct": 0,
+      "systemDifferencePct": 0,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 2,
       "sourceRows": [
         {
@@ -2144,8 +2291,10 @@
       "referenceCost": 6.052875555555555,
       "referenceMonth": "2026-07",
       "differencePct": 0.9437571270074274,
+      "systemDifferencePct": 0.9437571270074274,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -2175,8 +2324,10 @@
       "referenceCost": 3.0770466666666665,
       "referenceMonth": "2026-05",
       "differencePct": -22.32811982052053,
+      "systemDifferencePct": 36.49451747021497,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -2206,8 +2357,10 @@
       "referenceCost": 9.677333333333333,
       "referenceMonth": "2026-10",
       "differencePct": 0.027555800496004146,
+      "systemDifferencePct": 3.540920363736566,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 1,
       "sourceRows": [
         {
@@ -2237,8 +2390,10 @@
       "referenceCost": 8.721785714285714,
       "referenceMonth": "2026-10",
       "differencePct": -0.020474182056418044,
+      "systemDifferencePct": -0.020474182056418044,
       "spreadPct": 0,
       "status": "Costo coincide con compra",
+      "systemStatus": "OKFAC cercano a compra",
       "detailLines": 4,
       "sourceRows": [
         {
@@ -2283,8 +2438,10 @@
       "referenceCost": 7.14975,
       "referenceMonth": "2026-07",
       "differencePct": 17.906220497220172,
+      "systemDifferencePct": 17.906220497220172,
       "spreadPct": 0,
-      "status": "Actualizar costo de lista",
+      "status": "Lista difiere de compra",
+      "systemStatus": "Revisar OKFAC: referencia antigua",
       "detailLines": 1,
       "sourceRows": [
         {
