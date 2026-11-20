@@ -1,0 +1,11 @@
+{
+  "reason": "En la auditoría de 75 productos se detectaron variantes de presentación o fórmula incompatibles con el GTIN de OKFAC.",
+  "baseGtins": ["7707239275775", "736085410334"],
+  "links": [
+    {"provider": "ALFARO", "description": "Betaduo 2 Susp Iny Jer. Prellenada 2mL x 1", "gtin": "7703153018849", "reason": "Factura de 2 mL; producto de OKFAC de 1 mL."},
+    {"provider": "MYM", "description": "CALCIBONE D3 800UI X 30 TAB REC", "gtin": "7591821102071", "reason": "Calcibone D3 no es Calcibone Natal Forte."},
+    {"provider": "MYM", "description": "SPRAINER T4 X 30 SACHET", "gtin": "7707239275775", "reason": "Factura T4; producto de OKFAC T4-O."},
+    {"provider": "EBENEL", "description": "TRAZIDEX FCO*5 ML - Labofta / sophia", "gtin": "736085410334", "reason": "La factura no confirma ambos principios activos de la fórmula de OKFAC."},
+    {"provider": "MYM", "description": "TRAZIDEX OFTENO 0.3% SOL.OFT. X 5ML", "gtin": "736085410334", "reason": "La factura no confirma la fórmula 0.1% + 0.3%."}
+  ]
+}

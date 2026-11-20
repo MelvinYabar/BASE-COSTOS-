@@ -21,7 +21,7 @@ CONTAINER = re.compile(
 BARE_DISCRETE = re.compile(r"\b(\d{1,4})\s*(?:SOBRES?|SACHETS?|AMPOLLAS?|VIALES?|OCU)\b", re.I)
 REVERSED_DISCRETE = re.compile(
     r"\b(?:TAB(?:S|LETAS?)?|COMP(?:S|RIMIDOS?)?|CAP(?:S|SULAS?)?|"
-    r"OVU(?:LOS?)?|SOB(?:RES?)?|SCH|SACH(?:ETS)?)\s+X\s*(\d{1,4})\b"
+    r"OVU(?:LOS?)?|SOB(?:RES?)?|SCH|SACH(?:ETS)?)\s*X\s*(\d{1,4})\b"
     r"(?!\s*(?:ML|CC|GRS?|G|KG|DOSIS)\b)", re.I,
 )
 

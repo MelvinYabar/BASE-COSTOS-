@@ -22,6 +22,8 @@ INVOICES = SITE / "dist" / "invoices.json"
 CENTRAL_ASSOCIATIONS = SITE / "data" / "purchase_associations.json"
 COST_UNIT_DECISIONS = SITE / "data" / "cost_unit_decisions.json"
 PRODUCT_CATALOG = SITE / "dist" / "purchases.json"
+COST_LINK_EXCLUSIONS = SITE / "data" / "cost_link_exclusions.json"
+COST_75_VERIFIED_LINKS = SITE / "data" / "cost_75_verified_links.json"
 MONTHS_ALL = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 START_MONTH = 5
 INVOICE_INTEGRATION_FROM = "2026-09-01"
@@ -72,10 +74,26 @@ def latest_cost(row):
 
 
 def central_associations():
-    if not CENTRAL_ASSOCIATIONS.exists():
-        return {}
-    payload = json.loads(CENTRAL_ASSOCIATIONS.read_text(encoding="utf-8"))
-    return {item["mappingKey"]: item for item in payload.get("associations", [])}
+    payload = json.loads(CENTRAL_ASSOCIATIONS.read_text(encoding="utf-8")) if CENTRAL_ASSOCIATIONS.exists() else {}
+    result = {item["mappingKey"]: item for item in payload.get("associations", [])}
+    if COST_75_VERIFIED_LINKS.exists():
+        verified = json.loads(COST_75_VERIFIED_LINKS.read_text(encoding="utf-8"))
+        for item in verified.get("links", []):
+            key = f'{provider_name(item["provider"])}|{core_name(item["description"])}'
+            result[key] = item
+    return result
+
+
+def excluded_cost_links():
+    if not COST_LINK_EXCLUSIONS.exists():
+        return set()
+    payload = json.loads(COST_LINK_EXCLUSIONS.read_text(encoding="utf-8"))
+    return {(provider_name(item["provider"]), core_name(item["description"]), str(item["gtin"]))
+            for item in payload.get("links", [])}
+
+
+EXCLUDED_LINKS = excluded_cost_links()
+BASE_EXCLUDED_GTINS = set(json.loads(COST_LINK_EXCLUSIONS.read_text(encoding="utf-8")).get("baseGtins", [])) if COST_LINK_EXCLUSIONS.exists() else set()
 
 
 def central_unit_decisions():
@@ -90,6 +108,13 @@ def association_for(central, provider, description, excel_gtin="", catalog=None)
     association = central.get(mapping_key, {})
     associated_gtin = str(association.get("gtin", ""))
     gtin = clean(excel_gtin)
+    if (provider_name(provider), core_name(description), gtin) in EXCLUDED_LINKS:
+        gtin = ""
+        associated_gtin = ""
+        association = {}
+    elif (provider_name(provider), core_name(description), associated_gtin) in EXCLUDED_LINKS:
+        associated_gtin = ""
+        association = {}
     conflict = ""
     if associated_gtin and gtin and gtin != associated_gtin:
         conflict = gtin
@@ -219,6 +244,8 @@ def main():
         gtin = clean(base_v.cell(r, 2).value)
         product = clean(base_v.cell(r, 3).value)
         provider = provider_name(clean(base_v.cell(r, 4).value))
+        if gtin in BASE_EXCLUDED_GTINS:
+            continue
         if not (product or provider):
             continue
         if provider == "FDS" and not gtin and sku_key(provider, product):
@@ -311,7 +338,10 @@ def main():
         pack = num(record.get("unidades_caja"))
         units = round(boxes * pack, 6) if boxes is not None and pack is not None else None
         amount = num(record.get("importe_total"))
-        factor = final_factor(provider)
+        # XML/PDF invoice extractors mark line totals that already contain IGV.
+        # The supplier rule applies only when the extracted line has no such evidence.
+        line_has_igv = bool(re.search(r"(?:CON\s+IGV|IGV\s+INCLUIDO)", clean(record.get("metodo_deteccion", "")), re.I))
+        factor = 1 if line_has_igv else final_factor(provider)
         base_cost = round(amount / units, 6) if amount is not None and units and units > 0 else None
         final_cost = round(base_cost * factor, 6) if base_cost is not None else None
         detail.append({
@@ -320,7 +350,7 @@ def main():
             "provider": provider, "month": month_name(emitted), "invoice": invoice, "file": clean(record.get("fuente")),
             "boxes": boxes, "unitsPerBox": pack, "units": units, "invoiceAmount": amount,
             "costWithoutTax": base_cost, "tax": "IGV incluido" if factor == 1 else "+18%", "finalCost": final_cost,
-            "amountSource": "Histórico consolidado de facturas; importe de línea",
+            "amountSource": "Histórico consolidado de facturas; importe de línea" + ("; IGV incluido" if line_has_igv else ""),
             "unitsSource": clean(record.get("metodo_deteccion")), "invoiceDate": emitted,
         })
         existing_keys.add(key)

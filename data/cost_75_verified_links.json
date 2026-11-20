@@ -1,0 +1,85 @@
+{
+  "reason": "Coincidencia revisada de nombre, concentración y presentación para los 75 costos de Melvin. El costo lo calcula prepare_costs.py desde la factura.",
+  "links": [
+    {
+      "provider": "ALFARO",
+      "description": "Alercet D NF 5mg+120mg x 100 Tab de LP (PREC)",
+      "gtin": "7703153042875",
+      "systemName": "ALERCET D 5 MG + 120 MG (CETIRIZINA + PSEUDOEFEINA) CAJA CAPS X 100",
+      "evidenceInvoice": "FF78-00163589",
+      "evidenceDate": "2026-08-21"
+    },
+    {
+      "provider": "DIMEXA",
+      "description": "DUO VENTIMAX ECO INHALADOR X 200 DOSIS",
+      "gtin": "7750936719820",
+      "systemName": "DUO VENTIMAX 50 MCG + 100 MCG/DOSIS AEROSOL FRASCO X 200 DOSIS",
+      "evidenceInvoice": "F100-885274",
+      "evidenceDate": "2026-09-19"
+    },
+    {
+      "provider": "CASTILLO",
+      "description": "EUROPRES-D 160/12.5 COMPX30",
+      "gtin": "7800060150409",
+      "systemName": "EUROPRES-D 160/12.5MG CAJA X 30 COMP.",
+      "evidenceInvoice": "F100-679359",
+      "evidenceDate": "2026-09-25"
+    },
+    {
+      "provider": "DIMEXA",
+      "description": "EUTEBROL DUO 28MG/10MG X 30COMP",
+      "gtin": "7730979098120",
+      "systemName": "EUTEBROL DUO 28MG/10MG CAJA X 30 TAB.",
+      "evidenceInvoice": "F100-890644",
+      "evidenceDate": "2026-10-10"
+    },
+    {
+      "provider": "CASTILLO",
+      "description": "IDON X15ML GOTAS",
+      "gtin": "7800060009363",
+      "systemName": "IDON 10MG/ML SOL.ORAL GOTAS X 15 ML",
+      "evidenceInvoice": "F100-685209",
+      "evidenceDate": "2026-10-21"
+    },
+    {
+      "provider": "CASTILLO",
+      "description": "LAFIGIN 100MG X30COMP",
+      "gtin": "7800026009192",
+      "systemName": "LAFIGIN 100 MG CAJA X 30 COMP.",
+      "evidenceInvoice": "F100-684845",
+      "evidenceDate": "2026-10-20"
+    },
+    {
+      "provider": "ALFARO",
+      "description": "Tobradex 1mg + 3mg/mL Susp Oft x 5mL (78702 8)(79025 4)",
+      "gtin": "7612797435601",
+      "systemName": "TOBRADEX SUSP.OFT.(TOBRAMICINA+DEXAMETASONA) FRASCO X 5 ML",
+      "evidenceInvoice": "FF78-156780",
+      "evidenceDate": "2026-07-02"
+    },
+    {
+      "provider": "ALFARO",
+      "description": "UNIGEL MR 0.2% Gel Oft x 5g",
+      "gtin": "7751030000081",
+      "systemName": "UNIGEL (CARBOMERO) 0.2% GEL OFT.TUBO X 5 GR.",
+      "evidenceInvoice": "FF78-0174067",
+      "evidenceDate": "2026-11-03"
+    },
+    {
+      "provider": "DIMEXA",
+      "description": "VILZERMET 50MG/1000MG X30 COMP",
+      "gtin": "7730979098922",
+      "systemName": "VILZERMET 1000 MG + 50 MG CAJA COMP X 30 (METFORMINA + VILDAGLIPTINA) S/IGV",
+      "evidenceInvoice": "F100-853806",
+      "evidenceDate": "2026-05-26"
+    },
+    {
+      "provider": "FP MAYORISTA (QUIMICA SUIZA)",
+      "description": "VOZAMA 20MG COMP REC CJA 30 UND@#@20280703@#@33.50",
+      "gtin": "7841141005157",
+      "systemName": "VOZAMA 20MG X 30 COMP",
+      "evidenceInvoice": "FF01-00218966",
+      "evidenceDate": "2026-10-21"
+    }
+  ]
+}

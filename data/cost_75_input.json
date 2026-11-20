@@ -1,0 +1,531 @@
+{
+  "source": "Lista precios 4  - Melvin.xlsx",
+  "productMaster": "20615607160-LISTA-PRODUCTOS-19-11-2026.xlsx",
+  "rows": [
+    {
+      "product": "ALERCET 10MGX100 CAP BLA",
+      "code": "7703153025397",
+      "listCost": 1.2,
+      "systemCost": 1.2,
+      "systemPrice": 1.99
+    },
+    {
+      "product": "ALERCET D 5 MG + 120 MG (CETIRIZINA + PSEUDOEFEINA) CAJA CAPS X 100",
+      "code": "7703153042875",
+      "listCost": 2.57,
+      "systemCost": 2.57,
+      "systemPrice": 4.11
+    },
+    {
+      "product": "ALERGIOL 0.20 % SOL.OFT.FRASCO X 5 ML (OLAPATADINA)",
+      "code": "7841134014944",
+      "listCost": 60,
+      "systemCost": 60,
+      "systemPrice": 79.51
+    },
+    {
+      "product": "ALICAM FORTE PARACETAMOL 500MG",
+      "code": "7753748001015",
+      "listCost": 0.182,
+      "systemCost": 0.21,
+      "systemPrice": 0.94
+    },
+    {
+      "product": "ALLEGRA 180MG CAJA X 10 TAB REC",
+      "code": "7591044009010",
+      "listCost": 5.5,
+      "systemCost": 5.5,
+      "systemPrice": 6.37
+    },
+    {
+      "product": "ALOPURINOL 100 MG X 30 TB",
+      "code": "7750942001438",
+      "listCost": 0.2,
+      "systemCost": 0.28,
+      "systemPrice": 0.82
+    },
+    {
+      "product": "ALVIERA 0.1% CREMA TUBO X 30 GR.",
+      "code": "7750942004712",
+      "listCost": 55,
+      "systemCost": 55,
+      "systemPrice": 64.39
+    },
+    {
+      "product": "AMOXIDAL DUO 1G CAJA TABX20",
+      "code": "7703281020912",
+      "listCost": 2.04,
+      "systemCost": 2.04,
+      "systemPrice": 3.16
+    },
+    {
+      "product": "APROVEL 150 MG CAJA COMP X 28 (IRBESARTAN)",
+      "code": "7706263001657",
+      "listCost": 6.43,
+      "systemCost": 6.43,
+      "systemPrice": 8.46
+    },
+    {
+      "product": "ASPIRINA 100MG X 100TAB",
+      "code": "7753954002783",
+      "listCost": 0.62,
+      "systemCost": 0.62,
+      "systemPrice": 0.95
+    },
+    {
+      "product": "AVIANT 5MG X 30 TAB",
+      "code": "7501050618861",
+      "listCost": 4.76,
+      "systemCost": 4.76,
+      "systemPrice": 6.96
+    },
+    {
+      "product": "BETADUO 5MG+2MG BETAMETASONA JERINGA PRELLENADA 1ML",
+      "code": "7703153018849",
+      "listCost": 29.19,
+      "systemCost": 44.5,
+      "systemPrice": 62.5
+    },
+    {
+      "product": "BETALOC ZOK 100MG CAJA TAB X 30 (METOPROLOL)",
+      "code": "7501098606790",
+      "listCost": 6.27,
+      "systemCost": 6.27,
+      "systemPrice": 8
+    },
+    {
+      "product": "BETALOC ZOK 25 MG CAJA TABX10",
+      "code": "7501098606752",
+      "listCost": 4.54,
+      "systemCost": 4.54,
+      "systemPrice": 6
+    },
+    {
+      "product": "BETINA 16MG X 30TAB",
+      "code": "7891317194024",
+      "listCost": 3.16,
+      "systemCost": 3.16,
+      "systemPrice": 4.4
+    },
+    {
+      "product": "BILAXTEN BILASTINA 20MG CAJA COMP X20",
+      "code": "8436024612103",
+      "listCost": 4.53,
+      "systemCost": 4.53,
+      "systemPrice": 7
+    },
+    {
+      "product": "BRONAX 0.09% SOLUCION OFTALMICA FRASCO X 5 ML",
+      "code": "7795368055276",
+      "listCost": 57.74,
+      "systemCost": 57.74,
+      "systemPrice": 79
+    },
+    {
+      "product": "CALCIBONE NATAL FORTE FRASCO X 30 TAB.REC",
+      "code": "7591821102071",
+      "listCost": 81.94,
+      "systemCost": 81.94,
+      "systemPrice": 107.34
+    },
+    {
+      "product": "CATETER I.V. NRO 20X1/4 X 50UN",
+      "code": "7898909175478",
+      "listCost": 2.61,
+      "systemCost": 2.61,
+      "systemPrice": 5.1
+    },
+    {
+      "product": "CETRAXAL PLUS 3 MG/ML SOL. OTICA FRASCO X 10 ML",
+      "code": "8470008661039",
+      "listCost": 28.7,
+      "systemCost": 28.7,
+      "systemPrice": 46.2
+    },
+    {
+      "product": "CLACIER OCUVIALES - CAJA X 30 AMPOLLA DE 0.4 ML (SOLUCION OFTALMICA)",
+      "code": "7750778001015",
+      "listCost": 3.9,
+      "systemCost": 3.9,
+      "systemPrice": 4.8
+    },
+    {
+      "product": "CORENTEL 2.5 MG CAJA COMPX30",
+      "code": "7730969301834",
+      "listCost": 2.61,
+      "systemCost": 2.61,
+      "systemPrice": 3.39
+    },
+    {
+      "product": "DERMOVATE 0.0005 TUBO X 40 G UNGUENTO",
+      "code": "7703363001600",
+      "listCost": 37,
+      "systemCost": 37,
+      "systemPrice": 50.78
+    },
+    {
+      "product": "DERMOVATE 0.05 % CREMA TUBO X 30 GR",
+      "code": "7896269903021",
+      "listCost": 35,
+      "systemCost": 35,
+      "systemPrice": 49
+    },
+    {
+      "product": "DUO VENTIMAX 50 MCG + 100 MCG/DOSIS AEROSOL FRASCO X 200 DOSIS",
+      "code": "7750936719820",
+      "listCost": 41.11,
+      "systemCost": 41.11,
+      "systemPrice": 54.9
+    },
+    {
+      "product": "ENDOCARE TENSAGE CONTORNO OJOS ILUMINADOR X 15 ML",
+      "code": "8436574364095",
+      "listCost": 140.3,
+      "systemCost": 140.3,
+      "systemPrice": 185
+    },
+    {
+      "product": "EUROPRES-D 160/12.5MG CAJA X 30 COMP.",
+      "code": "7800060150409",
+      "listCost": 2.24,
+      "systemCost": 4.46,
+      "systemPrice": 6.5
+    },
+    {
+      "product": "EUTEBROL DUO 28MG/10MG CAJA X 30 TAB.",
+      "code": "7730979098120",
+      "listCost": 12.83,
+      "systemCost": 12.83,
+      "systemPrice": 17
+    },
+    {
+      "product": "EUTIROX 112 MCG X 50 TAB",
+      "code": "4065269168218",
+      "listCost": 1.58,
+      "systemCost": 1.86,
+      "systemPrice": 1.6
+    },
+    {
+      "product": "GLICENEX SR 750MG (CAJA TAB 30) (METFORMINA SR) S/IGV",
+      "code": "7751495000831",
+      "listCost": 1.63,
+      "systemCost": 1.63,
+      "systemPrice": 2.3
+    },
+    {
+      "product": "GOTABIOTIC PLUS SOL OFT X 5ML",
+      "code": "7795368001884",
+      "listCost": 33,
+      "systemCost": 33,
+      "systemPrice": 50
+    },
+    {
+      "product": "HOPRIX EN OCUVIAL 0.005% AMPOLLA X 0.3 ML X 30 (LATANOPROST)",
+      "code": "7750778000810",
+      "listCost": 2.76,
+      "systemCost": 2.76,
+      "systemPrice": 3.25
+    },
+    {
+      "product": "HYALO ADVANCE SP 0.1% SOLUCION OFT. FRASCO X10 ML",
+      "code": "7750778001718",
+      "listCost": 102,
+      "systemCost": 102,
+      "systemPrice": 146.39
+    },
+    {
+      "product": "IDON 10MG/ML SOL.ORAL GOTAS X 15 ML",
+      "code": "7800060009363",
+      "listCost": 42.64,
+      "systemCost": 42.64,
+      "systemPrice": 58
+    },
+    {
+      "product": "IRBESEL 150 MG CAJA TAB X 20 (IRBESARTAN)",
+      "code": "7751299000044",
+      "listCost": 2.74,
+      "systemCost": 4.83,
+      "systemPrice": 6.28
+    },
+    {
+      "product": "ISOPRINOSINE 250MG/5ML X 120ML",
+      "code": "7751333000023",
+      "listCost": 88.99,
+      "systemCost": 88.99,
+      "systemPrice": 163.53
+    },
+    {
+      "product": "JARDIANCE DUO 12.5MG/1000MG (EMPAGLIFLOZINA + METFORMINA)FRASCO X 60 COMP",
+      "code": "4048846019820",
+      "listCost": 4.32,
+      "systemCost": 4.32,
+      "systemPrice": 6
+    },
+    {
+      "product": "JARDIANCE DUO 12.5MG/850MG MG CAJA X 60",
+      "code": "4048846013071",
+      "listCost": 3.75,
+      "systemCost": 4.24,
+      "systemPrice": 8
+    },
+    {
+      "product": "LAFIGIN 100 MG CAJA X 30 COMP.",
+      "code": "7800026009192",
+      "listCost": 7.2,
+      "systemCost": 7.2,
+      "systemPrice": 9.4
+    },
+    {
+      "product": "LANTUS SOLOSTAR (INSULINA GLARGINA) 100 UI/ML X 3 ML (R)",
+      "code": "3582910023623",
+      "listCost": 75,
+      "systemCost": 72,
+      "systemPrice": 97
+    },
+    {
+      "product": "LINCOPLUS 600 MG/2 ML SOL.INY CAJA X 5 AMP.",
+      "code": "7759307618717",
+      "listCost": 12.74,
+      "systemCost": 12.74,
+      "systemPrice": 17.84
+    },
+    {
+      "product": "LIPIKAR SYNDET AP+ FRASCO X 400 ML",
+      "code": "3337875537315",
+      "listCost": 103.6,
+      "systemCost": 103.6,
+      "systemPrice": 150.9
+    },
+    {
+      "product": "MADOPAR 200 MG / 50 MG (LEVODOPA + BENSERAZIDA) FRASCO X 30 TAB.",
+      "code": "7613326037037",
+      "listCost": 164.24,
+      "systemCost": 164.24,
+      "systemPrice": 222
+    },
+    {
+      "product": "MALTOFER 100MG CAJA X 30 COMP.REC.",
+      "code": "7640114724107",
+      "listCost": 2.02,
+      "systemCost": 2.02,
+      "systemPrice": 2.8
+    },
+    {
+      "product": "MARTESIA 25 25MG CAJA CAPSX30",
+      "code": "7730969302923",
+      "listCost": 2.65,
+      "systemCost": 5.09,
+      "systemPrice": 6.61
+    },
+    {
+      "product": "MEDIK8 CRYSTAL RETINAL 6 NOCHE FRASCO X 30 ML",
+      "code": "818625024536",
+      "listCost": 341,
+      "systemCost": 341,
+      "systemPrice": 480
+    },
+    {
+      "product": "MEDIK8 CRYSTAL RETINAL CERAMIDE EYE 6 15ML",
+      "code": "818625026103",
+      "listCost": 287,
+      "systemCost": 287,
+      "systemPrice": 400
+    },
+    {
+      "product": "MEDIK8 HYDR8 B5 INTENSE X30ML",
+      "code": "MHBIX_5228",
+      "listCost": 293.5,
+      "systemCost": 293.5,
+      "systemPrice": 350
+    },
+    {
+      "product": "MEDIK8 LIQUID PEPTIDES X 30ML",
+      "code": "818625026905",
+      "listCost": 269,
+      "systemCost": 269,
+      "systemPrice": 380
+    },
+    {
+      "product": "MENTHOLATUM NF 85GR",
+      "code": "7759307017473",
+      "listCost": 15.83,
+      "systemCost": 15.83,
+      "systemPrice": 20
+    },
+    {
+      "product": "MODULCASS 5% X 10GR TUBO",
+      "code": "7795373019768",
+      "listCost": 123.9,
+      "systemCost": 188.21,
+      "systemPrice": 244.67
+    },
+    {
+      "product": "NAYARA GEL HIDRAT VAGINAL TUBO X 30 GR.",
+      "code": "7759053000132",
+      "listCost": 30.22,
+      "systemCost": 30.22,
+      "systemPrice": 41
+    },
+    {
+      "product": "NEXIUM 20 MG CAJA COMP X 28 (ESOMEPRAZOL)",
+      "code": "7501098609869",
+      "listCost": 6.43,
+      "systemCost": 9.98,
+      "systemPrice": 9.62
+    },
+    {
+      "product": "NORMIX 200 MG CAJA TAB X12",
+      "code": "8020030053311",
+      "listCost": 4.09,
+      "systemCost": 4.09,
+      "systemPrice": 7.5
+    },
+    {
+      "product": "PAMEZONE 40MG CAJA CAPS X 28",
+      "code": "7460536556489",
+      "listCost": 4.39,
+      "systemCost": 4.38,
+      "systemPrice": 6.9
+    },
+    {
+      "product": "PANADOL FORTE 65 MG + 500 MG SOBRE(2UND) CAJA TAB X 28 SOBRES (CAFEINA + PARACETAMOL)",
+      "code": "7451079003516",
+      "listCost": 1.7,
+      "systemCost": 1.7,
+      "systemPrice": 2.4
+    },
+    {
+      "product": "PEDIASURE CHOCOLATE LATA X 850 GR",
+      "code": "8886451011282",
+      "listCost": 96.9,
+      "systemCost": 96.9,
+      "systemPrice": 115
+    },
+    {
+      "product": "PILEXIL SPRAY ANTICAIDA X 120 ML",
+      "code": "8430340036469",
+      "listCost": 138.67,
+      "systemCost": 138.67,
+      "systemPrice": 195
+    },
+    {
+      "product": "PLIDAN COMPUESTO 10 MG+500 MG CJA X 100 COMP",
+      "code": "7730969307218",
+      "listCost": 0.92,
+      "systemCost": 0.92,
+      "systemPrice": 1.25
+    },
+    {
+      "product": "PRESTAT 75MG X 20COMP",
+      "code": "7751495001500",
+      "listCost": 3.5,
+      "systemCost": 3.5,
+      "systemPrice": 4.9
+    },
+    {
+      "product": "RUMADA 5MG+10MG CAJA X 30 COMP. (ROSUVASTATINA+EZETIMIBA)",
+      "code": "7730766002804",
+      "listCost": 5.39,
+      "systemCost": 5.39,
+      "systemPrice": 7.4
+    },
+    {
+      "product": "SEBIUM GEL MOUSSANT 400ML",
+      "code": "3701129814710",
+      "listCost": 141.1,
+      "systemCost": 141.1,
+      "systemPrice": 200
+    },
+    {
+      "product": "SPRAINER T4-O SACHET CAJA X 30 UND.",
+      "code": "7707239275775",
+      "listCost": 115,
+      "systemCost": 115,
+      "systemPrice": 149
+    },
+    {
+      "product": "TOBRADEX SUSP.OFT.(TOBRAMICINA+DEXAMETASONA) FRASCO X 5 ML",
+      "code": "7612797435601",
+      "listCost": 107.16,
+      "systemCost": 107.16,
+      "systemPrice": 139.31
+    },
+    {
+      "product": "TRAYENTA DUO 2.5MG/1000MG FRASCO X 60 COMP S/IGV",
+      "code": "4048846021632",
+      "listCost": 194.93,
+      "systemCost": 237.71,
+      "systemPrice": 333
+    },
+    {
+      "product": "TRAZIDEX OFTENO 0.1% + 0.3% - FRASCO GOTERO X 5 ML (SOLUCION OFTALMICA)",
+      "code": "736085410334",
+      "listCost": 67.18,
+      "systemCost": 67.18,
+      "systemPrice": 89.95
+    },
+    {
+      "product": "TRI AZIT 500MG (AZITROMICINA)",
+      "code": "7759307633451",
+      "listCost": 7.3,
+      "systemCost": 7.3,
+      "systemPrice": 8.2
+    },
+    {
+      "product": "TUSICLOX 35.4MG/5ML SUSP ORAL FRASCO X 120 ML (CLOPERASTINA)",
+      "code": "7703153025380",
+      "listCost": 44.23,
+      "systemCost": 44.23,
+      "systemPrice": 57.5
+    },
+    {
+      "product": "TUSILEXIL NF JBE FRASCO X 120 ML",
+      "code": "7460536571673",
+      "listCost": 25.48,
+      "systemCost": 25.48,
+      "systemPrice": 39.91
+    },
+    {
+      "product": "UNIGEL (CARBOMERO) 0.2% GEL OFT.TUBO X 5 GR.",
+      "code": "7751030000081",
+      "listCost": 46.44,
+      "systemCost": 46.44,
+      "systemPrice": 62.23
+    },
+    {
+      "product": "VAGISTEN 0.5MG (ESTRIOL) OVULOS CAJA X 10 UNID",
+      "code": "7750936005824",
+      "listCost": 6.11,
+      "systemCost": 6.11,
+      "systemPrice": 8.5
+    },
+    {
+      "product": "VILZERMET 1000 MG + 50 MG CAJA COMP X 30 (METFORMINA + VILDAGLIPTINA) S/IGV",
+      "code": "7730979098922",
+      "listCost": 2.39,
+      "systemCost": 4.2,
+      "systemPrice": 5.9
+    },
+    {
+      "product": "VOZAMA 20MG X 30 COMP",
+      "code": "7841141005157",
+      "listCost": 9.68,
+      "systemCost": 10.02,
+      "systemPrice": 13.8
+    },
+    {
+      "product": "VYTORIN 10 MG + 20 MG CAJA COMP X 28",
+      "code": "7897337714785",
+      "listCost": 8.72,
+      "systemCost": 8.72,
+      "systemPrice": 16.08
+    },
+    {
+      "product": "XIGDUO XR 10 MG + 1000 MG [CAJA TAB 30] (DAPAGLIFLOZINA + METFORMINA)",
+      "code": "5000456021012",
+      "listCost": 8.43,
+      "systemCost": 8.43,
+      "systemPrice": 11
+    }
+  ]
+}
