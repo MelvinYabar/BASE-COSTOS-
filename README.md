@@ -1,5 +1,11 @@
 # Avanti — Histórico de precios
 
+## Auditoría de 75 costos (20-11-2026)
+
+En **BD de costos → Auditoría 75** se concilió cada GTIN de `Lista precios 4  - Melvin.xlsx` con el maestro OKFAC del 19 de noviembre y la última compra enlazada disponible. La vista y su exportación a Excel muestran el costo original, el costo OKFAC, el costo por unidad vendible calculado, la fecha, el proveedor y la factura. Resultado: 39 costos cercanos a compra (±5%), 18 distintos y 18 sin verificación suficiente (16 sin compra exacta y 2 con presentación o fórmula dudosa). Una compra antigua es una referencia histórica, no una valorización del inventario actual.
+
+`data/cost_75_input.json` conserva los 75 renglones para regenerar `dist/cost-audit-75.json` con `node scripts/audit_cost_75.cjs`. Las 10 asociaciones de factura verificadas están en `data/cost_75_verified_links.json`; las equivalencias incompatibles se apartaron en `data/cost_link_exclusions.json`. Para reconstruir la BD madre tras nuevas facturas: `python scripts/prepare_costs.py`, luego `node scripts/audit_cost_75.cjs` y `python scripts/validate_costs.py`. Los importes de línea marcados **con IGV** por el extractor de XML/PDF llevan factor 1, incluso si el proveedor normalmente requiere sumar IGV a importes netos.
+
 Actualización de facturas del 10 de noviembre de 2026: el histórico integrado llega al **10-11-2026** (1,133 documentos, 6,626 líneas). La BD madre y el filtro de precios incluyen noviembre. Los PDF nuevos están en `dist/invoice-pdfs/`; 17 facturas de EBENEL se extrajeron de PDF y sus importes de línea se conciliaron contra el total impreso. Tres líneas nuevas de DIMEXA conservan su XML de origen, pero no tenían PDF en la descarga. Las guías de remisión no se tratan como facturas con costo.
 
 La sección **Calidad de datos** resume la cobertura observable de GTIN, unidades por envase, tratamiento IGV, asociaciones de compras y PDF enlazados. Sus porcentajes se calculan desde los JSON publicados; las unidades asumidas y los faltantes se muestran por separado. Un enlace de PDF no garantiza por sí solo que el archivo responda en producción.
