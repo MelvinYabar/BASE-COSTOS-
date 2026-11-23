@@ -21,7 +21,8 @@ def product_date(path):
 
 
 PRODUCTS = max(SOURCE.glob("20615607160-LISTA-PRODUCTOS-??-??-????.xlsx"), key=product_date)
-SALES = SOURCE / "ventas_totales.xlsx"
+DAILY_SALES = list(SOURCE.glob("20615607160-PRODUCTOS-VENDIDOS-POR-DIA-??-??-????.xlsx"))
+SALES = max(DAILY_SALES, key=product_date) if DAILY_SALES else SOURCE / "ventas_totales.xlsx"
 OUTPUT = SITE / "dist" / "stock-cover.json"
 TARGET_DAYS = 15
 

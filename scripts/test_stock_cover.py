@@ -22,10 +22,30 @@ class StockCoverTest(unittest.TestCase):
     def test_jardiance_uncoded_sales_are_included_once(self):
         data = json.loads(OUTPUT.read_text(encoding='utf-8'))
         item = next(p for p in data['products'] if p['code'] == '4048846019820')
-        self.assertEqual(item['matchedByNameHistory'], 600)
-        self.assertEqual(item['matchedByName30'], 240)
-        self.assertEqual(item['sold30'], 3180)
-        self.assertEqual(item['suggestedOrder15'], 270)
+        snapshot = datetime.fromisoformat(data['meta']['snapshot']).date()
+        start30 = datetime.fromisoformat(data['meta']['start30']).date()
+        matched_history = matched30 = sold30 = 0
+        book = load_workbook(SALES, read_only=True, data_only=True)
+        for row in book.active.iter_rows(min_row=8, values_only=True):
+            try:
+                sold_at = datetime.strptime(row[1], '%d/%m/%Y').date()
+            except (TypeError, ValueError):
+                continue
+            if sold_at >= snapshot:
+                continue
+            same_code = code(row[2]) == item['code']
+            same_name_without_code = not code(row[2]) and name_key(row[4]) == name_key(item['name'])
+            if same_name_without_code:
+                matched_history += quantity(row[6])
+                if sold_at >= start30:
+                    matched30 += quantity(row[6])
+            if sold_at >= start30 and (same_code or same_name_without_code):
+                sold30 += quantity(row[6])
+        book.close()
+        self.assertEqual(item['matchedByNameHistory'], matched_history)
+        self.assertEqual(item['matchedByName30'], matched30)
+        self.assertEqual(item['sold30'], sold30)
+        self.assertEqual(item['suggestedOrder15'], suggested_order(item['stock'], sold30, item['reviewUnit30']))
 
     def test_order_suggestion_uses_30_day_rate_and_rounds_up(self):
         self.assertEqual(suggested_order(630, 3900, False), 1320)

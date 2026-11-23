@@ -1,5 +1,22 @@
 # Avanti — Histórico de precios
 
+## Valorización de stock y rotación (23-11-2026)
+
+La sección **Valorización de stock** usa el maestro activo de OKFAC del 23 de noviembre, el reporte de vendidos por día y la lista escaneada de crónicos. El valor por producto es `stock positivo × costo registrado en OKFAC`; no se vuelve a aplicar IGV. Excluye productos inactivos y stocks negativos. Las filas con stock positivo y costo cero o vacío quedan sin valor, señaladas para revisión. La cifra mostrada es el valor registrado de las filas valorizables, no una valorización contable completa ni auditada.
+
+Las cinco categorías son excluyentes. Los GTIN vinculados inequívocamente a la lista del PDF se clasifican como **Crónicos**; los demás se clasifican por unidades vendidas en los 90 días completos previos al inventario: **Alta** ≥90, **Media** 30–89, **Baja** 9–29 y **Muy baja o nula** <9. Las ventas sin GTIN o fuera del catálogo activo no se asignan por semejanza de nombre. Las 12 entradas del PDF sin equivalencia inequívoca figuran en la hoja de revisión del Excel exportado. También se señalan los productos cuyo costo OKFAC supera el precio de venta para confirmar la unidad y el costo de la ficha.
+
+La sección permite buscar, filtrar por categoría y revisión, ordenar y exportar a Excel el detalle visible, el resumen por categoría y la lista de crónicos sin asociación. Para regenerar los datos tras recibir un nuevo maestro y reporte de ventas, guardar ambos en la carpeta superior y ejecutar:
+
+```powershell
+python scripts/prepare_stock_cover.py
+python scripts/prepare_stock_valuation.py
+python scripts/test_stock_cover.py
+python scripts/test_stock_valuation.py
+```
+
+Si cambia el PDF de crónicos, revisar manualmente `data/chronic_medicines_2026-11-23.json` y `data/chronic_matches_2026-11-23.json` antes de publicar; la similitud de nombres no confirma concentración ni presentación.
+
 ## Auditoría de 75 costos (20-11-2026)
 
 En **BD de costos → Auditoría 75** se concilió cada GTIN de `Lista precios 4  - Melvin.xlsx` con el maestro OKFAC del 19 de noviembre y la última compra enlazada disponible. La vista y su exportación a Excel muestran el costo original, el costo OKFAC, el costo por unidad vendible calculado, la fecha, el proveedor y la factura. Resultado: 39 costos cercanos a compra (±5%), 18 distintos y 18 sin verificación suficiente (16 sin compra exacta y 2 con presentación o fórmula dudosa). Una compra antigua es una referencia histórica, no una valorización del inventario actual.
