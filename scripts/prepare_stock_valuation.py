@@ -15,6 +15,7 @@ SITE = Path(__file__).resolve().parents[1]
 SOURCE = SITE.parent
 PDF_NAMES = SITE / "data" / "chronic_medicines_2026-11-23.json"
 PDF_MATCHES = SITE / "data" / "chronic_matches_2026-11-23.json"
+LABORATORIES = SITE / "data" / "laboratories_gtin.json"
 OUTPUT = SITE / "dist" / "stock-valuation.json"
 
 
@@ -63,6 +64,10 @@ def main():
     snapshot = cover["meta"]["snapshot"]
     product_path = SOURCE / cover["meta"]["productFile"]
     cover_by_code = {item["code"]: item for item in cover["products"]}
+    laboratory_data = json.loads(LABORATORIES.read_text(encoding="utf-8"))
+    if laboratory_data["meta"]["masterFile"] != product_path.name:
+        raise ValueError("El catálogo de laboratorios no corresponde al maestro vigente")
+    laboratories = laboratory_data["byGtin"]
     chronic_names = json.loads(PDF_NAMES.read_text(encoding="utf-8"))["names"]
     chronic_mapping = json.loads(PDF_MATCHES.read_text(encoding="utf-8"))["rowToCodes"]
     if len(chronic_names) != 110:
@@ -107,11 +112,14 @@ def main():
             valuation_status = "Valorizado"
             value = money(Decimal(str(stock)) * Decimal(str(cost or 0)))
         chronic_rows = chronic_by_code.get(item_code, [])
+        laboratory = laboratories.get(item_code)
         sold90 = source_cover["sold90"]
         category = rotation(sold90, bool(chronic_rows))
         cost_above_price = bool(stock > 0 and cost is not None and price is not None and cost > price > 0)
         products.append({
             "code": item_code, "name": str(row[3] or ""), "sourceCategory": str(row[4] or ""),
+            "laboratory": laboratory["laboratory"] if laboratory else "",
+            "laboratoryCatalogRow": laboratory["catalogRow"] if laboratory else None,
             "unit": str(row[5] or ""), "stock": stock, "cost": cost, "price": price,
             "value": value, "valuationStatus": valuation_status, "category": category,
             "chronicPdfRows": chronic_rows, "sold30": source_cover["sold30"], "sold90": sold90,
@@ -123,6 +131,8 @@ def main():
     book.close()
     if len(products) != cover["meta"]["activeProducts"]:
         raise ValueError("El conteo de productos activos no concilia con la cobertura")
+    if sum(bool(item["laboratory"]) for item in products) != laboratory_data["meta"]["matched"]:
+        raise ValueError("La cobertura de laboratorios no concilia con el catálogo")
     unmatched_codes = sorted(set(chronic_by_code) - {item["code"] for item in products})
     if unmatched_codes:
         raise ValueError(f"GTIN crónicos no activos en el maestro: {unmatched_codes}")
@@ -141,6 +151,9 @@ def main():
         "snapshot": snapshot, "productFile": product_path.name, "salesFile": SALES.name,
         "salesThrough": cover["meta"]["lastCompleteDay"], "start90": cover["meta"]["start90"],
         "activeProducts": len(products), "inactiveExcluded": inactive,
+        "laboratorySource": laboratory_data["meta"]["catalogFile"],
+        "laboratoryMatched": laboratory_data["meta"]["matched"],
+        "laboratoryUnmatched": laboratory_data["meta"]["unmatched"],
         "costBasis": "Costo registrado por unidad en OKFAC; sin ajuste adicional de IGV",
         "totalValue": money(sum(Decimal(str(item["value"])) for item in valued)),
         "valuedProducts": len(valued), "missingCostProducts": len(missing_cost),

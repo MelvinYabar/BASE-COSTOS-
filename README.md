@@ -2,6 +2,8 @@
 
 ## Valorización de stock y rotación (23-11-2026)
 
+El campo **Laboratorio** se obtiene del catálogo `Catálogo GTIN (EAN) DS. 024-2005 - SA 01 julio.xlsx`: código de barras del maestro OKFAC igual al GTIN de la columna B, laboratorio de la columna K. El cruce es exacto y conserva la fila del catálogo en el Excel exportado. En el corte actual cubre 1,338 de 1,490 productos activos; los 152 restantes figuran como **Sin identificar**. No se sustituyen automáticamente por el distribuidor ni por nombres parecidos. La fuente completa permanece fuera del repositorio; `data/laboratories_gtin.json` conserva solo los cruces necesarios para el maestro indicado en `dist/stock-cover.json`.
+
 La sección **Valorización de stock** usa el maestro activo de OKFAC del 23 de noviembre, el reporte de vendidos por día y la lista escaneada de crónicos. El valor por producto es `stock positivo × costo registrado en OKFAC`; no se vuelve a aplicar IGV. Excluye productos inactivos y stocks negativos. Las filas con stock positivo y costo cero o vacío quedan sin valor, señaladas para revisión. La cifra mostrada es el valor registrado de las filas valorizables, no una valorización contable completa ni auditada.
 
 Las cinco categorías son excluyentes. Los GTIN vinculados inequívocamente a la lista del PDF se clasifican como **Crónicos**; los demás se clasifican por unidades vendidas en los 90 días completos previos al inventario: **Alta** ≥90, **Media** 30–89, **Baja** 9–29 y **Muy baja o nula** <9. Las ventas sin GTIN o fuera del catálogo activo no se asignan por semejanza de nombre. Las 12 entradas del PDF sin equivalencia inequívoca figuran en la hoja de revisión del Excel exportado. También se señalan los productos cuyo costo OKFAC supera el precio de venta para confirmar la unidad y el costo de la ficha.
@@ -10,6 +12,7 @@ La sección permite buscar, filtrar por categoría y revisión, ordenar y export
 
 ```powershell
 python scripts/prepare_stock_cover.py
+python scripts/prepare_laboratories.py "C:\ruta\Catálogo GTIN (EAN) DS. 024-2005 - SA 01 julio.xlsx"
 python scripts/prepare_stock_valuation.py
 python scripts/test_stock_cover.py
 python scripts/test_stock_valuation.py

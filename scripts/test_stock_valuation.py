@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from openpyxl import load_workbook
 
-from prepare_stock_cover import PRODUCTS, code, quantity
+from prepare_stock_cover import SOURCE, code, quantity
 from prepare_stock_valuation import OUTPUT, money, rotation
 
 
@@ -27,7 +27,7 @@ class StockValuationTest(unittest.TestCase):
                          {"Crónicos", "Alta rotación", "Media rotación", "Baja rotación", "Muy baja o nula rotación"})
 
     def test_stock_and_cost_reconcile_to_master(self):
-        book = load_workbook(PRODUCTS, read_only=True, data_only=True)
+        book = load_workbook(SOURCE / self.data["meta"]["productFile"], read_only=True, data_only=True)
         active = {code(row[1]): row for row in book.active.iter_rows(min_row=7, values_only=True)
                   if row[20] == "Activo"}
         book.close()
@@ -47,6 +47,16 @@ class StockValuationTest(unittest.TestCase):
                          self.data["meta"]["missingCostProducts"])
         self.assertEqual(sum(item["valuationStatus"] == "Stock negativo" for item in items),
                          self.data["meta"]["negativeStockProducts"])
+
+    def test_laboratories_match_exact_gtin_catalog_mapping(self):
+        from prepare_stock_valuation import LABORATORIES
+        mapping = json.loads(LABORATORIES.read_text(encoding="utf-8"))["byGtin"]
+        self.assertEqual(self.data["meta"]["laboratoryMatched"], len(mapping))
+        self.assertEqual(self.data["meta"]["laboratoryUnmatched"], 152)
+        for item in self.data["products"]:
+            source = mapping.get(item["code"])
+            self.assertEqual(item["laboratory"], source["laboratory"] if source else "")
+            self.assertEqual(item["laboratoryCatalogRow"], source["catalogRow"] if source else None)
 
     def test_chronic_override_and_dose_separation(self):
         self.assertEqual(self.by_code["4048846019820"]["category"], "Crónicos")
